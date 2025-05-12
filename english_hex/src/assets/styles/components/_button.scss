@@ -1,0 +1,56 @@
+.button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: fit-content;
+    font-size: 18px;
+    font-weight: 600;
+    line-height: 100%;
+    letter-spacing: 0em;
+    color: rgba(255, 255, 255, 1);
+    border: 0;
+    border-radius: 16px;
+    padding: 12px 24px;
+
+    &--white {
+        border: 2px solid rgba(49, 29, 93, 1);
+        background-color: rgb(255, 255, 255);
+    }
+    
+    &--purple {
+        background-color: rgba(38, 32, 96, 1);
+    }
+
+    &--blue {
+        background: linear-gradient(to right, rgba(53, 92, 213, 1), rgba(113, 74, 180, 1)) ;
+    }
+
+    &--big {
+        width: 100%;
+        letter-spacing: 0.04em;
+    }
+}
+
+.authorization-toggle {
+    width: 230px;
+    height: 40px;
+    border: 2px solid rgba(255, 255, 255, 1);
+    border-radius: 20px;
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 24px;
+
+    &__select-button {
+        background: none;
+        border: 0;
+        border-radius: 20px;
+        padding: 4.5px 16.5px;
+        margin-block: 5px;
+        color: rgba(255, 255, 255, 1);
+        background-color: transparent;
+        font-size: 18px;
+        font-weight: 700;
+        line-height: 100%;
+        letter-spacing: 0em;
+    }
+}
