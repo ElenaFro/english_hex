@@ -1,0 +1,69 @@
+@import url('https://fonts.googleapis.com/css2?family=Mulish:ital,wght@0,200..1000;1,200..1000&display=swap');
+
+* {
+    font-family: Mulish;
+}
+
+body, #app {
+    background:
+    url('/src/assets/img/background_stars.png'),
+    linear-gradient(to top, rgba(235, 182, 105, 1),
+    rgba(200, 153, 116, 1),
+    rgba(161, 119, 128, 1),
+    rgba(129, 93, 124, 1),
+    rgba(93, 70, 117, 1),
+    rgba(57, 43, 88, 1),
+    rgba(43, 32, 64, 1),
+    rgba(30, 22, 41, 1),
+    rgba(26, 20, 36, 1),
+    rgba(25, 19, 33, 1));
+    background-size: contain;
+    background-position: top;
+    background-repeat: no-repeat;
+}
+
+.main-container {
+    width: 100%;
+    height: 100dvh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    // background:
+    // url('/src/assets/img/background_stars.png'),
+    // linear-gradient(to top, rgba(235, 182, 105, 1),
+    // rgba(200, 153, 116, 1),
+    // rgba(161, 119, 128, 1),
+    // rgba(129, 93, 124, 1),
+    // rgba(93, 70, 117, 1),
+    // rgba(57, 43, 88, 1),
+    // rgba(43, 32, 64, 1),
+    // rgba(30, 22, 41, 1),
+    // rgba(26, 20, 36, 1),
+    // rgba(25, 19, 33, 1));
+    // background-size: contain;
+    // background-position: top;
+    // background-repeat: no-repeat;
+    box-sizing: border-box;
+    overflow: hidden;
+}
+
+.content-container{
+    width: 317px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+
+    &__title {
+        font-size: 20px;
+        font-weight: 600;
+        line-height: 100%;
+        letter-spacing: 0em;
+        text-align: center;
+        margin-bottom: 40px;
+        color: rgba(255, 255, 255, 1);
+    }
+}
