@@ -33,6 +33,7 @@
 
 .message-block {
   text-align: center;
+  padding: 43px 25px 40px;
   z-index: 100;
 }
 

@@ -16,5 +16,7 @@
 </script>
 
 <style scoped>
-
+.message-block {
+	padding: 19px 7px 26px 27px;;
+}
 </style>
