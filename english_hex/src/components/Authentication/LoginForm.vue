@@ -2,12 +2,14 @@
   	<div class="main-container">
     	<div class="content-container">
 			<div class="authorization-toggle">
-				<button class="authorization-toggle__select-button" 
+				<button 
+				class="authorization-toggle__select-button" 
 				:class="{ active: mode === 'login' }"
 				@click="switchToLogin">
 					Вход
 				</button>
-				<button class="authorization-toggle__select-button" 
+				<button 
+				class="authorization-toggle__select-button" 
 				:class="{ active: mode === 'register' }"
 				@click="$emit('change-component', 'RegistForm')">
 					Регистрация
@@ -16,20 +18,33 @@
 
     		<div v-if="step === 'email'" class="login-form">
         		<p class="content-container__title">Укажи свой email</p>
-        		<input ref="emailInput" v-model="email" type="email" placeholder="Начните ввод" :class="{
-				'login-form__input-field': true,
-				'login-form__input-field--error': inputError
-        		}" />
+				<div class="login-form__input-container">
+					<input ref="emailInput" v-model="email" type="email" placeholder="Начните ввод" :class="{
+					'login-form__input-field': true,
+					'login-form__input-field--error': inputError
+					}" />
+				</div>
         		<button @click="emailVerif" class="button button--purple button--big">Продолжить</button>
         		<button class="login-form__link" @click="$emit('change-component', 'PasswordRecov')">Забыли пароль?</button>
       		</div>
 
 			<div v-if="step === 'password'" class="login-form">
 				<p class="content-container__title">Укажи свой пароль</p>
-				<input v-model="password" type="password" placeholder="Начните ввод" :class="{
-				'login-form__input-field': true,
-				'login-form__input-field--error': inputError
-				}" />
+				<div class="login-form__input-container">
+					<input  
+                    v-model="password"
+                    placeholder="Пароль"
+					:type="showPassword ? 'text' : 'password'"
+                    :class="{
+                        'login-form__input-field':true,
+                        'login-form__input-field--error': passwordError
+                    }"
+                	/>
+					<button type="button" class="show-password-button" @click="togglePassword">
+						<img class="show-password-button__visibility" 
+						:src="showPassword ? visibilityIcon : visibilityOffIcon" alt="">
+					</button>
+				</div>
 				<button class="button button--purple button--big" @click="login">Продолжить</button>
 			</div>
 		</div>
@@ -38,12 +53,19 @@
 
 <script setup>
 import { ref } from 'vue'
+import visibilityIcon from '@/assets/img/visibility_icon.svg'
+import visibilityOffIcon from '@/assets/img/visibility_off_icon.svg'
 
 const step = ref('email')
 const email = ref('')
 const password = ref('')
 const mode = ref('login')
 const inputError = ref(false)
+const showPassword = ref(false)
+
+const togglePassword = () => {
+  showPassword.value = !showPassword.value
+}
 
 const switchToLogin = () => {
 	step.value = 'email'
@@ -57,7 +79,7 @@ const emailVerif = () => {
 </script>
 
 <style scoped>
-.login-form__input-field {
+.login-form__input-container {
 	margin-bottom: 12px;
 }
 

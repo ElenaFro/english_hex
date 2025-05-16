@@ -6,7 +6,7 @@
                 <p class="message-block__text">Приложение доступно только пользователям от 14 лет и старше.<br>
                     Если вам нет 14, попросите родителя или опекуна помочь с доступом.
                 </p>
-                <div class="message-block__button-container">
+                <div class="button-container button-container--column">
                     <button @click="$emit('change-component', 'RegistForm')" class="button button--purple">
                         Да, мне есть 14 лет
                     </button>        
@@ -30,11 +30,5 @@
 
 .message-block__text {
     margin-bottom: 16px;
-}
-.message-block__button-container {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 16px;
 }
 </style>
