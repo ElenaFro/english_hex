@@ -22,13 +22,17 @@
     }
 
     &--blue {
-        background: linear-gradient(to right, rgba(53, 92, 213, 1), rgba(113, 74, 180, 1)) ;
+        background: linear-gradient(to right, rgba(53, 92, 213, 1), rgba(113, 74, 180, 1));
     }
 
     &--big {
         width: 100%;
         letter-spacing: 0.04em;
     }
+
+	&:active {
+		box-shadow: 0 0 6px 3px  rgba(53, 92, 213, 0.3);
+	}
 }
 
 .authorization-toggle {
@@ -39,18 +43,48 @@
     display: flex;
     justify-content: space-between;
     margin-bottom: 24px;
+	padding: 2px; 
 
     &__select-button {
+		display: inline;
         background: none;
         border: 0;
         border-radius: 20px;
-        padding: 4.5px 16.5px;
-        margin-block: 5px;
+        padding: 4.5px 10px;
         color: rgba(255, 255, 255, 1);
         background-color: transparent;
         font-size: 18px;
         font-weight: 700;
         line-height: 100%;
         letter-spacing: 0em;
+
+		&.active {
+			padding-inline: 17.5px;
+			background-color: white;
+			color: rgba(38, 32, 96, 1);
+		}
     }
+}
+
+.show-password-button {
+	position: absolute;
+	width: 40px;
+	height: 40px;
+	right: 15px;
+	background: none;
+	border: 0;
+}
+
+.button-container {
+	display: flex;
+
+	&--column {
+		flex-direction: column;
+		align-items: center;
+		gap: 16px;
+	}
+
+	&--row {
+		gap: 11px;
+	}
 }
