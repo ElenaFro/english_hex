@@ -694,7 +694,7 @@ body,
 }
 
 .layout {
-  max-width: 480px;
+  max-width: 375px;
   max-height: 1000px;
   background-color: #fff;
   margin: 0 auto;
