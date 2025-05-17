@@ -53,8 +53,11 @@
 
 <script setup>
 import { ref } from 'vue'
+import { useRouter } from 'vue-router'
 import visibilityIcon from '@/assets/img/visibility_icon.svg'
 import visibilityOffIcon from '@/assets/img/visibility_off_icon.svg'
+
+const router = useRouter()
 
 const step = ref('email')
 const email = ref('')
@@ -75,6 +78,10 @@ const switchToLogin = () => {
 const emailVerif = () => {
 	inputError.value = false
 	step.value = 'password'
+}
+
+const login = ()=>{
+	router.push({name: 'mainPage'})
 }
 </script>
 
