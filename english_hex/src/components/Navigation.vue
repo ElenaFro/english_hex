@@ -12,22 +12,22 @@ import { RouterLink } from "vue-router";
 
 const navItems = [
     {
-        name: "Home",
+        name: "mainPage",
         path: "/",
         icon: 'src/assets/icons/navBarIcon/Home.svg',
     },
     {
-        name: "Profile",
-        path: "/",
+        name: "addCategories",
+        path: "/addCategories",
         icon: 'src/assets/icons/navBarIcon/Plus.svg',
     },
     {
-        name: "Settings",
+        name: "raiting",
         path: "/raiting",
         icon: 'src/assets/icons/navBarIcon/Raiting.png',
     },
     {
-        name: "Settings",
+        name: "profile",
         path: "/profile",
         icon: 'src/assets/icons/navBarIcon/Profile.svg',
     },
