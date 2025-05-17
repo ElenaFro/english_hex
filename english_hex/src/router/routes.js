@@ -2,13 +2,20 @@ const routes = [
   {
     path: "/auth",
     name: "Auth",
-    component: () => import("@/pages/AuthPage.vue"),
+    component: () => import("@/layouts/GuestLayout.vue"),
+    children: [
+      {
+        path: "",
+        name: "AuthPage",
+        component: () => import("@/pages/AuthPage.vue"),
+      },
+    ],
     meta: { requiresAuth: false },
   },
   {
     path: "/",
-    name: "home",
-    component: () => import("@/App.vue"),
+    name: "Home",
+    component: () => import("@/layouts/MainLayout.vue"),
     children: [
       {
         path: "",
@@ -34,4 +41,5 @@ const routes = [
     meta: { requiresAuth: false },
   },
 ];
+
 export default routes;
