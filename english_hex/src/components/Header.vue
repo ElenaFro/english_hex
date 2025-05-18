@@ -40,8 +40,8 @@ import { useRoute } from 'vue-router';
 // ];
 const headerItemsRight = [
     {
-        name: "addCategories",
-        path: "/addCategories",
+        name: "notifications",
+        path: "/notifications",
         icon: 'src/assets/icons/navBarIcon/Bell.svg',
     },
 ];
@@ -97,6 +97,7 @@ watch(() => route.path, (newPath) => {
 .header-item-button {
     background-color: transparent;
     border-width: 0px !important;
+    padding: 0;
 }
 
 .header-item:hover {
