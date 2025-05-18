@@ -73,6 +73,13 @@
                 <button class="confirm-button" @click="confirmSave">Продолжить</button>
             </div>
         </div>
+        <div v-if="showPopup" class="popup-overlay" @click.self="closePopup">
+            <div class="popup-content">
+                <button class="close-button" @click="closePopup">×</button>
+                <p>Сохранить изменения?</p>
+                <button class="confirm-button" @click="confirmSave">Продолжить</button>
+            </div>
+        </div>
     </div>
 </template>
 

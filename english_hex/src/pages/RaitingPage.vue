@@ -8,3 +8,5 @@
 import Raiting from '@/components/Raiting.vue'
 import Header from '@/components/Header.vue'
 </script>
+<style scoped>
+</style>
