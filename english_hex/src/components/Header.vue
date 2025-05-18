@@ -99,14 +99,16 @@ watch(() => route.path, (newPath) => {
     border-width: 0px !important;
     padding: 0;
 }
-
+.header-item-button:hover {
+    background-color: rgba(255, 255, 255, 0)!important;
+}
 .header-item:hover {
-    background-color: rgba(255, 255, 255, 0);
+    background-color: rgba(255, 255, 255, 0)!important;
 }
 
-.header-item.active {
+/* .header-item.active {
     border-bottom: 1px solid #ffffff;
-}
+} */
 
 .header-icon {
     width: 32px;
