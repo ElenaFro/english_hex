@@ -1,10 +1,9 @@
 <template>
-    <div class="main-container">
+    <div class="raiting-container">
         <div class="content-container">
             <div class="message-block">
-                <h1 class="message-block__title">Вам исполнилось 14 лет?</h1>
-                <p class="message-block__text">Приложение доступно только пользователям от 14 лет и старше.<br>
-                    Если вам нет 14, попросите родителя или опекуна помочь с доступом.
+                <h1 class="message-block__title">Страница рейтинга</h1>
+                <p class="message-block__text">В работе
                 </p>
                 <!-- <div class="button-container button-container--column">
                     <button @click="$emit('change-component', 'RegistForm')" class="button button--purple">

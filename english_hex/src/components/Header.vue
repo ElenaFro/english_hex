@@ -63,7 +63,7 @@ watch(() => route.path, (newPath) => {
 
 <style scoped>
 .header-bar {
-    position: fixed;
+    position: absolute;
     top: 1rem;
     left: 50%;
     transform: translateX(-50%);
@@ -76,7 +76,7 @@ watch(() => route.path, (newPath) => {
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
     z-index: 1000;
     width: 90%;
-    max-width: 480px;
+    max-width: 375px;
 }
 
 .header-item {

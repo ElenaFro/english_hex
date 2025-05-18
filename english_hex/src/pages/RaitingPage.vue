@@ -1,8 +1,7 @@
 <template>
-    <!-- <div class="layout header_title">Рейтинг</div> -->
     <div>
         <Header />
-		<!-- <Raiting /> -->
+		<Raiting />
 	</div>
 </template>
 <script setup>
