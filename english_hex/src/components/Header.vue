@@ -1,6 +1,6 @@
 <template>
     <div class="header-bar">
-    <RouterLink
+    <!-- <RouterLink
       v-for="item in headerItemsLeft"
       :key="item.name"
       :to="item.path"
@@ -8,8 +8,11 @@
       :class="{ active: $route.path === item.path }"
     >
       <img :src="item.icon" class="header-icon" :alt="item.name" />
-    </RouterLink>
-    <h1 class="header-title">{{ currentTitle }}</h1>
+    </RouterLink> -->
+    <button @click="goBack" class="header-item-button">
+      <img src="@/assets/icons/navBarIcon/arrow_left.svg" class="header-icon" alt="Назад" />
+    </button>
+    <p class="header-title">{{ currentTitle }}</p>
     <RouterLink
       v-for="item in headerItemsRight"
       :key="item.name + '-right'"
@@ -28,13 +31,13 @@ import { RouterLink } from "vue-router";
 import { ref, watch } from 'vue';
 import { useRoute } from 'vue-router';
 
-const headerItemsLeft = [
-    {
-        name: "left",
-        path: "/",
-        icon: 'src/assets/icons/navBarIcon/arrow_left.svg',
-    },
-];
+// const headerItemsLeft = [
+//     {
+//         name: "left",
+//         path: "/",
+//         icon: 'src/assets/icons/navBarIcon/arrow_left.svg',
+//     },
+// ];
 const headerItemsRight = [
     {
         name: "addCategories",
@@ -45,6 +48,10 @@ const headerItemsRight = [
 
 const currentTitle = ref(" "); // Заголовок по умолчанию
 const route = useRoute(); // Получаем текущий маршрут
+// Функция для возврата на предыдущую страницу
+function goBack() {
+  window.history.back();
+}
 
 watch(() => route.path, (newPath) => {
     switch (newPath) {
@@ -73,7 +80,6 @@ watch(() => route.path, (newPath) => {
     background-color: transparent;
     border-radius: 30px;
     padding: 0.5rem 1rem;
-    /* box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2); */
     z-index: 1000;
     width: 90%;
     max-width: 375px;
@@ -88,6 +94,10 @@ watch(() => route.path, (newPath) => {
     padding: 0;
     transition: background-color 0.2s;
 }
+.header-item-button {
+    background-color: transparent;
+    border-width: 0px !important;
+}
 
 .header-item:hover {
     background-color: rgba(255, 255, 255, 0);
@@ -98,8 +108,8 @@ watch(() => route.path, (newPath) => {
 }
 
 .header-icon {
-    width: 24px;
-    height: 24px;
+    width: 32px;
+    height: 32px;
 }
 
 .header-label {
@@ -108,5 +118,8 @@ watch(() => route.path, (newPath) => {
 }
 .header-title {
     color: #ffff;
+    font-size: 28px;
+    font-weight: 800;
+    line-height: 35px;
 }
 </style>
