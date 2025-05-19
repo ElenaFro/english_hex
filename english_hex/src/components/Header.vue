@@ -10,7 +10,7 @@
       <img :src="item.icon" class="header-icon" :alt="item.name" />
     </RouterLink> -->
     <button @click="goBack" class="header-item-button">
-      <img src="@/assets/icons/navBarIcon/arrow_left.svg" class="header-icon" alt="Назад" />
+      <img src="@/assets/icons/navBarIcon/arrow_left.svg" class="header-icon-left" alt="Назад" />
     </button>
     <p class="header-title">{{ currentTitle }}</p>
     <RouterLink
@@ -60,6 +60,9 @@ watch(() => route.path, (newPath) => {
             break;
         case '/raiting':
              currentTitle.value = "Рейтинг";
+            break;
+        case '/notifications':
+             currentTitle.value = "Уведомления";
             break;
         default:
             currentTitle.value = " "; // Заголовок по умолчанию
@@ -114,7 +117,10 @@ watch(() => route.path, (newPath) => {
     width: 32px;
     height: 32px;
 }
-
+.header-icon-left{
+    width: 29px;
+    height: 29px; 
+}
 .header-label {
     font-size: 0.75rem;
     margin-top: 0.25rem;
