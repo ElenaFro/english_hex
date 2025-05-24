@@ -1,4 +1,7 @@
 <template>
+    <div>
+        <Header />
+	</div>
     <div class="profile-page">
         <div class="avatar-section">
             <img :src="avatarIcon" class="avatar" alt="User avatar" @click="toggleGender" />
@@ -70,6 +73,13 @@
                 <button class="confirm-button" @click="confirmSave">Продолжить</button>
             </div>
         </div>
+        <div v-if="showPopup" class="popup-overlay" @click.self="closePopup">
+            <div class="popup-content">
+                <button class="close-button" @click="closePopup">×</button>
+                <p>Сохранить изменения?</p>
+                <button class="confirm-button" @click="confirmSave">Продолжить</button>
+            </div>
+        </div>
     </div>
 </template>
 
@@ -77,6 +87,7 @@
 import { ref, computed } from "vue";
 import BoyIcon from "@/assets/img/DefaultUserAvatar/male.svg";
 import GirlIcon from "@/assets/img/DefaultUserAvatar/female.svg";
+import Header from '@/components/Header.vue';
 
 const form = ref({
     gender: "male",
@@ -179,6 +190,7 @@ const confirmSave = async () => {
     justify-content: center;
     align-items: center;
     vertical-align: middle;
+    margin-top: 76px;
 }
 
 .profile-card {

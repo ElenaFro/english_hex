@@ -406,6 +406,27 @@ body,
   background-color: rgb(250, 251, 253);
 }
 
+.message-block-notification {
+  width: 100%;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+  -ms-flex-direction: column;
+  flex-direction: column;
+  -webkit-box-align: center;
+  -ms-flex-align: center;
+  align-items: center;
+  -webkit-box-pack: center;
+  -ms-flex-pack: center;
+  justify-content: center;
+  padding: 0px 4px 16px 0px;
+  border: 0;
+  border-radius: 20px;
+  background-color: rgb(250, 251, 253);
+}
+
 .message-block--shadow {
   -webkit-box-shadow: 0 2px 2px 0px rgba(255, 255, 255, 0.25);
   box-shadow: 0 2px 2px 0px rgba(255, 255, 255, 0.25);
@@ -695,7 +716,10 @@ body,
 
 .layout {
   max-width: 375px;
+  width: 375px;
   max-height: 1000px;
   background-color: #fff;
   margin: 0 auto;
+  border-top-left-radius: 40px;
+  border-top-right-radius: 40px; 
 }
