@@ -1,7 +1,4 @@
 <template>
-    <div>
-        <Header />
-	</div>
     <div class="profile-page">
         <div class="avatar-section">
             <img :src="avatarIcon" class="avatar" alt="User avatar" @click="toggleGender" />
@@ -73,13 +70,6 @@
                 <button class="confirm-button" @click="confirmSave">Продолжить</button>
             </div>
         </div>
-        <div v-if="showPopup" class="popup-overlay" @click.self="closePopup">
-            <div class="popup-content">
-                <button class="close-button" @click="closePopup">×</button>
-                <p>Сохранить изменения?</p>
-                <button class="confirm-button" @click="confirmSave">Продолжить</button>
-            </div>
-        </div>
     </div>
 </template>
 
@@ -87,7 +77,7 @@
 import { ref, computed } from "vue";
 import BoyIcon from "@/assets/img/DefaultUserAvatar/male.svg";
 import GirlIcon from "@/assets/img/DefaultUserAvatar/female.svg";
-import Header from '@/components/Header.vue';
+import Navigation from '../components/Navigation.vue';
 
 const form = ref({
     gender: "male",
@@ -181,15 +171,15 @@ const confirmSave = async () => {
 
 <style scoped>
 .profile-page {
-    min-height: 100vh;
     width: 100%;
+    height: 100vh;
+    min-height: 100%;
     display: flex;
-    padding: 0 30px;
+    padding: 40px 30px;
     row-gap: 25px;
+    background-color: #F6F6FE;
     flex-direction: column;
-    justify-content: center;
     align-items: center;
-    vertical-align: middle;
     margin-top: 76px;
 }
 
@@ -199,6 +189,7 @@ const confirmSave = async () => {
     padding: 18px;
     width: 100%;
     max-width: 400px;
+    max-height: 800px;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
     color: #ffffff;
     display: flex;
@@ -351,6 +342,7 @@ const confirmSave = async () => {
     width: 100%;
     justify-content: start;
     align-items: start;
+    padding-bottom: 150px;
 }
 
 /* Стили для попапа */

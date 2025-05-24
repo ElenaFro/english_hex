@@ -1,14 +1,5 @@
 <template>
     <div class="header-bar">
-    <!-- <RouterLink
-      v-for="item in headerItemsLeft"
-      :key="item.name"
-      :to="item.path"
-      class="header-item"
-      :class="{ active: $route.path === item.path }"
-    >
-      <img :src="item.icon" class="header-icon" :alt="item.name" />
-    </RouterLink> -->
     <button @click="goBack" class="header-item-button">
       <img src="@/assets/icons/navBarIcon/arrow_left.svg" class="header-icon-left" alt="Назад" />
     </button>
@@ -46,9 +37,8 @@ const headerItemsRight = [
     },
 ];
 
-const currentTitle = ref(" "); // Заголовок по умолчанию
-const route = useRoute(); // Получаем текущий маршрут
-// Функция для возврата на предыдущую страницу
+const currentTitle = ref(" "); 
+const route = useRoute(); 
 function goBack() {
   window.history.back();
 }
@@ -65,7 +55,7 @@ watch(() => route.path, (newPath) => {
              currentTitle.value = "Уведомления";
             break;
         default:
-            currentTitle.value = " "; // Заголовок по умолчанию
+            currentTitle.value = " ";
             break;
     }        
 }, { immediate: true });
@@ -73,7 +63,7 @@ watch(() => route.path, (newPath) => {
 
 <style scoped>
 .header-bar {
-    position: fixed;
+    position: absolute;
     top: 1rem;
     left: 50%;
     transform: translateX(-50%);
@@ -108,10 +98,6 @@ watch(() => route.path, (newPath) => {
 .header-item:hover {
     background-color: rgba(255, 255, 255, 0)!important;
 }
-
-/* .header-item.active {
-    border-bottom: 1px solid #ffffff;
-} */
 
 .header-icon {
     width: 32px;
