@@ -37,7 +37,7 @@ const navItems = [
 <style scoped>
 .navigation-bar {
     position: fixed;
-    bottom: 1rem;
+    bottom: 10px;
     left: 50%;
     transform: translateX(-50%);
     display: flex;
@@ -45,7 +45,7 @@ const navItems = [
     align-items: center;
     background-color: #262060;
     border-radius: 30px;
-    padding: 0.5rem 1rem;
+    padding: 6px;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
     z-index: 1000;
     width: 90%;

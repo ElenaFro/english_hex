@@ -4,7 +4,7 @@
             <div class="podium-section">
                 <div v-for="(user, index) in topUsers" :key="user.id" class="podium-item" :class="`rank-${index + 1}`">
                     <img :src="user.avatar" class="user-avatar" :alt="user.nik_name" />
-                    <div class="user-info">
+                    <div>
                         <span class="user-nik_name">{{ user.nik_name }}</span>
 
                     </div>
@@ -13,7 +13,7 @@
         </section>
 
         <section class="user-list">
-            <section v-for="user in otherUsers" :key="user.id" class="user-item">
+            <section v-for="user in userList" :key="user.id" class="user-item">
                 <div class=" user-rank">{{ user.rank }}
                 </div>
                 <section class="user-item-section">
@@ -32,7 +32,7 @@
 <script setup>
 import { ref, computed } from "vue";
 
-// Мок-данные пользователей (имитация базы данных)
+
 const users = ref([
     {
         id: 1,
@@ -85,7 +85,36 @@ const users = ref([
     },
 ]);
 
-// Сортировка пользователей по рейтингу
+const currentUserReitingWithNeighbour = ref([
+    {
+        id: 98,
+        nik_name: "Алексей",
+        avatar: new URL("@/assets/img/DefaultUserAvatar/black.svg", import.meta.url).href,
+        rating: 1500,
+        stars: 5,
+    },
+    {
+        id: 99,
+        nik_name: "Мария",
+        avatar: new URL("@/assets/img/DefaultUserAvatar/black.svg", import.meta.url).href,
+        rating: 1400,
+        stars: 4,
+    },
+    {
+        id: 100,
+        nik_name: "Дмитрий",
+        avatar: new URL("@/assets/img/DefaultUserAvatar/black.svg", import.meta.url).href,
+        rating: 1300,
+        stars: 4,
+    },
+]);
+
+const userList = computed(() => otherUsers.value.concat(currentUserReitingWithNeighbour.value))
+const curentUser = (id) => {
+    userList.value.find((user) => user.id === id)
+
+}
+
 const sortedUsers = computed(() => {
     return [...users.value]
         .sort((a, b) => b.rating - a.rating)
@@ -95,12 +124,11 @@ const sortedUsers = computed(() => {
         }));
 });
 
-// Первые три пользователя (1-3 место)
 const topUsers = computed(() => {
     return sortedUsers.value.slice(0, 3);
 });
 
-// Остальные пользователи (4 место и ниже)
+
 const otherUsers = computed(() => {
     return sortedUsers.value.slice(3);
 });
@@ -109,20 +137,22 @@ const otherUsers = computed(() => {
 <style scoped>
 .raiting-page {
     max-height: 100%;
+    margin-top: 76px;
     width: 100%;
     display: flex;
     flex-direction: column;
     align-items: center;
     background: linear-gradient(135deg, #e0e7ff, #a3bffa);
+    border-top-left-radius: 40px;
+    border-top-right-radius: 40px;
 }
 
 .podium-container {
     width: 100%;
     max-width: 375px;
-    height: 500px;
+    height: 370px;
     background: url("@/assets/img/podium-bg.svg") no-repeat center center;
     position: relative;
-    margin-bottom: 20px;
 }
 
 .podium-section {
@@ -131,53 +161,45 @@ const otherUsers = computed(() => {
     align-items: flex-end;
     height: 100%;
     position: relative;
-    padding-bottom: 20px;
+
 }
 
 .podium-item {
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 10px;
+    gap: 3px;
     position: absolute;
 }
 
 .podium-item.rank-1 {
     left: 50%;
     transform: translateX(-50%);
-    top: 0px;
-    /* 1-е место выше */
+    top: 18px;
 }
 
 .podium-item.rank-2 {
-    left: 20%;
-    bottom: 20px;
-    /* 2-е место ниже и слева */
+    left: 10%;
+    top: 30px;
 }
 
 .podium-item.rank-3 {
-    right: 20%;
-    bottom: 20px;
-    /* 3-е место ниже и справа */
+    right: 10%;
+    top: 40px;
 }
-
-
 
 .podium-item.rank-1 .rank-badge {
     background: #ffd700;
-    /* Золотой для 1-го места */
     color: #262060;
 }
 
 .podium-item.rank-2 .rank-badge {
     background: #c0c0c0;
-    /* Серебряный для 2-го места */
     color: #262060;
 }
 
 .podium-item.rank-3 .rank-badge {
     background: #cd7f32;
-    /* Бронзовый для 3-го места */
     color: #262060;
 }
 
@@ -213,24 +235,27 @@ const otherUsers = computed(() => {
 }
 
 .user-list {
+    position: relative;
     width: 100%;
     max-width: 400px;
-    height: 532px;
-    overflow-y: auto;
-    background: #fff;
-    border-radius: 40px;
+    overflow: auto;
+    background: #FFF8F5;
+    border-top-left-radius: 40px;
+    border-top-right-radius: 40px;
     padding: 30px;
     display: flex;
     flex-direction: column;
     row-gap: 10px;
+    margin-top: -144px;
 }
 
 .user-item-section {
     display: flex;
     align-items: center;
     gap: 10px;
-    padding: 10px;
+    padding: 6px;
     border: 2px solid #4700B580;
+    background: #FFF;
     border-radius: 20px;
     gap: 17px;
     width: 100%;
@@ -257,8 +282,8 @@ const otherUsers = computed(() => {
 }
 
 .user-avatar-small {
-    width: 40px;
-    height: 40px;
+    width: 38px;
+    height: 38px;
     border-radius: 50%;
     object-fit: cover;
 }
