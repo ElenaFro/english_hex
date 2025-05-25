@@ -64,6 +64,9 @@ watch(() => route.path, (newPath) => {
         case '/notifications':
              currentTitle.value = "Уведомления";
             break;
+        case '/addCategories':
+            currentTitle.value = "Редактирование";
+            break;
         default:
             currentTitle.value = " "; // Заголовок по умолчанию
             break;
