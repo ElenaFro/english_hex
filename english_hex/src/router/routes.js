@@ -37,6 +37,11 @@ const routes = [
         name: "profile",
         component: () => import("@/pages/ProfilePage.vue"),
       },
+      {
+        path: "notifications",
+        name: "notifications",
+        component: () => import("@/pages/NotificationsPage.vue"),
+      },
     ],
     meta: { requiresAuth: false },
   },

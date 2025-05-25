@@ -1,4 +1,7 @@
 <template>
+    <div>
+        <Header />
+	</div>
     <div class="profile-page">
         <div class="avatar-section">
             <img :src="avatarIcon" class="avatar" alt="User avatar" @click="toggleGender" />
@@ -63,6 +66,13 @@
             </button>
         </div>
 
+        <div v-if="showPopup" class="popup-overlay" @click.self="closePopup">
+            <div class="popup-content">
+                <button class="close-button" @click="closePopup">×</button>
+                <p>Сохранить изменения?</p>
+                <button class="confirm-button" @click="confirmSave">Продолжить</button>
+            </div>
+        </div>
         <div v-if="showPopup" class="popup-overlay" @click.self="closePopup">
             <div class="popup-content">
                 <button class="close-button" @click="closePopup">×</button>
