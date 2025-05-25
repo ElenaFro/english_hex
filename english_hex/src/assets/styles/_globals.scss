@@ -52,3 +52,13 @@ body, #app {
         color: rgba(255, 255, 255, 1);
     }
 }
+
+.content-container {
+	display: flex;
+	flex: 1;
+	overflow: hidden;
+    width: 100%;
+    border-radius: 40px 40px 0 0;
+    padding: 57px 30px 0;
+    background-color: rgba(246, 246, 254, 1);
+}

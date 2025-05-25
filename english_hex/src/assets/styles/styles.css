@@ -268,6 +268,20 @@ body, #app {
   color: rgb(255, 255, 255);
 }
 
+.content-container {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-flex: 1;
+      -ms-flex: 1;
+          flex: 1;
+  overflow: hidden;
+  width: 100%;
+  border-radius: 40px 40px 0 0;
+  padding: 57px 30px 0;
+  background-color: rgb(246, 246, 254);
+}
+
 .button {
   display: -webkit-inline-box;
   display: -ms-inline-flexbox;

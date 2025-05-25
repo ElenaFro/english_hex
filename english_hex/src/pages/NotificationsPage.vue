@@ -1,11 +1,11 @@
 <template>
     <div>
         <Header />
-		<AddCategories />
+		<Notification />
 	</div>
 </template>
 <script setup>
-import AddCategories from '@/components/AddCategories.vue'
+import Notification from '@/components/Notification.vue'
 import Header from '@/components/Header.vue'
 </script>
 <style scoped>

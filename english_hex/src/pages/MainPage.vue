@@ -1,6 +1,6 @@
 <template>
 	<div class="main-container">
-		<header class="header">header</header>
+		<Header />
 		<div class="username-container">
 			<div class="username-container__img-container">
 				<div class="username-container__img-container-inner">
@@ -10,7 +10,7 @@
 			<p class="username-container__name">Имя пользователя</p>
 		</div>
 		<div class="content-container">
-			<div class="block-container">
+			<div class="scroll-container">
 				<CategoryChoice />
 				<CategoryChoice />
 				<CategoryChoice />
@@ -24,19 +24,13 @@
 <script setup>
 import { ref } from 'vue'
 import CategoryChoice from '@/components/MainPage/CategoryChoice.vue';
+import Header from '@/components/Header.vue';
 
 </script>
 
 <style scoped>
-.header {
-	width: 100%;
-	height: 59px;
-	background-color: white;
-	display: flex;
-	flex-shrink: 0;
-}
-
 .username-container {
+	position: relative;
 	box-sizing: content-box;
 	height: 64px;
 	padding: 0 0 21px 27px;
@@ -74,7 +68,7 @@ import CategoryChoice from '@/components/MainPage/CategoryChoice.vue';
 	color: rgba(255, 255, 255, 1);
 }
 
-.content-container {
+/* .content-container {
 	display: flex;
 	flex: 1;
 	overflow: hidden;
@@ -82,9 +76,9 @@ import CategoryChoice from '@/components/MainPage/CategoryChoice.vue';
     border-radius: 40px 40px 0 0;
     padding: 57px 30px 0;
     background-color: rgba(246, 246, 254, 1);
-}
+} */
 
-.block-container {
+.scroll-container {
 	width: 100%;
 	overflow-y: scroll;
 	display: grid;
@@ -94,7 +88,7 @@ import CategoryChoice from '@/components/MainPage/CategoryChoice.vue';
 	padding-bottom: 70px;
 }
 
-.block-container::-webkit-scrollbar {
+.scroll-container::-webkit-scrollbar {
 	width: 0;
 }
 </style>

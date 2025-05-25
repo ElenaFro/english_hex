@@ -1,3 +1,12 @@
 <template>
-    <div class="layout">Рейтинг</div>
+    <div>
+        <Header />
+		<Raiting />
+	</div>
 </template>
+<script setup>
+import Raiting from '@/components/Raiting.vue'
+import Header from '@/components/Header.vue'
+</script>
+<style scoped>
+</style>
