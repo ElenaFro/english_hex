@@ -1,6 +1,5 @@
 <template>
     <div>
-        <Header />
 		<AddCategories />
 	</div>
 </template>

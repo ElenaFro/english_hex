@@ -1,13 +1,10 @@
 <template>
-    <div class="raiting-container">
+    <div class="main-container">
         <div class="content-container">
-            <div class="message-block">
-                <h1 class="message-block__title">Страница рейтинга</h1>
-                <p class="message-block__text">В работе 
-                </p>
-            </div>
-        </div>
-    </div>
+			<div class="scroll-container">
+			</div>
+		</div>
+	</div>
 </template>
 
 <script setup>

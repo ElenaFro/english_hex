@@ -64,12 +64,12 @@
 						Администрация не оповещает пользователей об изменении в Соглашении.<br>
 					</p>
                     </div>
-                    <buttton class="button button--purple"
-                    @click="$emit('change-component', 'RegistForm')"
+                    <button class="button button--purple"
+                    @click="$emit('change-component', 'regist')"
                     >
                     Перейти к регистрации
                     <img src="@/assets/img/arrow_icon.svg" alt="">
-                    </buttton>
+                    </button>
             </div>
         </div>
     </div>

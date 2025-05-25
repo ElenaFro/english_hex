@@ -58,16 +58,12 @@ watch(() => route.path, (newPath) => {
 
 <style scoped>
 .header-bar {
-    position: absolute;
-    top: 1rem;
-    left: 50%;
-    transform: translateX(-50%);
+    position: relative;
     display: flex;
     justify-content: space-between;
     align-items: center;
     background-color: transparent;
-    border-radius: 30px;
-    padding: 0.5rem 1rem;
+    padding-block: 2% 24px;
     z-index: 1000;
     width: 90%;
     max-width: 375px;
