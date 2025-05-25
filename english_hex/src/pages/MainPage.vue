@@ -1,6 +1,4 @@
 <template>
-	<div class="main-container">
-		<Header />
 		<div class="username-container">
 			<div class="username-container__img-container">
 				<div class="username-container__img-container-inner">
@@ -19,13 +17,10 @@
 				<CategoryChoice />
 			</div>
 		</div>
-	</div>
 </template>
 <script setup>
 import { ref } from 'vue'
 import CategoryChoice from '@/components/MainPage/CategoryChoice.vue';
-import Header from '@/components/Header.vue';
-
 </script>
 
 <style scoped>
@@ -68,7 +63,7 @@ import Header from '@/components/Header.vue';
 	color: rgba(255, 255, 255, 1);
 }
 
-/* .content-container {
+.content-container {
 	display: flex;
 	flex: 1;
 	overflow: hidden;
@@ -76,7 +71,7 @@ import Header from '@/components/Header.vue';
     border-radius: 40px 40px 0 0;
     padding: 57px 30px 0;
     background-color: rgba(246, 246, 254, 1);
-} */
+}
 
 .scroll-container {
 	width: 100%;
