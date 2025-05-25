@@ -1,6 +1,14 @@
 <template>
     <div class="main-container">
-        <div class="content-container">
+		<PrivacyPolicy 
+		v-show="currentComponent === 'policy'" 
+		@change-component="currentComponent = $event" 
+		/>
+		<UserAgreem 
+		v-show="currentComponent === 'agreem'" 
+		@change-component="currentComponent = $event" 
+		/>
+        <div class="content-container" v-if="currentComponent === 'regist'">
             <div class="authorization-toggle">
                 <button 
 				class="authorization-toggle__select-button" 
@@ -56,18 +64,20 @@
 				</div>
 				<p v-if="passwordError" class="login-form__error-text">Поле заполнено некорректно</p>
                 <div class="agreement-container">
-                    <button 
+                    <button
+					type="button" 
 					:class="{
 						'agreement-container__link':true,
 						'agreement-container__link--visited': checkVisited
 					}"
-                    @click=handleClick
+                    @click="currentComponent = 'policy'"
                     >
                     Политика конфиденциальности
                     </button>
                     <button 
+					type="button"
 					class="agreement-container__link"
-                    @click="$emit('change-component', 'UserAgreem')"
+                    @click="currentComponent = 'agreem'"
                     >
                     Пользовательское соглашение
                     </button>
@@ -94,6 +104,8 @@
 import { ref } from 'vue'
 import visibilityIcon from '@/assets/img/visibility_icon.svg'
 import visibilityOffIcon from '@/assets/img/visibility_off_icon.svg'
+import PrivacyPolicy from '@/components/Authentication/PrivacyPolicy.vue'
+import UserAgreem from '@/components/Authentication/UserAgreem.vue'
 
 const nick = ref('')
 const email = ref('')
@@ -104,6 +116,7 @@ const passwordError = ref(false)
 const showPassword = ref(false)
 const agreementCheckbox = ref(false)
 const checkVisited = ref (false)
+const currentComponent = ref('regist')
 const mode = ref('register')
 const emit = defineEmits(['change-component'])
 
