@@ -38,7 +38,8 @@
 					</button>
 				</div>
 				<button class="button button--purple button--big" @click="login">
-					<loader v-if="loading" :size="20" /> Продолжить
+					<loader v-if="loading" :size="20" />
+					<p v-else>Продолжить</p>
 				</button>
 			</div>
 		</div>
@@ -78,9 +79,15 @@ const emailVerif = () => {
 }
 
 const login = async () => {
-	loading.value = true
-	await useAuthStore().login(email.value, password.value).then(() => router.push({ name: 'mainPage' }).catch((error) => alert(error)))
-	loading.value = false
+	loading.value = true;
+	try {
+		await useAuthStore().login(email.value, password.value);
+		await router.push({ name: 'mainPage' });
+	} catch (error) {
+		alert(error.message || 'Ошибка входа');
+	} finally {
+		loading.value = false;
+	}
 }
 </script>
 
