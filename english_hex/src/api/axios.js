@@ -2,7 +2,7 @@ import axios from "axios";
 import { boot } from "quasar/wrappers";
 
 const apiClient = axios.create({
-  baseURL: "https://api.english_hex.com",
+  baseURL: "http://62.109.0.225:8000/api",
   headers: { "Content-Type": "application/json" },
   timeout: 10000,
 });
@@ -23,7 +23,6 @@ export default boot(({ store }) => {
     (error) => Promise.reject(error)
   );
 
-  //для обработки ответов
   apiClient.interceptors.response.use(
     (response) => response,
     (error) => {

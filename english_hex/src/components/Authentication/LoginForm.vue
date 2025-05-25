@@ -1,61 +1,57 @@
 <template>
-  	<div class="main-container">
-    	<div class="content-container">
+	<div class="main-container">
+		<div class="content-container">
 			<div class="authorization-toggle">
-				<button 
-				class="authorization-toggle__select-button" 
-				:class="{ active: mode === 'login' }"
-				@click="switchToLogin">
+				<button class="authorization-toggle__select-button" :class="{ active: mode === 'login' }"
+					@click="switchToLogin">
 					Вход
 				</button>
-				<button 
-				class="authorization-toggle__select-button" 
-				:class="{ active: mode === 'register' }"
-				@click="$emit('change-component', 'RegistForm')">
+				<button class="authorization-toggle__select-button" :class="{ active: mode === 'register' }"
+					@click="$emit('change-component', 'RegistForm')">
 					Регистрация
 				</button>
-				</div>
+			</div>
 
-    		<div v-if="step === 'email'" class="login-form">
-        		<p class="content-container__title">Укажи свой email</p>
+			<div v-if="step === 'email'" class="login-form">
+				<p class="content-container__title">Укажи свой email</p>
 				<div class="login-form__input-container">
 					<input ref="emailInput" v-model="email" type="email" placeholder="Начните ввод" :class="{
-					'login-form__input-field': true,
-					'login-form__input-field--error': inputError
+						'login-form__input-field': true,
+						'login-form__input-field--error': inputError
 					}" />
 				</div>
-        		<button @click="emailVerif" class="button button--purple button--big">Продолжить</button>
-        		<button class="login-form__link" @click="$emit('change-component', 'PasswordRecov')">Забыли пароль?</button>
-      		</div>
+				<button @click="emailVerif" class="button button--purple button--big">Продолжить</button>
+				<button class="login-form__link" @click="$emit('change-component', 'PasswordRecov')">Забыли
+					пароль?</button>
+			</div>
 
 			<div v-if="step === 'password'" class="login-form">
 				<p class="content-container__title">Укажи свой пароль</p>
 				<div class="login-form__input-container">
-					<input  
-                    v-model="password"
-                    placeholder="Пароль"
-					:type="showPassword ? 'text' : 'password'"
-                    :class="{
-                        'login-form__input-field':true,
-                        'login-form__input-field--error': passwordError
-                    }"
-                	/>
+					<input v-model="password" placeholder="Пароль" :type="showPassword ? 'text' : 'password'" :class="{
+						'login-form__input-field': true,
+						'login-form__input-field--error': passwordError
+					}" />
 					<button type="button" class="show-password-button" @click="togglePassword">
-						<img class="show-password-button__visibility" 
-						:src="showPassword ? visibilityIcon : visibilityOffIcon" alt="">
+						<img class="show-password-button__visibility"
+							:src="showPassword ? visibilityIcon : visibilityOffIcon" alt="">
 					</button>
 				</div>
-				<button class="button button--purple button--big" @click="login">Продолжить</button>
+				<button class="button button--purple button--big" @click="login">
+					<loader v-if="loading" :size="20" /> Продолжить
+				</button>
 			</div>
 		</div>
-  	</div>
+	</div>
 </template>
 
 <script setup>
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
+import { useAuthStore } from '../../stores/auth'
 import visibilityIcon from '@/assets/img/visibility_icon.svg'
 import visibilityOffIcon from '@/assets/img/visibility_off_icon.svg'
+import loader from '../loader.vue'
 
 const router = useRouter()
 
@@ -65,9 +61,10 @@ const password = ref('')
 const mode = ref('login')
 const inputError = ref(false)
 const showPassword = ref(false)
+const loading = ref(false)
 
 const togglePassword = () => {
-  showPassword.value = !showPassword.value
+	showPassword.value = !showPassword.value
 }
 
 const switchToLogin = () => {
@@ -80,8 +77,10 @@ const emailVerif = () => {
 	step.value = 'password'
 }
 
-const login = ()=>{
-	router.push({name: 'mainPage'})
+const login = async () => {
+	loading.value = true
+	await useAuthStore().login(email.value, password.value).then(() => router.push({ name: 'mainPage' }).catch((error) => alert(error)))
+	loading.value = false
 }
 </script>
 

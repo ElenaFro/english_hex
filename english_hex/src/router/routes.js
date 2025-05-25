@@ -43,7 +43,7 @@ const routes = [
         component: () => import("@/pages/NotificationsPage.vue"),
       },
     ],
-    meta: { requiresAuth: false },
+    meta: { requiresAuth: true },
   },
 ];
 

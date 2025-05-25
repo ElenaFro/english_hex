@@ -29,7 +29,7 @@
                     'login-form__input-field': true,
                     'login-form__input-field--error': inputError
                 }" />
-                <button class="button button--purple button--big" @click="login">Продолжить</button>
+                <button class="button button--purple button--big" @click="login">Войти</button>
             </div>
         </div>
     </div>
@@ -37,6 +37,7 @@
 
 <script setup>
 import { ref } from 'vue'
+import { useAuthStore } from '../../stores/auth'
 
 const step = ref('email')
 const email = ref('')
@@ -52,6 +53,10 @@ const switchToLogin = () => {
 const emailVerif = () => {
     inputError.value = false
     step.value = 'password'
+}
+
+const login = () => {
+    useAuthStore().login(email.value, password.value).then((response) => console.log(response))
 }
 </script>
 
