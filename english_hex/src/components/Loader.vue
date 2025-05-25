@@ -41,11 +41,7 @@ const dashOffset = computed(() => circumference.value * 0.125);
 
 <style scoped>
 .loader-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
+    margin: auto;
     display: flex;
     justify-content: center;
     align-items: center;
