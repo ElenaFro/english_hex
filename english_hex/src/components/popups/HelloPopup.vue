@@ -84,7 +84,7 @@ const stopAndClose = () => {
 .popup {
     position: relative;
     z-index: 400;
-    margin-bottom: 180px;
+    margin-bottom: 20vh;
 
     &__close {
         position: absolute;
