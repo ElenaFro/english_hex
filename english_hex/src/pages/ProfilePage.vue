@@ -180,7 +180,17 @@ const confirmSave = async () => {
     background-color: #F6F6FE;
     flex-direction: column;
     align-items: center;
-    margin-top: 76px;
+    overflow-y: auto;
+    border-top-left-radius: 40px;
+    border-top-right-radius: 40px;
+
+    @media (min-width:375px) {
+        width: 375px;
+    }
+
+    @media (max-width:375px) {
+        width: 100%;
+    }
 }
 
 .profile-card {

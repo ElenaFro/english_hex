@@ -1,7 +1,6 @@
 <template>
     <div class="main-container">
-        <div class="content-container">
-            <section v-if="!loading">
+            <section class="content-container" v-if="!loading">
                 <div class="authorization-toggle">
                     <button class="authorization-toggle__select-button" :class="{ active: mode === 'login' }"
                         @click="$emit('change-component', 'LoginForm')">
@@ -66,11 +65,8 @@
                     {{ confirmText }}
                 </section>
             </section>
-
             <loader v-if="loading" />
-
         </div>
-    </div>
 </template>
 
 <script setup>
@@ -78,7 +74,7 @@ import { computed, ref } from 'vue'
 import visibilityIcon from '@/assets/img/visibility_icon.svg'
 import visibilityOffIcon from '@/assets/img/visibility_off_icon.svg'
 import { useAuthStore } from '../../stores/auth'
-import loader from '../loader.vue'
+import loader from '@/components/loader.vue'
 
 const nick = ref('')
 const email = ref('')
@@ -91,6 +87,7 @@ const agreementCheckbox = ref(false)
 const checkVisited = ref(false)
 const confirmEmailSend = ref(false)
 const loading = ref(false)
+
 const mode = ref('register')
 const emit = defineEmits(['change-component'])
 

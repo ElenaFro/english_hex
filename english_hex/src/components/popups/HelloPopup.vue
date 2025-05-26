@@ -39,6 +39,9 @@ const playSound = () => {
 
 <style scoped lang="scss">
 .popup-overlay {
+    position: fixed;
+    height: 100vh;
+    width: 100vw;
     backdrop-filter: blur(20px);
     display: flex;
     justify-content: center;

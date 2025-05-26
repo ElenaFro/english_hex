@@ -2,7 +2,7 @@
     <div class="raiting-container">
         <div class="content-container">
             <div class="message-block">
-                <h1 class="message-block__title">Страница рейтинга</h1>
+                <h1 class="message-block__title">Страница редактирования</h1>
                 <p class="message-block__text">В работе 
                 </p>
             </div>

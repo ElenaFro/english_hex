@@ -12,15 +12,14 @@ export default defineConfig({
   server: {
     host: "0.0.0.0",
     port: 5173,
+    watch: {
+      usePolling: true,
+    },
   },
   css: {
     preprocessorOptions: {
       scss: {
-        additionalData: `
-          @use "@/assets/styles/_globals.scss" as *;
-          @use "@/assets/styles/_mixins.scss" as *;
-          @use "@/assets/styles/_utils.scss" as *;
-        `,
+        additionalData: '@import "@/assets/styles/styles.scss";',
       },
     },
   },
