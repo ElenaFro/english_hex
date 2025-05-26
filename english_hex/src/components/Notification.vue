@@ -42,7 +42,8 @@
 
 <style scoped>
 .notifications-container {
-    width: 100vw;               
+    width: 100vw; 
+    max-width: 414px;              
     height: 100vh;           
     overflow-y: auto;         
     display: flex;            
@@ -80,6 +81,9 @@
     display: flex;
     flex-direction: row;
     align-items: start;
+    width: 100%;
+    padding-left: 20px;
+    padding-right: 20px;
 }
 .note-icon {
     padding-top: 16px;
