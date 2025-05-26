@@ -267,7 +267,7 @@ body, #app {
   margin-bottom: 40px;
   color: rgb(255, 255, 255);
 }
-
+/* 
 .layout {
   width: 100vw;
   height: 100dvh;
@@ -286,7 +286,7 @@ body, #app {
   -ms-scroll-chaining: none;
       overscroll-behavior: contain;
   scrollbar-width: none;
-}
+} */
 .layout::-webkit-scrollbar {
   display: none;
 }

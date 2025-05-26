@@ -54,15 +54,22 @@ body, #app {
 }
 
 .layout {
-	width: 100vw;
-	height: 100dvh;
-	position: relative;
-	display: flex;
-	flex-direction: column;
-	align-items: center;
-	-webkit-overflow-scrolling: touch;
-	overscroll-behavior: contain;
-	scrollbar-width: none;
+    height: 100dvh;
+        position: relative;
+        display: -webkit-box;
+        display: -ms-flexbox;
+        display: flex;
+        -webkit-box-orient: vertical;
+        -webkit-box-direction: normal;
+        -ms-flex-direction: column;
+        flex-direction: column;
+        -webkit-box-align: center;
+        -ms-flex-align: center;
+        align-items: center;
+        -webkit-overflow-scrolling: touch;
+        -ms-scroll-chaining: none;
+        overscroll-behavior: contain;
+        scrollbar-width: none;
 
 	&::-webkit-scrollbar {
 		display: none;
