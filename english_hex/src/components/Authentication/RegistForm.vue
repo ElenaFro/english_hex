@@ -74,7 +74,7 @@ import { computed, ref } from 'vue'
 import visibilityIcon from '@/assets/img/visibility_icon.svg'
 import visibilityOffIcon from '@/assets/img/visibility_off_icon.svg'
 import { useAuthStore } from '../../stores/auth'
-import loader from '../loader.vue'
+import loader from '@/components/loader.vue'
 
 const nick = ref('')
 const email = ref('')
