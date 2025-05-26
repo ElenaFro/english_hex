@@ -67,9 +67,11 @@ watch(() => route.path, (newPath) => {
     align-items: center;
     background-color: transparent;
     padding-block: 2% 24px;
-    z-index: 1000;
+    padding-left: 20px;
+    padding-right: 20px;
     width: 90%;
-    max-width: 375px;
+    max-width: 414px;
+
 }
 
 .header-item {
