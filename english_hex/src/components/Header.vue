@@ -69,7 +69,7 @@ watch(() => route.path, (newPath) => {
     padding-block: 2% 24px;
     padding-left: 20px;
     padding-right: 20px;
-    width: 90%;
+    width: 100%;
     max-width: 414px;
 
 }
