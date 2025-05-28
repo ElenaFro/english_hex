@@ -63,7 +63,6 @@
 					Сохранить изменения
 				</button>
 			</div>
-
 			<div v-if="showPopup" class="popup-overlay" @click.self="closePopup">
 				<div class="popup-content">
 					<button class="close-button" @click="closePopup">×</button>
@@ -86,7 +85,6 @@
 import { ref, computed } from "vue";
 import BoyIcon from "@/assets/img/DefaultUserAvatar/male.svg";
 import GirlIcon from "@/assets/img/DefaultUserAvatar/female.svg";
-import Navigation from '../components/Navigation.vue';
 
 const form = ref({
     gender: "male",
@@ -197,6 +195,17 @@ const confirmSave = async () => {
     align-items: center;
 	row-gap: 25px;
 	scrollbar-width: none;
+    overflow-y: auto;
+    border-top-left-radius: 40px;
+    border-top-right-radius: 40px;
+
+    @media (min-width:375px) {
+        width: 375px;
+    }
+
+    @media (max-width:375px) {
+        width: 100%;
+    }
 }
 
 .profile-card {

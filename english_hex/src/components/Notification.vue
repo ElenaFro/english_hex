@@ -42,7 +42,8 @@
 
 <style scoped>
 .notifications-container {
-    width: 100%;               
+    width: 100vw; 
+    max-width: 414px;              
     height: 100vh;           
     overflow-y: auto;         
     display: flex;            
@@ -51,8 +52,11 @@
     align-items: center;      
     position: relative;       
     box-sizing: border-box;    
-    margin-top: 80px; 
-    padding-top: 36px;         
+    margin-top: 0px; 
+    padding-top: 30px;  
+    background-color: #ffffff;  
+    border-top-left-radius: 40px;
+    border-top-right-radius: 40px;      
 }
 
 .message-block__title18 {
@@ -77,6 +81,9 @@
     display: flex;
     flex-direction: row;
     align-items: start;
+    width: 100%;
+    padding-left: 20px;
+    padding-right: 20px;
 }
 .note-icon {
     padding-top: 16px;

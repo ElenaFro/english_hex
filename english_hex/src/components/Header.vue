@@ -49,6 +49,9 @@ watch(() => route.path, (newPath) => {
         case '/notifications':
             currentTitle.value = "Уведомления";
             break;
+        case '/addCategories':
+            currentTitle.value = "Редактирование";
+            break;
         default:
             currentTitle.value = " ";
             break;
@@ -64,9 +67,11 @@ watch(() => route.path, (newPath) => {
     align-items: center;
     background-color: transparent;
     padding-block: 2% 24px;
-    z-index: 1000;
-    width: 90%;
-    max-width: 375px;
+    padding-left: 20px;
+    padding-right: 20px;
+    width: 100%;
+    max-width: 414px;
+
 }
 
 .header-item {

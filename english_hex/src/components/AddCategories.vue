@@ -1,5 +1,5 @@
 <template>
-    <div class="raiting-container">
+    <div class="add-container">
         <div class="content-container">
             <div class="message-block">
                 <h1 class="message-block__title">Страница редактирования</h1>
@@ -10,12 +10,13 @@
     </div>
 </template>
 
+
 <script setup>
 
 </script>
 
 <style scoped>
-.raiting-container {
+.add-container {
     width: 100%;               
     height: 100vh;           
     overflow-y: auto;         
@@ -25,7 +26,13 @@
     align-items: center;      
     position: relative;       
     box-sizing: border-box;    
-    margin-top: 80px;          
+    margin-top: 80px;   
+    
+    
+    max-width: 414px;              
+    /* background-color: #ffffff;   */
+    border-radius: 40px;
+
 }
 
 .message-block__title {

@@ -134,10 +134,9 @@ const otherUsers = computed(() => {
 });
 </script>
 
-<style scoped>
+<style scoped lang="scss">
 .raiting-page {
-    max-height: 100%;
-    margin-top: 76px;
+    height: 100vh;
     width: 100%;
     display: flex;
     flex-direction: column;
@@ -145,6 +144,14 @@ const otherUsers = computed(() => {
     background: linear-gradient(135deg, #e0e7ff, #a3bffa);
     border-top-left-radius: 40px;
     border-top-right-radius: 40px;
+
+    @media (min-width:375px) {
+        width: 375px;
+    }
+
+    @media (max-width:375px) {
+        width: 100%;
+    }
 }
 
 .podium-container {
@@ -160,6 +167,7 @@ const otherUsers = computed(() => {
     justify-content: space-around;
     align-items: flex-end;
     height: 100%;
+    min-height: 530px;
     position: relative;
 
 }
@@ -237,8 +245,8 @@ const otherUsers = computed(() => {
 .user-list {
     position: relative;
     width: 100%;
+    height: 100%;
     max-width: 400px;
-    overflow: auto;
     background: #FFF8F5;
     border-top-left-radius: 40px;
     border-top-right-radius: 40px;
@@ -247,6 +255,9 @@ const otherUsers = computed(() => {
     flex-direction: column;
     row-gap: 10px;
     margin-top: -144px;
+    overflow-y: auto;
+    padding-bottom: 170px;
+    box-sizing: border-box;
 }
 
 .user-item-section {

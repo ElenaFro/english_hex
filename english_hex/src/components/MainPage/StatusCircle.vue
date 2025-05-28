@@ -8,9 +8,14 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
+defineProps({
+  percent: {
+    type: Number,
+    default: 0
+  }
+})
 
-const percent = ref(70)
+// const percent = ref(70)
 </script>
 
 <style scoped>
