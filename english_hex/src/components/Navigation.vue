@@ -47,7 +47,7 @@ const navItems = [
     border-radius: 30px;
     padding: 6px;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
-    z-index: 1000;
+    z-index: 500;
     width: 90%;
     max-width: 315px;
 }
