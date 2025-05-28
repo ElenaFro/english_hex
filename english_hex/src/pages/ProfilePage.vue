@@ -74,17 +74,15 @@
 </template>
 
 <script setup>
-import { ref, computed } from "vue";
+import { ref, computed, onMounted } from "vue";
 import BoyIcon from "@/assets/img/DefaultUserAvatar/male.svg";
 import GirlIcon from "@/assets/img/DefaultUserAvatar/female.svg";
-import Navigation from '../components/Navigation.vue';
+import { useAuthStore } from "@/stores/auth";
+import apiClient from "@/api/axios";
+import { compareObjects } from "@/shared/compareObject";
 
-const form = ref({
-    gender: "male",
-    name: "",
-    email: "",
-    password: "",
-});
+const form = ref({});
+const initialForm = ref({})
 
 const errors = ref({
     gender: "",
@@ -93,13 +91,16 @@ const errors = ref({
     password: "",
 });
 
+onMounted(async () => {
+    form.value = useAuthStore().getCurrentUser();
+    initialForm.value = JSON.parse(JSON.stringify(form.value));
+})
+
 const isSaving = ref(false);
 const showPopup = ref(false);
 const edit = ref(true);
 
-const avatarIcon = computed(() => {
-    return form.value.gender === "male" ? BoyIcon : GirlIcon;
-});
+const avatarIcon = computed(() => form.value?.gender === "male" ? BoyIcon : GirlIcon);
 
 const toggleGender = () => {
     form.value.gender = form.value.gender === "male" ? "female" : "male";
@@ -135,14 +136,14 @@ const validateForm = () => {
         isValid = false;
     }
 
-    const passwordRegex = /^(?=.*[A-Za-z0-9]).{8,30}$/;
-    if (!form.value.password) {
-        errors.value.password = "Поле заполнено некорректно";
-        isValid = false;
-    } else if (!passwordRegex.test(form.value.password)) {
-        errors.value.password = "Поле заполнено некорректно";
-        isValid = false;
-    }
+    // const passwordRegex = /^(?=.*[A-Za-z0-9]).{8,30}$/;
+    // if (!form.value.password) {
+    //     errors.value.password = "Поле заполнено некорректно";
+    //     isValid = false;
+    // } else if (!passwordRegex.test(form.value.password)) {
+    //     errors.value.password = "Поле заполнено некорректно";
+    //     isValid = false;
+    // }
 
     return isValid;
 };
@@ -159,12 +160,17 @@ const closePopup = () => {
 const confirmSave = async () => {
     isSaving.value = true;
     try {
-        console.log("Сохранение данных:", form.value);
-        closePopup();
+        const payload = compareObjects(initialForm.value, form.value);
+        await apiClient.patch('/profile/update', payload)
+            .then(async () => {
+                await useAuthStore().fetchUser();
+                closePopup();
+            }).catch((error) => { throw error })
     } catch (error) {
         console.error("Ошибка сохранения:", error);
     } finally {
         isSaving.value = false;
+        form.value = useAuthStore().getCurrentUser()
     }
 };
 </script>

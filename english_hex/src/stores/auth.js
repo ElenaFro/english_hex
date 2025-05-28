@@ -1,11 +1,15 @@
 import { defineStore } from "pinia";
 import { ref } from "vue";
-import { apiClient } from "../api/axios";
+import apiClient from "../api/axios";
 
 export const useAuthStore = defineStore("auth", () => {
-  const user = ref(null);
-  const token = ref(localStorage.getItem("token") || null);
-  const isAuthenticated = ref(!!localStorage.getItem("token"));
+  const user = ref(JSON.parse(localStorage.getItem("user")) || null);
+  const token = ref(localStorage.getItem("access_token") || null);
+  const isAuthenticated = ref(!!localStorage.getItem("access_token"));
+
+  const getCurrentUser = () => {
+    return user.value;
+  };
 
   async function register(name, email, password, confirm_agreement) {
     const response = await apiClient.post("/registration", {
@@ -37,7 +41,8 @@ export const useAuthStore = defineStore("auth", () => {
     token.value = null;
     user.value = null;
     isAuthenticated.value = false;
-    localStorage.removeItem("token");
+    localStorage.removeItem("access_token");
+    localStorage.removeItem("user");
   }
 
   async function recoverPassword(email) {
@@ -50,8 +55,9 @@ export const useAuthStore = defineStore("auth", () => {
   async function fetchUser() {
     if (!token.value) return;
     try {
-      const response = await apiClient.get("/profile");
+      const response = await apiClient.get("/profile/get");
       user.value = response.data;
+      localStorage.setItem("user", JSON.stringify(response.data));
       isAuthenticated.value = true;
     } catch (error) {
       console.error("Fetch user error:", error);
@@ -66,6 +72,7 @@ export const useAuthStore = defineStore("auth", () => {
     register,
     login,
     logout,
+    getCurrentUser,
     recoverPassword,
     fetchUser,
   };
