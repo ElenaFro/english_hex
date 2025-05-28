@@ -1,6 +1,6 @@
 <template>
 	<div class="container">
-		<button type="button" class="nav-arrow">
+		<button type="button" class="nav-arrow" @click="goToLearningPage">
 			<img class="nav-arrow__img" src="@/assets/img/nav-arrow_icon.svg" alt="">
 		</button>
 		<div class="category-img">
@@ -26,8 +26,14 @@
 
 <script setup>
 import { ref } from 'vue'
+import { useRouter } from 'vue-router'
 import StatusCircle from './StatusCircle.vue';
 
+const router = useRouter()
+
+const goToLearningPage = () => {
+	router.push('/learning')
+}
 </script>
 
 <style scoped>

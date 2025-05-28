@@ -1,85 +1,84 @@
 <template>
-    <div>
-        <Header />
-	</div>
     <div class="profile-page">
-        <div class="avatar-section">
-            <img :src="avatarIcon" class="avatar" alt="User avatar" @click="toggleGender" />
-        </div>
-        <div class="profile-card">
-            <div class="form-group">
-                <label for="name">Имя</label>
-                <div class="input-with-icon">
-                    <input id="name" v-model="form.name" type="text" maxlength="17" placeholder="Введите ваше имя"
-                        class="form-input" :class="{ 'error': errors.name }" @input="clearError('name')" />
-                    <span class="edit-icon" @click="focusInput('name')">
-                        <img v-if="edit" src="@/assets/icons/editPencil.svg" />
-                    </span>
-                </div>
-                <span v-if="errors.name" class="error-message">{{ errors.name }}</span>
-            </div>
+		<div class="profile-page__inner">
+			<div class="avatar-section">
+				<img :src="avatarIcon" class="avatar" alt="User avatar" @click="toggleGender" />
+			</div>
+			<div class="profile-card">
+				<div class="form-group">
+					<label for="name">Имя</label>
+					<div class="input-with-icon">
+						<input id="name" v-model="form.name" type="text" maxlength="17" placeholder="Введите ваше имя"
+							class="form-input" :class="{ 'error': errors.name }" @input="clearError('name')" />
+						<span class="edit-icon" @click="focusInput('name')">
+							<img v-if="edit" src="@/assets/icons/editPencil.svg" />
+						</span>
+					</div>
+					<span v-if="errors.name" class="error-message">{{ errors.name }}</span>
+				</div>
 
-            <div class="form-group">
-                <label>Пол</label>
-                <div class="gender-options">
-                    <label class="gender-label">
-                        <input type="radio" name="gender" value="male" v-model="form.gender" @change="updateAvatar" />
-                        <span class="custom-radio"></span>
-                        Мужской
-                    </label>
-                    <label class="gender-label">
-                        <input type="radio" name="gender" value="female" v-model="form.gender" @change="updateAvatar" />
-                        <span class="custom-radio"></span>
-                        Женский
-                    </label>
-                </div>
-                <span v-if="errors.gender" class="error-message">{{ errors.gender }}</span>
-            </div>
+				<div class="form-group">
+					<label>Пол</label>
+					<div class="gender-options">
+						<label class="gender-label">
+							<input type="radio" name="gender" value="male" v-model="form.gender" @change="updateAvatar" />
+							<span class="custom-radio"></span>
+							Мужской
+						</label>
+						<label class="gender-label">
+							<input type="radio" name="gender" value="female" v-model="form.gender" @change="updateAvatar" />
+							<span class="custom-radio"></span>
+							Женский
+						</label>
+					</div>
+					<span v-if="errors.gender" class="error-message">{{ errors.gender }}</span>
+				</div>
 
-            <div class="form-group">
-                <label for="email">Email</label>
-                <div class="input-with-icon">
-                    <input id="email" v-model="form.email" type="email" maxlength="30" placeholder="Ваш email"
-                        class="form-input" :class="{ 'error': errors.email }" @input="clearError('email')" />
-                    <span class="edit-icon" @click="focusInput('email')">
-                        <img v-if="edit" src="@/assets/icons/editPencil.svg" />
-                    </span>
-                </div>
-                <span v-if="errors.email" class="error-message">{{ errors.email }}</span>
-            </div>
+				<div class="form-group">
+					<label for="email">Email</label>
+					<div class="input-with-icon">
+						<input id="email" v-model="form.email" type="email" maxlength="30" placeholder="Ваш email"
+							class="form-input" :class="{ 'error': errors.email }" @input="clearError('email')" />
+						<span class="edit-icon" @click="focusInput('email')">
+							<img v-if="edit" src="@/assets/icons/editPencil.svg" />
+						</span>
+					</div>
+					<span v-if="errors.email" class="error-message">{{ errors.email }}</span>
+				</div>
 
-            <div class="form-group">
-                <label for="password">Пароль</label>
-                <div class="input-with-icon">
-                    <input id="password" v-model="form.password" type="password" maxlength="30" placeholder="Ваш пароль"
-                        class="form-input" :class="{ 'error': errors.password }" @input="clearError('password')" />
-                    <span class="edit-icon" @click="focusInput('password')">
-                        <img v-if="edit" src="@/assets/icons/editPencil.svg" />
-                    </span>
-                </div>
-                <span v-if="errors.password" class="error-message">{{ errors.password }}</span>
-            </div>
-        </div>
-        <div class="button-section">
-            <button class="save-button" :disabled="isSaving" @click="openPopup">
-                Сохранить изменения
-            </button>
-        </div>
+				<div class="form-group">
+					<label for="password">Пароль</label>
+					<div class="input-with-icon">
+						<input id="password" v-model="form.password" type="password" maxlength="30" placeholder="Ваш пароль"
+							class="form-input" :class="{ 'error': errors.password }" @input="clearError('password')" />
+						<span class="edit-icon" @click="focusInput('password')">
+							<img v-if="edit" src="@/assets/icons/editPencil.svg" />
+						</span>
+					</div>
+					<span v-if="errors.password" class="error-message">{{ errors.password }}</span>
+				</div>
+			</div>
+			<div class="button-section">
+				<button class="save-button" :disabled="isSaving" @click="openPopup">
+					Сохранить изменения
+				</button>
+			</div>
 
-        <div v-if="showPopup" class="popup-overlay" @click.self="closePopup">
-            <div class="popup-content">
-                <button class="close-button" @click="closePopup">×</button>
-                <p>Сохранить изменения?</p>
-                <button class="confirm-button" @click="confirmSave">Продолжить</button>
-            </div>
-        </div>
-        <div v-if="showPopup" class="popup-overlay" @click.self="closePopup">
-            <div class="popup-content">
-                <button class="close-button" @click="closePopup">×</button>
-                <p>Сохранить изменения?</p>
-                <button class="confirm-button" @click="confirmSave">Продолжить</button>
-            </div>
-        </div>
+			<div v-if="showPopup" class="popup-overlay" @click.self="closePopup">
+				<div class="popup-content">
+					<button class="close-button" @click="closePopup">×</button>
+					<p>Сохранить изменения?</p>
+					<button class="confirm-button" @click="confirmSave">Продолжить</button>
+				</div>
+			</div>
+			<div v-if="showPopup" class="popup-overlay" @click.self="closePopup">
+				<div class="popup-content">
+					<button class="close-button" @click="closePopup">×</button>
+					<p>Сохранить изменения?</p>
+					<button class="confirm-button" @click="confirmSave">Продолжить</button>
+				</div>
+			</div>
+		</div>
     </div>
 </template>
 
@@ -184,13 +183,20 @@ const confirmSave = async () => {
     width: 100%;
     height: 100vh;
     min-height: 100%;
-    display: flex;
     padding: 40px 30px;
-    row-gap: 25px;
     background-color: #F6F6FE;
+	border-radius: 40px;
+}
+
+.profile-page__inner {
+	overflow-y: scroll;
+	width: 100%;
+	height: 100%;
+	display: flex;
     flex-direction: column;
     align-items: center;
-    margin-top: 76px;
+	row-gap: 25px;
+	scrollbar-width: none;
 }
 
 .profile-card {

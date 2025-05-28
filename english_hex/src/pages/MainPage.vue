@@ -7,7 +7,7 @@
 			</div>
 			<p class="username-container__name">Имя пользователя</p>
 		</div>
-		<div class="content-container">
+		<div class="page-content">
 			<div class="scroll-container">
 				<CategoryChoice />
 				<CategoryChoice />
@@ -63,27 +63,11 @@ import CategoryChoice from '@/components/MainPage/CategoryChoice.vue';
 	color: rgba(255, 255, 255, 1);
 }
 
-.content-container {
-	display: flex;
-	flex: 1;
-	overflow: hidden;
-    width: 100%;
-    border-radius: 40px 40px 0 0;
-    padding: 57px 30px 0;
-    background-color: rgba(246, 246, 254, 1);
-}
-
 .scroll-container {
-	width: 100%;
-	overflow-y: scroll;
 	display: grid;
 	grid-template-columns: repeat(2, 148px);
 	grid-auto-rows: 220px;
+	justify-content: space-between;
 	gap: 20px;
-	padding-bottom: 70px;
-}
-
-.scroll-container::-webkit-scrollbar {
-	width: 0;
 }
 </style>
