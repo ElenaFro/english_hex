@@ -52,7 +52,7 @@ import { useRouter } from 'vue-router'
 import { useAuthStore } from '../../stores/auth'
 import visibilityIcon from '@/assets/img/visibility_icon.svg'
 import visibilityOffIcon from '@/assets/img/visibility_off_icon.svg'
-import loader from '../loader.vue'
+import loader from '../Loader.vue'
 
 const router = useRouter()
 
@@ -82,6 +82,7 @@ const login = async () => {
 	loading.value = true;
 	try {
 		await useAuthStore().login(email.value, password.value);
+		await useAuthStore().fetchUser();
 		await router.push({ name: 'mainPage' });
 	} catch (error) {
 		alert(error.message || 'Ошибка входа');

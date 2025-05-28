@@ -5,7 +5,7 @@
                 <div v-for="(user, index) in topUsers" :key="user.id" class="podium-item" :class="`rank-${index + 1}`">
                     <img :src="user.avatar" class="user-avatar" :alt="user.nik_name" />
                     <div>
-                        <span class="user-nik_name">{{ user.nik_name }}</span>
+                        <span class="user-nik_name">{{ user.name }}</span>
 
                     </div>
                 </div>
@@ -30,8 +30,12 @@
 </template>
 
 <script setup>
-import { ref, computed } from "vue";
+import { ref, computed, onMounted } from "vue";
+import apiClient from '@/api/axios.js'
 
+onMounted(() => {
+    getRaiting();
+})
 
 const users = ref([
     {
@@ -84,6 +88,14 @@ const users = ref([
         stars: 2,
     },
 ]);
+
+const getRaiting = async () => {
+    const response = await apiClient.get('/rating/get');
+    console.log(response.data)
+    return response.data;
+}
+
+const usersList = computed(() => getRaiting)
 
 const currentUserReitingWithNeighbour = ref([
     {
