@@ -63,13 +63,8 @@
             </button>
         </div>
 
-        <div v-if="showPopup" class="popup-overlay" @click.self="closePopup">
-            <div class="popup-content">
-                <button class="close-button" @click="closePopup">×</button>
-                <p>Сохранить изменения?</p>
-                <button class="confirm-button" @click="confirmSave">Продолжить</button>
-            </div>
-        </div>
+        <defaultPopup :isVisible="showPopup" title="Сохранить изменения?" @confirm="confirmSave"
+            @update:isVisible="showPopup = $event" />
     </div>
 </template>
 
@@ -80,6 +75,7 @@ import GirlIcon from "@/assets/img/DefaultUserAvatar/female.svg";
 import { useAuthStore } from "@/stores/auth";
 import apiClient from "@/api/axios";
 import { compareObjects } from "@/shared/compareObject";
+import defaultPopup from "@/components/popups/defaultPopup.vue";
 
 const form = ref({});
 const initialForm = ref({})
@@ -359,65 +355,5 @@ const confirmSave = async () => {
     justify-content: start;
     align-items: start;
     padding-bottom: 200px;
-}
-
-/* Стили для попапа */
-.popup-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: rgba(0, 0, 0, 0.5);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 1000;
-}
-
-.popup-content {
-    background: #fff;
-    border-radius: 20px;
-    padding: 20px;
-    padding-top: 46px;
-    width: 90%;
-    max-width: 315px;
-    height: 186px;
-    position: relative;
-    color: #311D5D;
-    text-align: center;
-}
-
-.popup-content p {
-    margin: 0 0 20px 0;
-    font-size: 22px;
-    font-weight: 700;
-}
-
-.close-button {
-    position: absolute;
-    top: -2px;
-    right: 10px;
-    background: none;
-    border: none;
-    font-size: 38px;
-    color: #262060;
-    cursor: pointer;
-}
-
-.confirm-button {
-    padding: 12px 24px;
-    border: none;
-    border-radius: 20px;
-    background: #262060;
-    color: #ffffff;
-    font-size: 18px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: background-color 0.2s;
-}
-
-.confirm-button:hover {
-    background-color: #262567;
 }
 </style>

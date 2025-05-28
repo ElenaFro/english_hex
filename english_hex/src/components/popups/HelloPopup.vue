@@ -77,7 +77,7 @@ const stopAndClose = () => {
     display: flex;
     justify-content: center;
     align-items: center;
-    z-index: 300;
+    z-index: 1000;
     margin: auto;
 }
 
