@@ -2,15 +2,15 @@
     <section class="popup-overlay">
         <section class="popup">
             <p class="popup__header d-mb-16">
-                {{ headerText }}
+                {{ title }}
             </p>
             <img src="@/assets/img/close_icon.svg" class="popup__close" @click="stopAndClose" />
             <div>
-                {{ bodyText }}
+                {{ message }}
             </div>
-            <div class="full_width flex justify-between">
+            <div class="full_width flex justify-between full-height items-end">
                 <div class="flex items-end">
-                    <button class="arrow_btn" @click="stopAndClose">
+                    <button class="arrow_btn" @click="$emit('arrowClick')">
                         <img src="@/assets/img/arrow_icon.svg" alt="arrow" />
                     </button>
                 </div>
@@ -25,11 +25,14 @@
 
 <script setup>
 import { ref } from 'vue';
-import soundMp3 from '@/assets/audio/helloFromDi.mp3';
+
+const props = defineProps({
+    title: { type: String, default: '' },
+    message: { type: String, default: '' },
+    soundMp3: { type: String, default: '' }
+})
 
 const emit = defineEmits(['close']);
-const headerText = 'Добро пожаловать!';
-const bodyText = 'Привет! Меня зовут Di, и я рада приветствовать тебя в мире изучения английских слов! Ты сделал важный шаг к своей мечте - свободному владению иностранным языком.';
 
 const lastPlayed = ref(0);
 const COOLDOWN_MS = 15 * 1000;
@@ -45,7 +48,7 @@ const playSound = () => {
         currentAudio.value.currentTime = 0;
     }
 
-    const audio = new Audio(soundMp3);
+    const audio = new Audio(props.soundMp3);
     currentAudio.value = audio;
     audio.play().then(() => {
         lastPlayed.value = currentTime;
@@ -82,9 +85,13 @@ const stopAndClose = () => {
 }
 
 .popup {
-    position: relative;
+    position: static;
+    max-height: 463px;
+    height: 463px;
     z-index: 400;
     margin-bottom: 25vh;
+    display: flex;
+    flex-direction: column;
 
     &__close {
         position: absolute;

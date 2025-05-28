@@ -88,3 +88,25 @@
 		gap: 11px;
 	}
 }
+
+.action-button {
+    padding: 9px 22px;
+    border: none;
+    border-radius: 16px;
+    background: linear-gradient(94.6deg, #355cd5 4.52%, #714ab4 107.33%);
+    color: #ffffff;
+    font-size: 18px;
+    font-weight: 600;
+    cursor: pointer;
+    width: 100%;
+    transition: background-color 0.2s;
+}
+
+.action-button:hover {
+    background-color: #60a5fa;
+}
+
+.action-button:disabled {
+    background-color: #cccccc;
+    cursor: not-allowed;
+}

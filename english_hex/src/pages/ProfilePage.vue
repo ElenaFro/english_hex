@@ -1,5 +1,5 @@
 <template>
-    <div class="profile-page">
+    <div class="page-container">
         <div class="avatar-section">
             <img :src="avatarIcon" class="avatar" alt="User avatar" @click="toggleGender" />
         </div>
@@ -58,7 +58,7 @@
             </div>
         </div>
         <div class="button-section">
-            <button class="save-button" :disabled="isSaving" @click="openPopup">
+            <button class="action-button" :disabled="isSaving" @click="openPopup">
                 Сохранить изменения
             </button>
         </div>
@@ -172,27 +172,8 @@ const confirmSave = async () => {
 </script>
 
 <style scoped>
-.profile-page {
-    width: 100%;
-    height: 100vh;
-    min-height: 100%;
-    display: flex;
-    padding: 40px 30px;
+.page-container {
     row-gap: 25px;
-    background-color: #F6F6FE;
-    flex-direction: column;
-    align-items: center;
-    overflow-y: auto;
-    border-top-left-radius: 40px;
-    border-top-right-radius: 40px;
-
-    @media (min-width:375px) {
-        width: 375px;
-    }
-
-    @media (max-width:375px) {
-        width: 100%;
-    }
 }
 
 .profile-card {
@@ -326,34 +307,15 @@ const confirmSave = async () => {
     text-align: center;
 }
 
-.save-button {
-    padding: 9px 22px;
-    border: none;
-    border-radius: 16px;
-    background: linear-gradient(94.6deg, #355cd5 4.52%, #714ab4 107.33%);
-    color: #ffffff;
-    font-size: 18px;
-    font-weight: 600;
-    cursor: pointer;
-    width: 100%;
-    max-width: 240px;
-    transition: background-color 0.2s;
-}
-
-.save-button:hover {
-    background-color: #60a5fa;
-}
-
-.save-button:disabled {
-    background-color: #cccccc;
-    cursor: not-allowed;
-}
-
 .button-section {
     display: flex;
     width: 100%;
     justify-content: start;
     align-items: start;
     padding-bottom: 200px;
+}
+
+.action-button {
+    max-width: 240px;
 }
 </style>
