@@ -358,7 +358,7 @@ const confirmSave = async () => {
     width: 100%;
     justify-content: start;
     align-items: start;
-    padding-bottom: 150px;
+    padding-bottom: 200px;
 }
 
 /* Стили для попапа */
