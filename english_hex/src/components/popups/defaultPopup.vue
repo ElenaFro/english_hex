@@ -2,7 +2,7 @@
     <div v-if="isVisible" class="popup-overlay" @click.self="closePopup">
         <div class="popup-content">
             <button class="close-button" @click="closePopup">×</button>
-            <h2 v-if="title" class="popup-title">{{ title }}</h2>
+            <h2 v-if="title" class="popup-title" :class="titleMargin">{{ title }}</h2>
             <p v-if="message" class="popup-message">{{ message }}</p>
             <slot name="content"></slot>
             <div class="popup-actions">
@@ -17,7 +17,7 @@
 </template>
 
 <script setup>
-import { ref, watch } from "vue";
+import { computed, ref, watch } from "vue";
 
 const props = defineProps({
     isVisible: {
@@ -41,6 +41,8 @@ const props = defineProps({
 const emit = defineEmits(["update:isVisible", "confirm", "close"]);
 
 const localVisible = ref(props.isVisible);
+
+const titleMargin = computed(() => props.message ? 'd-mb-12' : 'd-mb-30')
 
 watch(
     () => props.isVisible,
@@ -80,16 +82,15 @@ const confirmAction = () => {
     border-radius: 20px;
     padding: 20px;
     padding-top: 46px;
+    padding-bottom: 35px;
     width: 90%;
     max-width: 315px;
-    height: 186px;
     position: relative;
     color: #311D5D;
     text-align: center;
 }
 
 .popup-title {
-    margin: 0 0 20px 0;
     font-size: 22px;
     font-weight: 700;
 }
@@ -99,6 +100,7 @@ const confirmAction = () => {
     font-weight: 400;
     line-height: 120%;
     text-align: center;
+    margin-bottom: 30px;
 }
 
 .close-button {
