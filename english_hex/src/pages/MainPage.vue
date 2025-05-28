@@ -18,13 +18,15 @@
 		</div>
 	</div>
 	<loader v-if="loading" />
-	<HelloPopup v-if="openHelloPopup" @close="closePopup" />
+	<HelloPopupWithSound v-if="openHelloPopup" :title="titlePopup" :message="messagePopup" :sound-mp3="SoundForPopup"
+		@close="closePopup" @arrow-click="closePopup" />
 </template>
 <script setup>
 import { ref, onMounted } from 'vue';
 import CategoryChoice from '@/components/MainPage/CategoryChoice.vue';
-import loader from '../components/loader.vue';
-import HelloPopup from '../components/popups/HelloPopup.vue';
+import loader from '@/components/loader.vue';
+import HelloPopupWithSound from '@/components/popups/HelloPopupWithSound.vue';
+import SoundForPopup from '@/assets/audio/helloFromDi.mp3'
 const loading = ref(true);
 const openHelloPopup = ref(false);
 
@@ -36,6 +38,8 @@ onMounted(() => {
 const closePopup = () => {
 	openHelloPopup.value = !openHelloPopup.value
 }
+const titlePopup = 'Добро пожаловать!';
+const messagePopup = 'Привет! Меня зовут Di, и я рада приветствовать тебя в мире изучения английских слов! Ты сделал важный шаг к своей мечте - свободному владению иностранным языком.';
 </script>
 
 <style scoped>

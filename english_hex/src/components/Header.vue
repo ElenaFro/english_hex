@@ -6,7 +6,7 @@
         <p class="header-title">{{ currentTitle }}</p>
         <RouterLink v-for="item in headerItemsRight" :key="item.name + '-right'" :to="item.path" class="header-item"
             :class="{ active: $route.path === item.path }">
-            <img :src="item.icon" class="header-icon" :alt="item.name" />
+            <img v-if="!route.fullPath.includes('games')" :src="item.icon" class="header-icon" :alt="item.name" />
         </RouterLink>
     </div>
 
@@ -52,6 +52,9 @@ watch(() => route.path, (newPath) => {
         case '/addCategories':
             currentTitle.value = "Редактирование";
             break;
+        case '/games':
+            currentTitle.value = "Игры";
+            break;
         default:
             currentTitle.value = " ";
             break;
@@ -69,7 +72,7 @@ watch(() => route.path, (newPath) => {
     padding-block: 2% 24px;
     padding-left: 20px;
     padding-right: 20px;
-    width: 90%;
+    width: 100%;
     max-width: 414px;
 
 }
