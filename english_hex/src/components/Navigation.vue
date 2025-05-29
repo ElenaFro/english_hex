@@ -36,8 +36,9 @@ const navItems = [
 ];
 
 const isActive = (item) => {
-    if (item.name === "mainPage") {
-        return route.path === '/' || route.path === '/games';
+    const isRouteInNav = navItems.some((navItem) => navItem.path === route.path);
+    if (!isRouteInNav) {
+        return item.name === 'mainPage';
     }
     return route.path === item.path;
 };

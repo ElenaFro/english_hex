@@ -65,6 +65,17 @@ export const useAuthStore = defineStore("auth", () => {
     }
   }
 
+  async function getRaiting() {
+    if (!token.value) return;
+    try {
+      const response = await apiClient.get("/rating/get");
+      return response.data;
+    } catch (error) {
+      console.error("Get rating error:", error);
+      throw error;
+    }
+  }
+
   return {
     user,
     token,
@@ -75,5 +86,6 @@ export const useAuthStore = defineStore("auth", () => {
     getCurrentUser,
     recoverPassword,
     fetchUser,
+    getRaiting,
   };
 });

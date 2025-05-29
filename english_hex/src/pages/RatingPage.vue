@@ -2,26 +2,26 @@
     <div class="raiting-page">
         <section class="podium-container">
             <div class="podium-section">
-                <div v-for="(user, index) in topUsers" :key="user.id" class="podium-item" :class="`rank-${index + 1}`">
-                    <img :src="user.avatar" class="user-avatar" :alt="user.nik_name" />
+                <div v-for="(user, index) in topUsers" :key="user.id" class="podium-item"
+                    :class="`rank-${index + 1} ${user.id === currentUser?.id ? 'active-user' : ''}`">
+                    <img src="@/assets/img/DefaultUserAvatar/male.svg" class="user-avatar" :alt="user.name" />
                     <div>
-                        <span class="user-nik_name">{{ user.name }}</span>
-
+                        <span class="name_top">{{ user.name }}</span>
                     </div>
                 </div>
             </div>
         </section>
 
         <section class="user-list">
-            <section v-for="user in userList" :key="user.id" class="user-item">
-                <div class=" user-rank">{{ user.rank }}
-                </div>
+            <section v-for="user in otherUsers" :key="user.id" class="user-item"
+                :class="{ 'active-user': user.id === currentUser?.id }">
+                <div class="user-rank">{{ user.rank }}</div>
                 <section class="user-item-section">
-                    <img :src="user.avatar" class="user-avatar-small" :alt="user.nik_name" />
-                    <span class="user-nik_name">{{ user.nik_name }}</span>
+                    <img src="@/assets/img/DefaultUserAvatar/male.svg" class="user-avatar-small" :alt="user.name" />
+                    <span class="user-name">{{ user.name }}</span>
                     <div class="user-info">
-                        <span class="user-stars">{{ user.stars }} </span> <img src="@/assets/icons/yelow_star.svg"
-                            class="star_class" />
+                        <span class="user-stars">{{ user.rating }}</span>
+                        <img src="@/assets/icons/yelow_star.svg" class="star_class" />
                     </div>
                 </section>
             </section>
@@ -30,105 +30,20 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from "vue";
-import apiClient from '@/api/axios.js'
+import { ref, computed, onMounted } from 'vue';
+import { useAuthStore } from '@/stores/auth';
 
-onMounted(() => {
-    getRaiting();
-})
+const raitingData = ref([]);
+const currentUser = ref(null);
 
-const users = ref([
-    {
-        id: 1,
-        nik_name: "Алексей",
-        avatar: new URL("@/assets/img/DefaultUserAvatar/black.svg", import.meta.url).href,
-        rating: 1500,
-        stars: 5,
-    },
-    {
-        id: 2,
-        nik_name: "Мария",
-        avatar: new URL("@/assets/img/DefaultUserAvatar/black.svg", import.meta.url).href,
-        rating: 1400,
-        stars: 4,
-    },
-    {
-        id: 3,
-        nik_name: "Дмитрий",
-        avatar: new URL("@/assets/img/DefaultUserAvatar/black.svg", import.meta.url).href,
-        rating: 1300,
-        stars: 4,
-    },
-    {
-        id: 4,
-        nik_name: "Екатерина",
-        avatar: new URL("@/assets/img/DefaultUserAvatar/black.svg", import.meta.url).href,
-        rating: 1200,
-        stars: 3,
-    },
-    {
-        id: 5,
-        nik_name: "Иван",
-        avatar: new URL("@/assets/img/DefaultUserAvatar/black.svg", import.meta.url).href,
-        rating: 1100,
-        stars: 3,
-    },
-    {
-        id: 6,
-        nik_name: "Ольга",
-        avatar: new URL("@/assets/img/DefaultUserAvatar/black.svg", import.meta.url).href,
-        rating: 1000,
-        stars: 2,
-    },
-    {
-        id: 7,
-        nik_name: "Сергей",
-        avatar: new URL("@/assets/img/DefaultUserAvatar/black.svg", import.meta.url).href,
-        rating: 900,
-        stars: 2,
-    },
-]);
-
-const getRaiting = async () => {
-    const response = await apiClient.get('/rating/get');
-    console.log(response.data)
-    return response.data;
-}
-
-const usersList = computed(() => getRaiting)
-
-const currentUserReitingWithNeighbour = ref([
-    {
-        id: 98,
-        nik_name: "Алексей",
-        avatar: new URL("@/assets/img/DefaultUserAvatar/black.svg", import.meta.url).href,
-        rating: 1500,
-        stars: 5,
-    },
-    {
-        id: 99,
-        nik_name: "Мария",
-        avatar: new URL("@/assets/img/DefaultUserAvatar/black.svg", import.meta.url).href,
-        rating: 1400,
-        stars: 4,
-    },
-    {
-        id: 100,
-        nik_name: "Дмитрий",
-        avatar: new URL("@/assets/img/DefaultUserAvatar/black.svg", import.meta.url).href,
-        rating: 1300,
-        stars: 4,
-    },
-]);
-
-const userList = computed(() => otherUsers.value.concat(currentUserReitingWithNeighbour.value))
-const curentUser = (id) => {
-    userList.value.find((user) => user.id === id)
-
-}
+onMounted(async () => {
+    const authStore = useAuthStore();
+    raitingData.value = await authStore.getRaiting();
+    currentUser.value = await authStore.getCurrentUser();
+});
 
 const sortedUsers = computed(() => {
-    return [...users.value]
+    return [...raitingData.value]
         .sort((a, b) => b.rating - a.rating)
         .map((user, index) => ({
             ...user,
@@ -140,9 +55,11 @@ const topUsers = computed(() => {
     return sortedUsers.value.slice(0, 3);
 });
 
-
 const otherUsers = computed(() => {
-    return sortedUsers.value.slice(3);
+    const topUserIds = topUsers.value.map((user) => user.id);
+    return sortedUsers.value
+        .filter((user) => !topUserIds.includes(user.id))
+        .sort((a, b) => a.rank - b.rank);
 });
 </script>
 
@@ -157,11 +74,11 @@ const otherUsers = computed(() => {
     border-top-left-radius: 40px;
     border-top-right-radius: 40px;
 
-    @media (min-width:375px) {
+    @media (min-width: 375px) {
         width: 375px;
     }
 
-    @media (max-width:375px) {
+    @media (max-width: 375px) {
         width: 100%;
     }
 }
@@ -170,7 +87,7 @@ const otherUsers = computed(() => {
     width: 100%;
     max-width: 375px;
     height: 370px;
-    background: url("@/assets/img/podium-bg.svg") no-repeat center center;
+    background: url('@/assets/img/podium-bg.svg') no-repeat center center;
     position: relative;
 }
 
@@ -181,14 +98,13 @@ const otherUsers = computed(() => {
     height: 100%;
     min-height: 530px;
     position: relative;
-
 }
 
 .podium-item {
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 3px;
+    gap: 4px;
     position: absolute;
 }
 
@@ -199,12 +115,12 @@ const otherUsers = computed(() => {
 }
 
 .podium-item.rank-2 {
-    left: 10%;
+    left: 6%;
     top: 30px;
 }
 
 .podium-item.rank-3 {
-    right: 10%;
+    right: 8%;
     top: 40px;
 }
 
@@ -235,17 +151,22 @@ const otherUsers = computed(() => {
 .user-info {
     text-align: center;
     display: flex;
-    width: 100%;
     justify-content: flex-end;
     column-gap: 10px;
 }
 
-.user-nik_name {
+.user-name {
     display: flex;
+    flex-direction: row;
+    white-space: nowrap;
+    max-width: 130px;
+    width: 130px;
+    text-align: start;
+    overflow: hidden;
+    text-overflow: ellipsis;
     font-size: 16px;
     font-weight: 600;
-    text-align: center;
-    align-items: center;
+    align-items: start;
     color: #4700B580;
 }
 
@@ -275,8 +196,8 @@ const otherUsers = computed(() => {
 .user-item-section {
     display: flex;
     align-items: center;
-    gap: 10px;
-    padding: 6px;
+    justify-content: space-between;
+    padding: 10px;
     border: 2px solid #4700B580;
     background: #FFF;
     border-radius: 20px;
@@ -315,7 +236,7 @@ const otherUsers = computed(() => {
     display: flex;
     align-items: center;
     font-size: 14px;
-    color: #a3bffa;
+    color: #4700B580;
 }
 
 .star_class img {
@@ -323,5 +244,31 @@ const otherUsers = computed(() => {
     justify-content: end !important;
     width: 25px;
     height: 25px;
+}
+
+.active-user .user-item-section {
+    background: #C6C9FE;
+
+    :deep(.user-name) {
+        color: #2E0C77;
+    }
+
+    :deep(.user-stars) {
+        color: #2E0C77;
+    }
+}
+
+.name_top {
+    color: #262060;
+    display: flex;
+    flex-direction: row;
+    white-space: nowrap;
+    max-width: 130px;
+    text-align: center;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    font-size: 12px;
+    font-weight: 600;
+    line-height: 100%;
 }
 </style>
