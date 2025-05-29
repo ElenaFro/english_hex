@@ -43,7 +43,7 @@ watch(() => route.path, (newPath) => {
         case '/profile':
             currentTitle.value = "Профиль";
             break;
-        case '/raiting':
+        case '/rating':
             currentTitle.value = "Рейтинг";
             break;
         case '/notifications':
