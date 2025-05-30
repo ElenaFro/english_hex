@@ -5,7 +5,7 @@
 			</div>
 			<h1 class="page-content__title">Заголовок для животных</h1>
 			<p class="page-content__text">Отправляйся в увлекательное путешествие по миру животных с нашей колодой карточек! Каждая карточка  — это яркое изображение животного, его название на английском и русском, и пример употребления слова в предложении. </p>
-			<button @click="$emit('switch-component', 'EducatVideo')" class="button button--blue">Перейти к изучению</button>
+			<button @click="$emit('switch-component', 'LessonsPage')" class="button button--blue">Перейти к изучению</button>
 		</div>
 </template>
 

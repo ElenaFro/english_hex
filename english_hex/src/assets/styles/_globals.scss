@@ -88,6 +88,7 @@ body, #app {
 
 	.scroll-container {
 		width: 100%;
+		max-width: 375px;
 		overflow-y: scroll;
 		padding-bottom: 150px;
 		scrollbar-width: none;

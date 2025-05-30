@@ -4,36 +4,24 @@
 			<img class="nav-arrow__img" src="@/assets/img/nav-arrow_icon.svg" alt="">
 		</button>
 		<div class="category-img">
-			<!-- <img :src="imgUrl" alt=""> -->
-
-			<!-- Убрать когда будут подтягиваться данные -->
-			<img src="/src/assets/img/clothes_img.png" alt="">
+			<img :src="imgUrl" alt="">
 		</div>
-		<!-- <p class="category-name">{{ sectionName }}</p> -->
-
-		<!-- Убрать когда будут подтягиваться данные -->
-		<p class="category-name">Clothes</p>
+		<p class="category-name">{{ sectionName }}</p>
 		<div class="statusa-bar">
 			<div class="statusa-bar__active">
 				<img src="@/assets/img/open-lock_icon.svg" alt="">
 				<div class="status-circle">
-					<!-- <StatusCircle :percent="progress"/> -->
-
-					<!-- Черновик -->
-					<StatusCircle :percent="70"/>
+					<StatusCircle :percent="progress"/>
 				</div>
 			</div>
 			<div class="statusa-bar__active">
-				<!-- <img
+				<img
 					:src="locked 
-					? '@/assets/img/closed-lock_icon.svg' 
-					: '@/assets/img/open-lock_icon.svg'" 
+					? closedLockIcon 
+					: openLockIcon" 
 					alt=""
-				> -->
-
-				<img src="@/assets/img/closed-lock_icon.svg" alt="">
+				>
 				<div class="status-circle">
-					
 					<StatusCircle :percent="0"/>
 				</div>
 			</div>
@@ -44,7 +32,8 @@
 <script setup>
 import { useRouter } from 'vue-router'
 import StatusCircle from './StatusCircle.vue';
-
+import closedLockIcon from '@/assets/img/closed-lock_icon.svg'
+import openLockIcon from '@/assets/img/open-lock_icon.svg'
 
 defineProps({
 	id: Number,
@@ -58,7 +47,8 @@ defineProps({
 const router = useRouter()
 
 const goToLearningPage = () => {
-	router.push('/learning/${id}')
+	// router.push(`/learning/${id}`)
+	router.push('/learning/')
 }
 </script>
 

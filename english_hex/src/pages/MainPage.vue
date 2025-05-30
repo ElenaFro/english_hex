@@ -49,7 +49,7 @@ const avatarIcon = computed(() => {
 
 onMounted(async () => {
 	try {
-		const res = await axios.get('#')
+		const res = await axios.get('/test.json')
 		sections.value = res.data
 	} catch (err) {
 		//Уточнить что делать в случае ошибки

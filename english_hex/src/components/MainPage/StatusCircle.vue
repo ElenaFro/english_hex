@@ -15,7 +15,6 @@ defineProps({
   }
 })
 
-// const percent = ref(70)
 </script>
 
 <style scoped>
