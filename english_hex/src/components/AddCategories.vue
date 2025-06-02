@@ -3,7 +3,7 @@
         <div class="content-container">
             <div class="message-block">
                 <h1 class="message-block__title">Упс, что-то не так</h1>
-                <p class="message-block__text">Данная функция временно недоступна, ждите дальнейших обновлений! 
+                <p class="message-block__text">где-то в моей ветке есть контент для админа! 
                 </p>
             </div>
         </div>

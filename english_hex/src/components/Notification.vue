@@ -56,7 +56,8 @@
     padding-top: 30px;  
     background-color: #ffffff;  
     border-top-left-radius: 40px;
-    border-top-right-radius: 40px;      
+    border-top-right-radius: 40px;    
+    gap:16px;  
 }
 
 .message-block__title18 {
