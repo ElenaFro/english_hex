@@ -27,7 +27,7 @@
                 <p class="message-block__text14">Текст — зафиксированная на каком-либо материальном носителе человеческая мысль; в общем плане связная и полная последовательность символов. Существуют две основные трактовки понятия «текст»: </p>
             </div>
             <div>
-                <p class="message-block__day">29 марта</p>
+                <p class="message-block__day">29 сентября</p>
                 <div class="day-container">
                     <img src="@/assets/icons/navBarIcon/Ellipse red.svg" class="note-icon" alt="New" />
                 </div>
@@ -76,6 +76,8 @@
     font-weight: 600;
     line-height: 27px;
     color:#747474;
+    width: 84px;
+    text-align: right;
 }
 .note-container{
     display: flex;
@@ -84,6 +86,7 @@
     width: 100%;
     padding-left: 20px;
     padding-right: 20px;
+    gap:4px;
 }
 .note-icon {
     padding-top: 16px;
