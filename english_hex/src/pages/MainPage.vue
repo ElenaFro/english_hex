@@ -49,14 +49,12 @@ onMounted(() => {
         openHelloPopup.value = true; // Открываем попап только один раз
         hasVisited.value = true; // Устанавливаем флаг, чтобы не открывать попап снова
 		sessionStorage.setItem('hasVisited', 'true'); // Сохраняем значение в этой сессии , состояние будет сбрасываться при закрытии вкладки или обновлении страницы
-		console.log(" onMounted openHelloPopup.value =", openHelloPopup.value )
     }
 });
 
 const closePopup = () => {
 	// openHelloPopup.value = !openHelloPopup.value
 	openHelloPopup.value = false; 
-	console.log("const closePopup openHelloPopup.value =", openHelloPopup.value )
 }
 const titlePopup = 'Добро пожаловать!';
 const messagePopup = 'Привет! Меня зовут Di, и я рада приветствовать тебя в мире изучения английских слов! Ты сделал важный шаг к своей мечте - свободному владению иностранным языком.';
