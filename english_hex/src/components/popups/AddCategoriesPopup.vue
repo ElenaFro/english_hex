@@ -12,9 +12,6 @@
             </div>
             <div class="">
                 <div class="flex items-end">
-                    <!-- <router-link class="btn" to="/" >
-                        Вернуться на главную
-                    </router-link> -->
                     <button class="btn" @click="goToMainPage">
                         Вернуться на главную
                     </button>
