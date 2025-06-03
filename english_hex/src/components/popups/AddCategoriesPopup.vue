@@ -1,8 +1,5 @@
 <template>
     <section class="popup-overlay">
-                <!-- <div class="relative">
-                    <img src="@/assets/img/girl_popup.png" alt="girl" class="girl">
-                </div> -->
         <section class="popup relative">
             <div class="girl_top">
                 <img src="@/assets/img/girl_popup.png" alt="girl" class="girl">
@@ -10,25 +7,29 @@
             <p class="popup__header pt-45 pb-25">
                 {{ title }}
             </p>
-            <!-- <img src="@/assets/img/close_icon.svg" class="popup__close" @click="stopAndClose" /> -->
             <div>
                 {{ message }}
             </div>
             <div class="">
                 <div class="flex items-end">
-                    <router-link class="btn" to="/">
+                    <!-- <router-link class="btn" to="/" >
                         Вернуться на главную
-                    </router-link>
+                    </router-link> -->
+                    <button class="btn" @click="goToMainPage">
+                        Вернуться на главную
+                    </button>
                 </div>
-                <!-- <div class="relative">
-                    <img src="@/assets/img/girl_popup.png" alt="girl" class="girl_with_flag">
-                </div> -->
             </div>
         </section>
     </section>
 </template>
 
 <script setup>
+import { useRouter } from 'vue-router';
+import { defineProps, defineEmits } from 'vue';
+
+const router = useRouter();
+const emit = defineEmits();
 
 const props = defineProps({
     title: { type: String, default: '' },
@@ -36,6 +37,11 @@ const props = defineProps({
     soundMp3: { type: String, default: '' }
 })
 
+// Метод для перехода на главную страницу
+const goToMainPage = () => {
+    emit('close'); // Эмитируем событие close
+    router.push('/'); // Переходим на главную страницу
+};
 </script>
 
 <style scoped lang="scss">

@@ -18,8 +18,12 @@
 		</div>
 	</div>
 	<loader v-if="loading" />
-	<HelloPopupWithSound v-if="openHelloPopup" :title="titlePopup" :message="messagePopup" :sound-mp3="SoundForPopup"
-		@close="closePopup" @arrow-click="closePopup" />
+	<HelloPopupWithSound v-if="openHelloPopup" 
+	:title="titlePopup" 
+	:message="messagePopup" 
+	:sound-mp3="SoundForPopup"
+	@close="closePopup" 
+	@arrow-click="closePopup" />
 </template>
 <script setup>
 import { ref, onMounted } from 'vue';
@@ -27,16 +31,32 @@ import CategoryChoice from '@/components/MainPage/CategoryChoice.vue';
 import loader from '@/components/loader.vue';
 import HelloPopupWithSound from '@/components/popups/HelloPopupWithSound.vue';
 import SoundForPopup from '@/assets/audio/helloFromDi.mp3'
+
 const loading = ref(true);
 const openHelloPopup = ref(false);
 
+// onMounted(() => {
+// 	loading.value = false;
+// 	openHelloPopup.value = true;
+// })
+
+// Проверяем значение hasVisited в sessionStorage
+const hasVisited = ref(sessionStorage.getItem('hasVisited') === 'true');
+
 onMounted(() => {
-	loading.value = false;
-	openHelloPopup.value = true;
-})
+    loading.value = false;
+    if (!hasVisited.value) {
+        openHelloPopup.value = true; // Открываем попап только один раз
+        hasVisited.value = true; // Устанавливаем флаг, чтобы не открывать попап снова
+		sessionStorage.setItem('hasVisited', 'true'); // Сохраняем значение в этой сессии , состояние будет сбрасываться при закрытии вкладки или обновлении страницы
+		console.log(" onMounted openHelloPopup.value =", openHelloPopup.value )
+    }
+});
 
 const closePopup = () => {
-	openHelloPopup.value = !openHelloPopup.value
+	// openHelloPopup.value = !openHelloPopup.value
+	openHelloPopup.value = false; 
+	console.log("const closePopup openHelloPopup.value =", openHelloPopup.value )
 }
 const titlePopup = 'Добро пожаловать!';
 const messagePopup = 'Привет! Меня зовут Di, и я рада приветствовать тебя в мире изучения английских слов! Ты сделал важный шаг к своей мечте - свободному владению иностранным языком.';
