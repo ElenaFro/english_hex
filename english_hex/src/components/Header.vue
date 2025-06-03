@@ -66,6 +66,9 @@ watch(() => route.path, (newPath) => {
         case '/games':
             currentTitle.value = "Игры";
             break;
+        case '/planetattack_games':
+            currentTitle.value = "Игры";
+            break;    
         default:
             currentTitle.value = " ";
             break;
