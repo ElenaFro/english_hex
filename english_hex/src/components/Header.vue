@@ -13,7 +13,7 @@
         <p class="header-title">{{ currentTitle }}</p>
         <RouterLink v-for="item in headerItemsRight" :key="item.name + '-right'" :to="item.path" class="header-item"
             :class="{ active: $route.path === item.path }">
-            <img v-if="!route.fullPath.includes('games')" :src="item.icon" class="header-icon" :alt="item.name" />
+            <img v-if="!route.fullPath.includes('games') && !route.fullPath.includes('Game')" :src="item.icon" class="header-icon" :alt="item.name" />
         </RouterLink>
     </div>
 
@@ -66,7 +66,7 @@ watch(() => route.path, (newPath) => {
         case '/games':
             currentTitle.value = "Игры";
             break;
-        case '/planetattack_games':
+        case '/planetGame':
             currentTitle.value = "Игры";
             break;    
         default:
