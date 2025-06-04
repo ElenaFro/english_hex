@@ -1,0 +1,38 @@
+[
+	{
+	"id": 1,
+	"name": "Clothes",
+	"section": "Одежда",
+	"image": "src/assets/img/clothes_img.png",
+	"color": "#f2f2f2",
+	"progress": 70,
+	"locked": false
+	},
+	{
+	"id": 2,
+	"name": "Medicine",
+	"section": "Медицина",
+	"image": "src/assets/img/medicine_img.png",
+	"color": "#e6ffe6",
+	"progress": 20,
+	"locked": true
+	},
+	{
+	"id": 3,
+	"name": "Animals",
+	"section": "Животные",
+	"image": "src/assets/img/animals_img.png",
+	"color": "#fff0f0",
+	"progress": 23,
+	"locked": true
+	},
+	{
+	"id": 4,
+	"name": "Plants",
+	"section": "Растения",
+	"image": "src/assets/img/plants_img.png",
+	"color": "#fff0f0",
+	"progress": 35,
+	"locked": false
+	}
+  ]

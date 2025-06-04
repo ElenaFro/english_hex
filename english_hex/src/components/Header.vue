@@ -45,9 +45,20 @@ const headerItemsRight = [
 
 const currentTitle = ref(" ");
 const route = useRoute();
+// const sections = ref([])
+
 function goBack() {
     window.history.back();
 }
+
+// onMounted(async () => {
+// 	try {
+// 		const res = await axios.get('/test.json')
+// 		learningSections.value = res.data
+// 	} catch {
+// 		console.error(err)
+// 	}
+// })
 
 watch(() => route.path, (newPath) => {
     switch (newPath) {

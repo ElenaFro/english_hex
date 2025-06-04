@@ -1,23 +1,28 @@
 <template>
 	<div class="container">
-		<button type="button" class="nav-arrow">
+		<button type="button" class="nav-arrow" @click="goToLearningPage">
 			<img class="nav-arrow__img" src="@/assets/img/nav-arrow_icon.svg" alt="">
 		</button>
 		<div class="category-img">
-			<img src="@/assets/img/clothes_img.png" alt="">
+			<img :src="imgUrl" alt="">
 		</div>
-		<p class="category-name">Clothes</p>
+		<p class="category-name">{{ sectionName }}</p>
 		<div class="statusa-bar">
 			<div class="statusa-bar__active">
 				<img src="@/assets/img/open-lock_icon.svg" alt="">
 				<div class="status-circle">
-					<StatusCircle />
+					<StatusCircle :percent="progress"/>
 				</div>
 			</div>
 			<div class="statusa-bar__active">
-				<img src="@/assets/img/closed-lock_icon.svg" alt="">
+				<img
+					:src="locked 
+					? closedLockIcon 
+					: openLockIcon" 
+					alt=""
+				>
 				<div class="status-circle">
-					<StatusCircle />
+					<StatusCircle :percent="0"/>
 				</div>
 			</div>
 		</div>
@@ -25,9 +30,26 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { useRouter } from 'vue-router'
 import StatusCircle from './StatusCircle.vue';
+import closedLockIcon from '@/assets/img/closed-lock_icon.svg'
+import openLockIcon from '@/assets/img/open-lock_icon.svg'
 
+defineProps({
+	id: Number,
+	sectionName: String,
+	imgUrl: String,
+	backgroundColor: String,
+	progress: Number,
+	locked: Boolean
+})
+
+const router = useRouter()
+
+const goToLearningPage = () => {
+	// router.push(`/learning/${id}`)
+	router.push('/learning/')
+}
 </script>
 
 <style scoped>
