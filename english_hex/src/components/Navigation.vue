@@ -1,14 +1,16 @@
 <template>
     <nav class="navigation-bar">
         <RouterLink v-for="item in navItems" :key="item.name" :to="item.path" class="nav-item"
-            :class="{ active: $route.path === item.path }">
+            :class="{ active: isActive(item) }">
             <img :src="item.icon" class="nav-icon" alt="item.label" />
         </RouterLink>
     </nav>
 </template>
 
 <script setup>
-import { RouterLink } from "vue-router";
+import { RouterLink, useRoute } from "vue-router";
+
+const route = useRoute();
 
 const navItems = [
     {
@@ -22,8 +24,8 @@ const navItems = [
         icon: 'src/assets/icons/navBarIcon/Plus.svg',
     },
     {
-        name: "raiting",
-        path: "/raiting",
+        name: "rating",
+        path: "/rating",
         icon: 'src/assets/icons/navBarIcon/Raiting.png',
     },
     {
@@ -32,6 +34,14 @@ const navItems = [
         icon: 'src/assets/icons/navBarIcon/Profile.svg',
     },
 ];
+
+const isActive = (item) => {
+    const isRouteInNav = navItems.some((navItem) => navItem.path === route.path);
+    if (!isRouteInNav) {
+        return item.name === 'mainPage';
+    }
+    return route.path === item.path;
+};
 </script>
 
 <style scoped>
@@ -47,7 +57,7 @@ const navItems = [
     border-radius: 30px;
     padding: 6px;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
-    z-index: 1000;
+    z-index: 500;
     width: 90%;
     max-width: 315px;
 }

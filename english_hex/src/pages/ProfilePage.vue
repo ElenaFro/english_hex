@@ -1,22 +1,20 @@
 <template>
-    <div class="profile-page">
-		<div class="profile-page__inner">
-			<div class="avatar-section">
-				<img :src="avatarIcon" class="avatar" alt="User avatar" @click="toggleGender" />
-			</div>
-			<div class="profile-card">
-				<div class="form-group">
-					<label for="name">Имя</label>
-					<div class="input-with-icon">
-						<input id="name" v-model="form.name" type="text" maxlength="17" placeholder="Введите ваше имя"
-							class="form-input" :class="{ 'error': errors.name }" @input="clearError('name')" />
-						<span class="edit-icon" @click="focusInput('name')">
-							<img v-if="edit" src="@/assets/icons/editPencil.svg" />
-						</span>
-					</div>
-					<span v-if="errors.name" class="error-message">{{ errors.name }}</span>
-				</div>
-
+    <div class="page-container">
+        <div class="avatar-section">
+            <img :src="avatarIcon" class="avatar" alt="User avatar" @click="toggleGender" />
+        </div>
+        <div class="profile-card">
+            <div class="form-group">
+                <label for="name">Имя</label>
+                <div class="input-with-icon">
+                    <input id="name" v-model="form.name" type="text" maxlength="17" placeholder="Введите ваше имя"
+                        class="form-input" :class="{ 'error': errors.name }" @input="clearError('name')" />
+                    <span class="edit-icon" @click="focusInput('name')">
+                        <img v-if="edit" src="@/assets/icons/editPencil.svg" />
+                    </span>
+                </div>
+                <span v-if="errors.name" class="error-message">{{ errors.name }}</span>
+            </div>
 				<div class="form-group">
 					<label>Пол</label>
 					<div class="gender-options">
@@ -45,53 +43,41 @@
 					</div>
 					<span v-if="errors.email" class="error-message">{{ errors.email }}</span>
 				</div>
+            <div class="form-group">
+                <label for="password">Пароль</label>
+                <div class="input-with-icon">
+                    <input id="password" v-model="form.password" type="password" maxlength="30" placeholder="Ваш пароль"
+                        class="form-input" :class="{ 'error': errors.password }" @input="clearError('password')" />
+                    <span class="edit-icon" @click="focusInput('password')">
+                        <img v-if="edit" src="@/assets/icons/editPencil.svg" />
+                    </span>
+                </div>
+                <span v-if="errors.password" class="error-message">{{ errors.password }}</span>
+            </div>
+        </div>
+        <div class="button-section">
+            <button class="action-button" :disabled="isSaving" @click="openPopup">
+                Сохранить изменения
+            </button>
+        </div>
 
-				<div class="form-group">
-					<label for="password">Пароль</label>
-					<div class="input-with-icon">
-						<input id="password" v-model="form.password" type="password" maxlength="30" placeholder="Ваш пароль"
-							class="form-input" :class="{ 'error': errors.password }" @input="clearError('password')" />
-						<span class="edit-icon" @click="focusInput('password')">
-							<img v-if="edit" src="@/assets/icons/editPencil.svg" />
-						</span>
-					</div>
-					<span v-if="errors.password" class="error-message">{{ errors.password }}</span>
-				</div>
-			</div>
-			<div class="button-section">
-				<button class="save-button" :disabled="isSaving" @click="openPopup">
-					Сохранить изменения
-				</button>
-			</div>
-			<div v-if="showPopup" class="popup-overlay" @click.self="closePopup">
-				<div class="popup-content">
-					<button class="close-button" @click="closePopup">×</button>
-					<p>Сохранить изменения?</p>
-					<button class="confirm-button" @click="confirmSave">Продолжить</button>
-				</div>
-			</div>
-			<div v-if="showPopup" class="popup-overlay" @click.self="closePopup">
-				<div class="popup-content">
-					<button class="close-button" @click="closePopup">×</button>
-					<p>Сохранить изменения?</p>
-					<button class="confirm-button" @click="confirmSave">Продолжить</button>
-				</div>
-			</div>
-		</div>
+        <defaultPopup :isVisible="showPopup" title="Сохранить изменения?" @confirm="confirmSave"
+            @update:isVisible="showPopup = $event" />
     </div>
 </template>
 
 <script setup>
-import { ref, computed } from "vue";
+import { ref, computed, onMounted } from "vue";
 import BoyIcon from "@/assets/img/DefaultUserAvatar/male.svg";
 import GirlIcon from "@/assets/img/DefaultUserAvatar/female.svg";
+import { useAuthStore } from "@/stores/auth";
+import apiClient from "@/api/axios";
+import { compareObjects } from "@/shared/compareObject";
+import defaultPopup from "@/components/popups/defaultPopup.vue";
 
-const form = ref({
-    gender: "male",
-    name: "",
-    email: "",
-    password: "",
-});
+
+const form = ref({});
+const initialForm = ref({})
 
 const errors = ref({
     gender: "",
@@ -100,13 +86,16 @@ const errors = ref({
     password: "",
 });
 
+onMounted(async () => {
+    form.value = useAuthStore().getCurrentUser();
+    initialForm.value = JSON.parse(JSON.stringify(form.value));
+})
+
 const isSaving = ref(false);
 const showPopup = ref(false);
 const edit = ref(true);
 
-const avatarIcon = computed(() => {
-    return form.value.gender === "male" ? BoyIcon : GirlIcon;
-});
+const avatarIcon = computed(() => form.value?.gender === "male" ? BoyIcon : GirlIcon);
 
 const toggleGender = () => {
     form.value.gender = form.value.gender === "male" ? "female" : "male";
@@ -142,14 +131,14 @@ const validateForm = () => {
         isValid = false;
     }
 
-    const passwordRegex = /^(?=.*[A-Za-z0-9]).{8,30}$/;
-    if (!form.value.password) {
-        errors.value.password = "Поле заполнено некорректно";
-        isValid = false;
-    } else if (!passwordRegex.test(form.value.password)) {
-        errors.value.password = "Поле заполнено некорректно";
-        isValid = false;
-    }
+    // const passwordRegex = /^(?=.*[A-Za-z0-9]).{8,30}$/;
+    // if (!form.value.password) {
+    //     errors.value.password = "Поле заполнено некорректно";
+    //     isValid = false;
+    // } else if (!passwordRegex.test(form.value.password)) {
+    //     errors.value.password = "Поле заполнено некорректно";
+    //     isValid = false;
+    // }
 
     return isValid;
 };
@@ -166,12 +155,17 @@ const closePopup = () => {
 const confirmSave = async () => {
     isSaving.value = true;
     try {
-        console.log("Сохранение данных:", form.value);
-        closePopup();
+        const payload = compareObjects(initialForm.value, form.value);
+        await apiClient.patch('/profile/update', payload)
+            .then(async () => {
+                await useAuthStore().fetchUser();
+                closePopup();
+            }).catch((error) => { throw error })
     } catch (error) {
         console.error("Ошибка сохранения:", error);
     } finally {
         isSaving.value = false;
+        form.value = useAuthStore().getCurrentUser()
     }
 };
 </script>
@@ -206,6 +200,11 @@ const confirmSave = async () => {
     @media (max-width:375px) {
         width: 100%;
     }
+}
+
+.page-container {
+    row-gap: 25px;
+
 }
 
 .profile-card {
@@ -339,94 +338,15 @@ const confirmSave = async () => {
     text-align: center;
 }
 
-.save-button {
-    padding: 9px 22px;
-    border: none;
-    border-radius: 16px;
-    background: linear-gradient(94.6deg, #355cd5 4.52%, #714ab4 107.33%);
-    color: #ffffff;
-    font-size: 18px;
-    font-weight: 600;
-    cursor: pointer;
-    width: 100%;
-    max-width: 240px;
-    transition: background-color 0.2s;
-}
-
-.save-button:hover {
-    background-color: #60a5fa;
-}
-
-.save-button:disabled {
-    background-color: #cccccc;
-    cursor: not-allowed;
-}
-
 .button-section {
     display: flex;
     width: 100%;
     justify-content: start;
     align-items: start;
-    padding-bottom: 150px;
+    padding-bottom: 200px;
 }
 
-/* Стили для попапа */
-.popup-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: rgba(0, 0, 0, 0.5);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 1000;
-}
-
-.popup-content {
-    background: #fff;
-    border-radius: 20px;
-    padding: 20px;
-    padding-top: 46px;
-    width: 90%;
-    max-width: 315px;
-    height: 186px;
-    position: relative;
-    color: #311D5D;
-    text-align: center;
-}
-
-.popup-content p {
-    margin: 0 0 20px 0;
-    font-size: 22px;
-    font-weight: 700;
-}
-
-.close-button {
-    position: absolute;
-    top: -2px;
-    right: 10px;
-    background: none;
-    border: none;
-    font-size: 38px;
-    color: #262060;
-    cursor: pointer;
-}
-
-.confirm-button {
-    padding: 12px 24px;
-    border: none;
-    border-radius: 20px;
-    background: #262060;
-    color: #ffffff;
-    font-size: 18px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: background-color 0.2s;
-}
-
-.confirm-button:hover {
-    background-color: #262567;
+.action-button {
+    max-width: 240px;
 }
 </style>

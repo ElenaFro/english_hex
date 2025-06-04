@@ -11,6 +11,8 @@
 				class="video-container__lerning-video" 
 				src="@/assets/video/video.mp4"
 				autoplay
+				playsinline
+				webkit-playsinline
 			></video>
 		</div>
 </template>
@@ -21,13 +23,20 @@ import { ref } from 'vue'
 const videoRef = ref(null)
 
 const replayVideo = () => {
-	if (videoRef.value && videoRef.value.ended) {
+	if (videoRef.value) {
 		videoRef.value.currentTime = 0
 		videoRef.value.play()
 	} 
 }
 
-defineExpose({ replayVideo })
+const pauseVideo = () => {
+	if (videoRef.value) {
+		videoRef.value.pause()
+		videoRef.value.currentTime = 0
+	}
+}
+
+defineExpose({ replayVideo, pauseVideo })
 
 </script>
 

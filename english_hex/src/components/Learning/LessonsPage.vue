@@ -64,6 +64,7 @@ const replayAgain = () => {
 }
 
 const goToCard = () => {
+	videoRef.value?.pauseVideo?.()
 	activeComponent.value = 'WordPage'
 }
 </script>
@@ -109,7 +110,6 @@ const goToCard = () => {
 }
 
 .button-container {
-	z-index: 1000;
 	display: flex;
 	justify-content: space-between;
 }

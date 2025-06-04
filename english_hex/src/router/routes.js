@@ -28,9 +28,9 @@ const routes = [
         component: () => import("@/pages/AddCategoriesPage.vue"),
       },
       {
-        path: "raiting",
-        name: "raiting",
-        component: () => import("@/pages/RaitingPage.vue"),
+        path: "rating",
+        name: "rating",
+        component: () => import("@/pages/RatingPage.vue"),
       },
       {
         path: "profile",
@@ -47,6 +47,11 @@ const routes = [
 		name: "learning",
 		component: () => import("@/pages/LearningPage.vue"),
 	  },
+      {
+        path: "games",
+        name: "games",
+        component: () => import("@/pages/games/GameMainPage.vue"),
+      },
     ],
     meta: { requiresAuth: false },
   },

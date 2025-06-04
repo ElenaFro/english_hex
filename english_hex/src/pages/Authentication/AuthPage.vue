@@ -55,8 +55,10 @@ const emailVerif = () => {
     step.value = 'password'
 }
 
-const login = () => {
-    useAuthStore().login(email.value, password.value).then((response) => console.log(response))
+const login = async () => {
+    await useAuthStore().login(email.value, password.value).then(
+        await useAuthStore().fetchUser()
+    );
 }
 </script>
 

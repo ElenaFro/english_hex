@@ -6,7 +6,7 @@
         <p class="header-title">{{ currentTitle }}</p>
         <RouterLink v-for="item in headerItemsRight" :key="item.name + '-right'" :to="item.path" class="header-item"
             :class="{ active: $route.path === item.path }">
-            <img :src="item.icon" class="header-icon" :alt="item.name" />
+            <img v-if="!route.fullPath.includes('games')" :src="item.icon" class="header-icon" :alt="item.name" />
         </RouterLink>
     </div>
 
@@ -14,8 +14,9 @@
 
 <script setup>
 import { RouterLink } from "vue-router";
-import { ref, watch } from 'vue';
+import { ref, watch, onMounted } from 'vue';
 import { useRoute } from 'vue-router';
+import axios from 'axios'
 
 // const headerItemsLeft = [
 //     {
@@ -34,16 +35,27 @@ const headerItemsRight = [
 
 const currentTitle = ref(" ");
 const route = useRoute();
+// const sections = ref([])
+
 function goBack() {
     window.history.back();
 }
+
+// onMounted(async () => {
+// 	try {
+// 		const res = await axios.get('/test.json')
+// 		learningSections.value = res.data
+// 	} catch {
+// 		console.error(err)
+// 	}
+// })
 
 watch(() => route.path, (newPath) => {
     switch (newPath) {
         case '/profile':
             currentTitle.value = "Профиль";
             break;
-        case '/raiting':
+        case '/rating':
             currentTitle.value = "Рейтинг";
             break;
         case '/notifications':
@@ -51,6 +63,9 @@ watch(() => route.path, (newPath) => {
             break;
         case '/addCategories':
             currentTitle.value = "Редактирование";
+            break;
+        case '/games':
+            currentTitle.value = "Игры";
             break;
         default:
             currentTitle.value = " ";

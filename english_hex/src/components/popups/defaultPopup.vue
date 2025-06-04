@@ -2,14 +2,11 @@
     <div v-if="isVisible" class="popup-overlay" @click.self="closePopup">
         <div class="popup-content">
             <button class="close-button" @click="closePopup">×</button>
-            <h2 v-if="title" class="popup-title">{{ title }}</h2>
+            <h2 v-if="title" class="popup-title" :class="titleMargin">{{ title }}</h2>
             <p v-if="message" class="popup-message">{{ message }}</p>
             <slot name="content"></slot>
             <div class="popup-actions">
                 <slot name="actions">
-                    <button v-if="cancelText" class="cancel-button" @click="closePopup">
-                        {{ cancelText }}
-                    </button>
                     <button v-if="confirmText" class="confirm-button" @click="confirmAction">
                         {{ confirmText }}
                     </button>
@@ -20,7 +17,7 @@
 </template>
 
 <script setup>
-import { ref, watch } from "vue";
+import { computed, ref, watch } from "vue";
 
 const props = defineProps({
     isVisible: {
@@ -37,17 +34,15 @@ const props = defineProps({
     },
     confirmText: {
         type: String,
-        default: "Подтвердить",
-    },
-    cancelText: {
-        type: String,
-        default: "Отмена",
+        default: "Продолжить",
     },
 });
 
 const emit = defineEmits(["update:isVisible", "confirm", "close"]);
 
 const localVisible = ref(props.isVisible);
+
+const titleMargin = computed(() => props.message ? 'd-mb-12' : 'd-mb-30')
 
 watch(
     () => props.isVisible,
@@ -76,12 +71,11 @@ const confirmAction = () => {
     right: 0;
     bottom: 0;
     background: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(20px);
     display: flex;
     justify-content: center;
     align-items: center;
     z-index: 1000;
-    -webkit-overflow-scrolling: touch;
-    overscroll-behavior: contain;
 }
 
 .popup-content {
@@ -89,25 +83,25 @@ const confirmAction = () => {
     border-radius: 20px;
     padding: 20px;
     padding-top: 46px;
+    padding-bottom: 35px;
     width: 90%;
     max-width: 315px;
-    min-height: 186px;
     position: relative;
-    color: #311d5d;
+    color: #311D5D;
     text-align: center;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
 }
 
 .popup-title {
-    margin: 0 0 10px 0;
     font-size: 22px;
     font-weight: 700;
 }
 
 .popup-message {
-    margin: 0 0 20px 0;
-    font-size: 16px;
+    font-size: 18px;
     font-weight: 400;
+    line-height: 120%;
+    text-align: center;
+    margin-bottom: 30px;
 }
 
 .close-button {
@@ -119,12 +113,6 @@ const confirmAction = () => {
     font-size: 38px;
     color: #262060;
     cursor: pointer;
-}
-
-.popup-actions {
-    display: flex;
-    justify-content: center;
-    gap: 10px;
 }
 
 .confirm-button {
@@ -141,21 +129,5 @@ const confirmAction = () => {
 
 .confirm-button:hover {
     background-color: #262567;
-}
-
-.cancel-button {
-    padding: 12px 24px;
-    border: 2px solid #262060;
-    border-radius: 20px;
-    background: transparent;
-    color: #262060;
-    font-size: 18px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: background-color 0.2s;
-}
-
-.cancel-button:hover {
-    background-color: #f6f6fe;
 }
 </style>
