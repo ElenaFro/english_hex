@@ -1,12 +1,19 @@
 <template>
     <div class="header-bar">
-        <button @click="goBack" class="header-item-button">
-            <img src="@/assets/icons/navBarIcon/arrow_left.svg" class="header-icon-left" alt="Назад" />
-        </button>
+        <template v-if="isHomePage">
+            <span class="header-star">
+                {{ earnedStars }} <img src="@/assets/icons/navBarIcon/star.svg" class="header-star-left" alt="Звезда" />
+            </span>
+        </template> 
+        <template v-else>      
+            <button @click="goBack" class="header-item-button">
+                <img src="@/assets/icons/navBarIcon/arrow_left.svg" class="header-icon-left" alt="Назад" />
+            </button>
+        </template> 
         <p class="header-title">{{ currentTitle }}</p>
         <RouterLink v-for="item in headerItemsRight" :key="item.name + '-right'" :to="item.path" class="header-item"
             :class="{ active: $route.path === item.path }">
-            <img v-if="!route.fullPath.includes('games')" :src="item.icon" class="header-icon" :alt="item.name" />
+            <img v-if="!route.fullPath.includes('games') && !route.fullPath.includes('Game')" :src="item.icon" class="header-icon" :alt="item.name" />
         </RouterLink>
     </div>
 
@@ -14,9 +21,8 @@
 
 <script setup>
 import { RouterLink } from "vue-router";
-import { ref, watch, onMounted } from 'vue';
-import { useRoute } from 'vue-router';
-import axios from 'axios'
+import { ref, watch, computed  } from 'vue';
+import { useRoute} from 'vue-router';
 
 // const headerItemsLeft = [
 //     {
@@ -25,6 +31,10 @@ import axios from 'axios'
 //         icon: 'src/assets/icons/navBarIcon/arrow_left.svg',
 //     },
 // ];
+
+const earnedStars = ref(0); // Здесь вы можете динамически изменять количество звезд
+const isHomePage = computed(() => route.path === '/'); // Проверяем, находимся ли мы на главной странице
+
 const headerItemsRight = [
     {
         name: "notifications",
@@ -67,6 +77,9 @@ watch(() => route.path, (newPath) => {
         case '/games':
             currentTitle.value = "Игры";
             break;
+        case '/planetGame':
+            currentTitle.value = "Игры";
+            break;    
         default:
             currentTitle.value = " ";
             break;
@@ -81,12 +94,34 @@ watch(() => route.path, (newPath) => {
     justify-content: space-between;
     align-items: center;
     background-color: transparent;
-    padding-block: 2% 24px;
+    padding-block: 0% 24px;
     padding-left: 20px;
     padding-right: 20px;
     width: 100%;
     max-width: 414px;
 
+}
+.header-star {
+    background-color: #ffffff;
+    display: flex;
+    width: 84px;
+    height: 42px;
+    border-bottom-left-radius: 20px;
+    border-bottom-right-radius: 20px;
+    font-family: Mulish;
+    font-weight: 700;
+    font-size: 20px;
+    line-height: 100%;
+    letter-spacing: 0%;
+    padding-left: 13px;
+    padding-bottom: 0px;
+    align-items: center;
+}
+.header-star-left {
+    width: 21px;
+    height: 21px;
+    padding-left: 2px;
+    padding-bottom: 2px;
 }
 
 .header-item {
@@ -116,11 +151,13 @@ watch(() => route.path, (newPath) => {
 .header-icon {
     width: 32px;
     height: 32px;
+    margin-top: 13px;
 }
 
 .header-icon-left {
     width: 29px;
     height: 29px;
+    margin-top: 13px;
 }
 
 .header-label {
@@ -133,5 +170,6 @@ watch(() => route.path, (newPath) => {
     font-size: 28px;
     font-weight: 800;
     line-height: 35px;
+    margin-top: 13px;
 }
 </style>

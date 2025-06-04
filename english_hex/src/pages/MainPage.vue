@@ -25,8 +25,12 @@
 		</div>
 	</div>
 	<loader v-if="loading" />
-	<HelloPopupWithSound v-if="openHelloPopup" :title="titlePopup" :message="messagePopup" :sound-mp3="SoundForPopup"
-		@close="closePopup" @arrow-click="closePopup" />
+	<HelloPopupWithSound v-if="openHelloPopup" 
+	:title="titlePopup" 
+	:message="messagePopup" 
+	:sound-mp3="SoundForPopup"
+	@close="closePopup" 
+	@arrow-click="closePopup" />
 </template>
 
 <script setup>
@@ -57,16 +61,28 @@ onMounted(async () => {
 		//Уточнить что делать в случае ошибки
 		console.error(err)
 	}
-
-	loading.value = false;
-	openHelloPopup.value = true;
-
-	userName.value = localStorage.getItem('username');
-	gender.value = localStorage.getItem('gender') || 'male';
 })
 
+// onMounted(() => {
+// 	loading.value = false;
+// 	openHelloPopup.value = true;
+// })
+
+// Проверяем значение hasVisited в sessionStorage
+const hasVisited = ref(sessionStorage.getItem('hasVisited') === 'true');
+
+onMounted(() => {
+    loading.value = false;
+    if (!hasVisited.value) {
+        openHelloPopup.value = true; // Открываем попап только один раз
+        hasVisited.value = true; // Устанавливаем флаг, чтобы не открывать попап снова
+		sessionStorage.setItem('hasVisited', 'true'); // Сохраняем значение в этой сессии , состояние будет сбрасываться при закрытии вкладки или обновлении страницы
+    }
+});
+
 const closePopup = () => {
-	openHelloPopup.value = !openHelloPopup.value
+	// openHelloPopup.value = !openHelloPopup.value
+	openHelloPopup.value = false; 
 }
 const titlePopup = 'Добро пожаловать!';
 const messagePopup = 'Привет! Меня зовут Di, и я рада приветствовать тебя в мире изучения английских слов! Ты сделал важный шаг к своей мечте - свободному владению иностранным языком.';
