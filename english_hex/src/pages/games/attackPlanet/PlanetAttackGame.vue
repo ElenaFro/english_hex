@@ -36,6 +36,7 @@
     width: 100vw; 
     max-width: 414px;  
     gap: 23px;
+    padding-top: 20px;
     &__game {
         display: flex;
         flex-direction: column;
