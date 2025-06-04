@@ -4,7 +4,7 @@
             <p class="page-container__header_game">Атака планеты</p>
             <p class="page-container__describe_game">{{ describeGame }}</p>
             <p  class="page-container__message">{{ message }}</p>
-            <button class="action-button" @click="goToGame(item)">Начать</button>
+            <button class="action-button" @click="goToGamePage">Начать</button>
 
         </section>
          <section class="image-section">
@@ -23,9 +23,10 @@ const router = useRouter();
 const describeGame = 'Спасите планету от метеоритной атаки';
 const message = 'Отвечайте на вопросы правильно, чтобы остановить приближение метеорита. За каждую ошибку он подлетает ближе. 5 ошибок — и планета будет разрушена. Максимальная награда — 50 звёзд. За каждую ошибку вычитается 5 звёзд.';
 
-const goToGame = (item) => {
-    router.push({ name: item.path })
-}
+// Метод для перехода на главную страницу
+const goToGamePage = () => {
+    router.push('/planetGame'); // Переходим на  страницу с игрой, пока здесь адрес этой страницы
+};
 
 </script>
 <style scoped lang="scss">

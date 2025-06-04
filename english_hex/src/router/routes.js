@@ -48,8 +48,8 @@ const routes = [
         component: () => import("@/pages/games/GameMainPage.vue"),
       },
       {
-        path: "planetattack_games",
-        name: "planetattack_games",
+        path: "planetGame",
+        name: "planetGame",
         component: () => import("@/pages/games/PlanetAttack.vue"),
       },      
     ],
