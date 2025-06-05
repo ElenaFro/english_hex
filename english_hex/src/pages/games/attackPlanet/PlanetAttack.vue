@@ -112,15 +112,15 @@ const goToGamePage = () => {
 }
 
 .image-container {
-    position: relative; // Позволяет позиционировать вложенные изображения относительно этого контейнера
+    position: relative; 
     display: flex;
-    justify-content: center; // Центрируем изображения
-    align-items: center; // Центрируем изображения по вертикали
+    justify-content: center; 
+    align-items: center; 
 }
 
 .meteor {
     position: absolute;
-    right: -124px;
+    right: -104px;
     top: 50%; 
     transform: translateY(-140%); 
 }
@@ -129,7 +129,7 @@ const goToGamePage = () => {
     position: relative;
     display: flex;
     flex-direction: column;
-    justify-content: center; /* Центрируем содержимое по вертикали */
+    justify-content: center; 
     align-items: center;
     height: 100%;
     padding-bottom: 120px;
