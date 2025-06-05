@@ -56,13 +56,16 @@ const goToLearningPage = () => {
 .container {
 	display: flex;
 	flex-direction: column;
-	justify-content: end;
+	/* justify-content: end; */
+	justify-content: flex-end;
 	width: 100%;
 	height: 100%;
 	position: relative;
 	border-radius: 15px;
 	padding: 19px 14px 13px;
 	background: url('/src/assets/img/background_category.png');
+	background-size:100% auto !important;
+    background-position: center !important;
 	/* background-color: rgba(189, 139, 207, 1); */
 }
 
