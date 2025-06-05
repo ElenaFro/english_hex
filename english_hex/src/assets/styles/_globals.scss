@@ -163,7 +163,9 @@ body, #app {
 }
 
 .page-container{
-    width: 100%;
+    // width: 100%;
+    width: 100vw;
+    max-width: 414px;
     height: 100vh;
     min-height: 100%;
     display: flex;
@@ -175,11 +177,11 @@ body, #app {
     border-top-left-radius: 40px;
     border-top-right-radius: 40px;
     
-    @media (min-width:375px) {
-        width: 375px;
-    }
+    // @media (min-width:375px) {
+    //     width: 375px;
+    // }
     
-    @media (max-width:375px) {
-        width: 100%;
-    }
+    // @media (max-width:375px) {
+    //     width: 100%;
+    // }
 }

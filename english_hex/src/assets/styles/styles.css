@@ -308,8 +308,10 @@ body, #app {
   background-color: rgb(246, 246, 254);
 }
 .page-content .scroll-container {
-  width: 100%;
-  max-width: 375px;
+  /* width: 100%;
+  max-width: 375px; */
+  width: 100vw;
+  max-width: 414px;
   overflow-y: scroll;
   padding-bottom: 150px;
   scrollbar-width: none;
