@@ -25,4 +25,9 @@ body {
     align-items: center;
     min-height: 100vh;
 }
+@media (min-width: 415px) {
+    .layout {
+       overflow: visible; 
+    }
+}
 </style>

@@ -76,6 +76,12 @@ body, #app {
 	}
 }
 
+@media (min-width: 415px) {
+    .layout, body {
+       overflow: visible; 
+    }
+}
+
 .page-content {
 	overflow: hidden;
 	display: flex;

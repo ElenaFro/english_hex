@@ -1,5 +1,5 @@
 <template>
-    <div class="relative">
+    <div class="relative all">
         <img src="@/assets/img/Games/метеор_small.png" alt="meteor" class="meteor">
         <section class="page-container">
             
@@ -45,7 +45,7 @@
         align-items: center; 
         gap: 20px;
         width:100%;
-        max-width: 414px;
+      max-width: 414px;
         height: calc(100vh - 550px);
         max-height: 238px;
         background-color: #FFFFFF;
@@ -75,12 +75,14 @@
 
 .meteor {
     position: absolute;
-    right: 0px;
+    width:74px;
+    height:94px;
+    right: -4px;
     top: -25px; 
     z-index: 3000;
 }
 
-.image-sectionn_game{
+.image-section_game{
     position: relative;
     display: flex;
     flex-direction: column;
@@ -114,5 +116,10 @@
 .sound1 {
     width: 60px;
     height: auto;
+}
+@media (min-width: 415px) {
+    .all, .meteor, .layout {
+       overflow: visible; 
+    }
 }
 </style>

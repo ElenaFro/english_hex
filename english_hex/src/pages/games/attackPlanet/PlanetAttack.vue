@@ -31,7 +31,7 @@ const goToGamePage = () => {
 </script>
 <style scoped lang="scss">
 .page-container {
-    overflow: auto;
+    overflow: visible;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
@@ -120,9 +120,9 @@ const goToGamePage = () => {
 
 .meteor {
     position: absolute;
-    right: -104px;
-    top: 50%; // Центрируем по вертикали
-    transform: translateY(-140%); // Сдвигаем на половину высоты изображения
+    right: -124px;
+    top: 50%; 
+    transform: translateY(-140%); 
 }
 
 .image-section{
