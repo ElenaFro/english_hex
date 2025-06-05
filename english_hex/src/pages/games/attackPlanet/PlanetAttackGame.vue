@@ -6,9 +6,11 @@
             <section class="image-section_game">
                 <div class="image-container">
                     <img src="@/assets/img/Games/Планеты_big.png" alt="planet" class="planet">
-            </div>
+                </div>
             </section> 
             <section class="page-container__game">
+                <p class="question">?</p>
+                <img src="@/assets/img/Games/sound.svg" alt="sound" class="sound1">
             </section> 
             <section class="page-container__button">
                 <div class="line">
@@ -38,7 +40,10 @@
     gap: 23px;
     &__game {
         display: flex;
-        flex-direction: column;
+        flex-direction: row;
+        justify-content: center; 
+        align-items: center; 
+        gap: 20px;
         width:100%;
         max-width: 414px;
         height: calc(100vh - 550px);
@@ -64,8 +69,8 @@
 
 .image-container {
     display: flex;
-    justify-content: center; // Центрируем изображения
-    align-items: center; // Центрируем изображения по вертикали
+    justify-content: center; 
+    align-items: center; 
 }
 
 .meteor {
@@ -97,5 +102,17 @@
     gap: 25px;
     margin-left: 30px;
     margin-right: 30px; 
+}
+.question {
+    font-weight: 800;
+    font-size: 100px;
+    line-height: 100%;
+    letter-spacing: 0%;
+    text-align: center;
+    vertical-align: middle;
+}
+.sound1 {
+    width: 60px;
+    height: auto;
 }
 </style>
