@@ -40,20 +40,23 @@
     gap: 23px;
     &__game {
         display: flex;
-        flex-direction: row;
+        flex-direction: column;
         justify-content: center; 
         align-items: center; 
-        gap: 20px;
-        width:100%;
-      max-width: 414px;
-        height: calc(100vh - 550px);
-        max-height: 238px;
+        gap: 10px;
+        width:173px;
+        // width:100%;
+        // max-width: 414px;
+        // height: calc(100vh - 550px);
+        // max-height: 238px;
+        height: 183px;
         background-color: #FFFFFF;
         border-radius: 20px;
         border: 3px solid #262060;
         margin-left: 30px;
         margin-right: 30px; 
         color: #311D5D;
+       
     }
         &__button {
             width:100vw;
@@ -97,6 +100,10 @@
     color: #262060;
     width: calc(50vw - 42.5px);
     border-radius: 16px;
+    font-weight: 700;
+    font-size: 18px;
+    line-height: 120%;
+    letter-spacing: 0%;
 }
 .line {
     display: flex;
@@ -107,19 +114,58 @@
 }
 .question {
     font-weight: 800;
-    font-size: 100px;
+    font-size: 71px;
     line-height: 100%;
     letter-spacing: 0%;
     text-align: center;
     vertical-align: middle;
 }
 .sound1 {
-    width: 60px;
+    width: 43px;
     height: auto;
 }
 @media (min-width: 415px) {
     .all, .meteor, .layout {
        overflow: visible; 
+    }
+}
+@media (max-height: 700px) {
+    .page-container__game {
+        gap: 8px;
+        width:143px;
+        height: 153px; 
+    }
+    .question {
+        font-size: 60px;
+    }
+    .page-container{
+        gap: 18px;
+    }
+    .sound1 {
+        width: 38px;
+        height: auto;
+    }
+    .planet {
+        width: 200px;
+        height: auto;
+    }
+}
+@media (max-height: 668px) {
+    .planet {
+        width: 180px;
+        height: auto;
+    }
+    .page-container__game {
+        gap: 7px;
+        width:140px;
+        height: 140px; 
+    }
+    .page-container{
+        gap: 16px;
+    }
+    .sound1 {
+        width: 34px;
+        height: auto;
     }
 }
 </style>
