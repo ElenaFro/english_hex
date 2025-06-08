@@ -25,7 +25,7 @@ const message = 'Отвечайте на вопросы правильно, ч�
 
 // Метод для перехода на страницу игры
 const goToGamePage = () => {
-    router.push('/planetAttackGame'); 
+    router.push('/planetAttackPage'); 
 };
 
 </script>

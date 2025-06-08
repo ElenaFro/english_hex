@@ -2,26 +2,11 @@
     <div class="relative all">
         <img src="@/assets/img/Games/метеор_small.png" alt="meteor" class="meteor">
         <section class="page-container">
-            
-            <section class="image-section_game">
-                <div class="image-container">
-                    <img src="@/assets/img/Games/Планеты_big.png" alt="planet" class="planet">
-                </div>
+            <section class="page-container__result">
+                <button class="button button--purple">
+                    Проиграл!
+                </button>
             </section> 
-            <section class="page-container__game">
-                <p class="question">?</p>
-                <img src="@/assets/img/Games/sound.svg" alt="sound" class="sound1">
-            </section> 
-            <section class="page-container__button">
-                <div class="line">
-                    <button class="answer-button" @click="sendAnswer">Лебедь</button>
-                    <button class="answer-button" @click="sendAnswer">Конь</button>
-                </div>
-                <div class="line">
-                    <button class="answer-button" @click="sendAnswer">Щука</button>
-                    <button class="answer-button" @click="sendAnswer">Собака</button>
-                </div>
-            </section>      
         </section>
     </div>
 </template>
@@ -38,18 +23,19 @@
     width: 100vw; 
     max-width: 414px;  
     gap: 23px;
-    &__game {
+    &__result {
         display: flex;
         flex-direction: column;
         justify-content: center; 
         align-items: center; 
         gap: 10px;
-        width:173px;
-        // width:100%;
-        // max-width: 414px;
-        // height: calc(100vh - 550px);
-        // max-height: 238px;
-        height: 183px;
+        // width:173px;
+        width:100%;
+        max-width: 414px;
+        // height: calc(100vh - 350px);
+        max-height: 422px;
+        height: 422px;
+        // height: 183px;
         background-color: #FFFFFF;
         border-radius: 20px;
         border: 3px solid #262060;

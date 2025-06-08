@@ -21,7 +21,7 @@
         <p class="header-title">{{ currentTitle }}</p>
         <RouterLink v-for="item in headerItemsRight" :key="item.name + '-right'" :to="item.path" class="header-item"
             :class="{ active: $route.path === item.path }">
-            <img v-if="!route.fullPath.includes('games') && !route.fullPath.includes('Game')" :src="item.icon" class="header-icon" :alt="item.name" />
+            <img v-if="!route.fullPath.includes('games') && !route.fullPath.includes('planetAttackPage')" :src="item.icon" class="header-icon" :alt="item.name" />
         </RouterLink>
         <template v-if="isGamePlanetPage">
             <span class="header-star">
@@ -40,7 +40,7 @@ import { useRoute} from 'vue-router';
 const earnedStars = ref(0); // Здесь вы можете динамически изменять количество звезд
 const liveStars = ref(5);
 const isHomePage = computed(() => route.path === '/'); // Проверяем, находимся ли мы на главной странице
-const isGamePlanetPage = computed(() => route.path === '/planetAttackGame'); // Проверяем, находимся ли мы на главной странице
+const isGamePlanetPage = computed(() => route.path === '/planetAttackPage'); // Проверяем, находимся ли мы на главной странице
 
 const headerItemsRight = [
     {

@@ -58,10 +58,11 @@ const routes = [
         component: () => import("@/pages/games/attackPlanet/PlanetAttack.vue"),
       }, 
       {
-        path: "planetAttackGame",
-        name: "planetAttackGame",
-        component: () => import("@/pages/games/attackPlanet/PlanetAttackGame.vue"),
-      },       
+        path: "planetAttackPage",
+        name: "planetAttackPage",
+        component: () => import("@/pages/games/attackPlanet/PlanetAttackPage.vue"),
+      },   
+          
     ],
     meta: { requiresAuth: false },
   },
