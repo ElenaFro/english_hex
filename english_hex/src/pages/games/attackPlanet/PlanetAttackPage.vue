@@ -33,6 +33,24 @@ function switchComponent(componentName) {
     }
 }
 
+// const activeComponent = ref(AttackPlanetGame);
+
+// function switchComponent(componentName) {
+//     switch (componentName) {
+//         case 'AttackPlanetResult':
+//             activeComponent.value = AttackPlanetResult;
+//             break;
+//         case 'AttackPlanetLoss':
+//             activeComponent.value = AttackPlanetLoss;
+//             break;
+//         case 'AttackPlanetWin':
+//             activeComponent.value = AttackPlanetWin;
+//             break;
+//         default:
+//             activeComponent.value = AttackPlanetGame;
+//             break;
+//     }
+// }
 </script>
 
 <style scoped>

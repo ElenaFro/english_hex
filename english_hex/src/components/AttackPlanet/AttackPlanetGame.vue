@@ -55,44 +55,73 @@ const currentQuestion = computed(() => {
        return questions.value[currentQuestionIndex.value] || {}; // Возвращаем пустой объект, если вопрос не найден
    });
 
+// const sendAnswer = (answer) => {
+//     const currentQuestionData = currentQuestion.value;
+
+//     if (answer === currentQuestionData.correctAnswer) {
+//         answers.value[answer] = '#31AF40';
+        
+//         setTimeout(nextQuestion, 1000); 
+//     } else {
+//         answers.value[answer] = '#881717'; 
+//         lives.value--; 
+//         emit('update:lives', lives.value);
+//             if (lives.value > 0 && currentQuestionIndex.value >= questions.value.length) {
+//                 console.log('Resultlives.value',lives.value);
+//             setTimeout(() => {
+//                  emit('switch-component', 'AttackPlanetResult');
+//             }, 3000);
+//         }
+//         if (lives.value <= 0) {
+//             console.log('Loss lives.value',lives.value);
+//                 emit('switch-component', 'AttackPlanetLoss');
+//         }
+//     }
+// };
+
+// const nextQuestion = () => {
+//     currentQuestionIndex.value++;
+//     if (lives.value == 5 && currentQuestionIndex.value >= questions.value.length) {
+//         console.log('Win lives.value',lives.value);
+//         emit('switch-component', 'AttackPlanetWin');
+//     }  else {
+//       if (lives.value < 5 && currentQuestionIndex.value >= questions.value.length) {
+//         console.log('Resultlives.value',lives.value);
+//         emit('switch-component', 'AttackPlanetResult');
+//         } 
+//     } 
+// };
+
 const sendAnswer = (answer) => {
     const currentQuestionData = currentQuestion.value;
-
     if (answer === currentQuestionData.correctAnswer) {
         answers.value[answer] = '#31AF40'; // Установить цвет кнопки в зеленый
-        
-        setTimeout(nextQuestion, 2000); // Переход к следующему вопросу через 1 секунду
+        setTimeout(nextQuestion, 1000); // Переход к следующему вопросу через 1 секунду
     } else {
         answers.value[answer] = '#881717'; // Установить цвет кнопки в красный
         lives.value--; // Уменьшить количество жизней
-            if (lives.value > 0 && currentQuestionIndex.value >= questions.value.length) {
-                console.log('Resultlives.value',lives.value);
-            setTimeout(() => {
-                 emit('switch-component', 'AttackPlanetResult');
-            }, 3000);
-        }
+        emit('update:lives', lives.value);
+
         if (lives.value <= 0) {
-            console.log('Loss lives.value',lives.value);
-            setTimeout(() => {
-                 emit('switch-component', 'AttackPlanetLoss');
-            }, 3000);
+            console.log('Loss lives.value', lives.value);
+            emit('switch-component', 'AttackPlanetLoss');
         }
     }
 };
 
 const nextQuestion = () => {
-    currentQuestionIndex.value++;
-    if (lives.value == 5 && currentQuestionIndex.value >= questions.value.length) {
-        console.log('Win lives.value',lives.value);
-        // Эмитируем событие для переключения компонента
+    if (lives.value > 0 && currentQuestionIndex.value < questions.value.length - 1) {
+        currentQuestionIndex.value++;
+    } else if (lives.value === 5 && currentQuestionIndex.value >= questions.value.length - 1) {
+        console.log('Win lives.value', lives.value);
         emit('switch-component', 'AttackPlanetWin');
-    }  else {
-      if (lives.value < 5 && currentQuestionIndex.value >= questions.value.length) {
-        console.log('lives.value',lives.value);
-        // Эмитируем событие для переключения компонента
-        emit('Result switch-component', 'AttackPlanetResult');
-        } 
-    } 
+    } else if (lives.value > 0 && lives.value < 5 && currentQuestionIndex.value >= questions.value.length - 1) {
+        console.log('Result lives.value', lives.value);
+        emit('switch-component', 'AttackPlanetResult');
+    } else if (lives.value <= 0) {
+        console.log('Loss lives.value', lives.value);
+        emit('switch-component', 'AttackPlanetLoss');
+    }
 };
 
 const getButtonColor = (answer) => {

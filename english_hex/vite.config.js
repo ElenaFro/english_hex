@@ -8,6 +8,18 @@ export default defineConfig({
 	vue(),
 	VitePWA({
 		registerType: "autoUpdate",
+		workbox: {
+        globPatterns: ['**/*.{js,css,html,png,jpg,jpeg,svg,mp3}'],
+        runtimeCaching: [
+			{
+				urlPattern: /\/planetAttackPage/,
+				handler: 'NetworkFirst',
+				options: {
+				cacheName: 'pages-cache',
+				},
+			},
+			],
+		},
 		devOptions: {
 		  enabled: true, // чтобы работало во время разработки
 		},

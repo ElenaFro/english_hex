@@ -8,7 +8,7 @@
 
         <template v-else-if="isGamePlanetPage"> <!-- Добавлено условие для страницы Game Planet -->
             <span class="header-live">
-                <span v-for="star in liveStars" :key="star" class="live-icon">
+                <span v-for="live in lives" :key="live" class="live-icon">
                     <img src="@/assets/icons/navBarIcon/live.svg" class="header-live-left" alt="Жизнь" />
                 </span>
             </span>
@@ -36,9 +36,10 @@
 import { RouterLink } from "vue-router";
 import { ref, watch, computed  } from 'vue';
 import { useRoute} from 'vue-router';
-
+import { defineProps } from 'vue';
+defineProps(['lives']);
 const earnedStars = ref(0); // Здесь вы можете динамически изменять количество звезд
-const liveStars = ref(5);
+const lives = ref(5);
 const isHomePage = computed(() => route.path === '/'); // Проверяем, находимся ли мы на главной странице
 const isGamePlanetPage = computed(() => route.path === '/planetAttackPage'); // Проверяем, находимся ли мы на главной странице
 
@@ -53,6 +54,12 @@ const headerItemsRight = [
 const currentTitle = ref(" ");
 const route = useRoute();
 // const sections = ref([])
+// const props = defineProps({
+//     lives: {
+//         type: Number,
+//         required: true
+//     }
+// });
 
 function goBack() {
     window.history.back();

@@ -1,15 +1,19 @@
 <template>
     <div class="layout">
-        <Header />
-        <RouterView />
+         <Header :lives="lives" />
+        <RouterView @update:lives="lives = $event"  />
         <Navigation />
     </div>
 </template>
+
 <script setup>
 import Navigation from '../components/Navigation.vue';
 import Header from '../components/Header.vue';
+import { ref } from 'vue';
+const lives = ref(5); 
 </script>
 
+import { ref } from 'vue';
 <style lang="scss">
 html,
 body {
