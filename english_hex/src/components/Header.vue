@@ -37,9 +37,12 @@ import { RouterLink } from "vue-router";
 import { ref, watch, computed  } from 'vue';
 import { useRoute} from 'vue-router';
 import { defineProps } from 'vue';
-defineProps(['lives']);
-const earnedStars = ref(0); // Здесь вы можете динамически изменять количество звезд
+
 const lives = ref(5);
+const earnedStars = ref(parseInt(localStorage.getItem('earnedStars')) || 0);
+
+// const props = defineProps(['lives']); 
+
 const isHomePage = computed(() => route.path === '/'); // Проверяем, находимся ли мы на главной странице
 const isGamePlanetPage = computed(() => route.path === '/planetAttackPage'); // Проверяем, находимся ли мы на главной странице
 
@@ -53,13 +56,6 @@ const headerItemsRight = [
 
 const currentTitle = ref(" ");
 const route = useRoute();
-// const sections = ref([])
-// const props = defineProps({
-//     lives: {
-//         type: Number,
-//         required: true
-//     }
-// });
 
 function goBack() {
     window.history.back();
@@ -93,7 +89,10 @@ watch(() => route.path, (newPath) => {
             break;
         case '/planetGame':
             currentTitle.value = "Игры";
-            break;    
+            break;  
+        case '/planetAttackPage':
+            currentTitle.value = "";
+            break;   
         default:
             currentTitle.value = " ";
             break;

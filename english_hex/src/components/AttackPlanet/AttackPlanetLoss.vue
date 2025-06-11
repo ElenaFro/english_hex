@@ -1,157 +1,167 @@
 <template>
     <div class="relative all">
-        <img src="@/assets/img/Games/метеор_small.png" alt="meteor" class="meteor">
         <section class="page-container">
             <section class="page-container__result">
-                <button class="button button--purple">
-                    Проиграл!
-                </button>
+                <p  class="result-title">Планета уничтожена.</p>
+                <p  class="text-result">Миссия провалена - метеорит достиг цели. Но это еще не конец. Попробуйте снова и улучшите результат!</p>
+                <div class="container-result">
+                    <p  class="result-title_left">Награда:</p>
+                    <div class="result-stars">
+                        <p class="result-add-star"> +0</p>
+                        <img src="@/assets/icons/navBarIcon/star.svg" class="result-star" alt="Звезда" />
+                    </div>
+                </div>
+                <div class="buttons">
+                    <button  class="button button--purple" @click="goToGamePage">
+                        Пройти еще раз
+                        <img src="@/assets/img/arrow_icon.svg" alt="arrow" />
+                    </button>
+                    <button class="button button--purple d-mt-12" @click="goToMainPage">
+                         Дальше
+                         <img src="@/assets/img/arrow_icon.svg" alt="arrow" />
+                    </button>
+                    
+                </div>
             </section> 
         </section>
+        <img src="@/assets/Di_avatar/girl_head.png" alt="Di" class="avatar_result"/>
     </div>
 </template>
 <script setup>
+import { useRouter } from 'vue-router';
 
+const router = useRouter();
+const goToMainPage = () => {
+    router.push('/'); // Переходим на главную страницу
+};
+const goToGamePage = () => {
+    window.location.reload();
+};
+// const resetGameState = () => {
+//     // Сбросим состояние игры:
+//     lives.value = 5;
+//     currentQuestionIndex.value = 0;
+//     answers.value = {};
+// };
 </script>
 <style scoped lang="scss">
 .page-container{
     overflow: auto;
     display: flex;
     flex-direction: column;
-    justify-content: center;
+    justify-content: start;
     background-color: transparent;
     width: 100vw; 
     max-width: 414px;  
     gap: 23px;
+    margin-top: 10px;
     &__result {
         display: flex;
         flex-direction: column;
         justify-content: center; 
         align-items: center; 
-        gap: 10px;
-        // width:173px;
+        gap: 12px;
         width:100%;
         max-width: 414px;
-        // height: calc(100vh - 350px);
         max-height: 422px;
         height: 422px;
-        // height: 183px;
         background-color: #FFFFFF;
         border-radius: 20px;
-        border: 3px solid #262060;
+        border: none;
         margin-left: 30px;
         margin-right: 30px; 
         color: #311D5D;
-       
+        padding: 20px;
     }
-        &__button {
-            width:100vw;
-            max-width: 414px;
-            margin-left: 30px;
-            margin-right: 30px; 
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-            margin-bottom: 93px;
-        }
 }
-
-.image-container {
-    display: flex;
-    justify-content: center; 
-    align-items: center; 
+.container-result {
+    width:100%;
 }
-
-.meteor {
-    position: absolute;
-    width:74px;
-    height:94px;
-    right: -4px;
-    top: -25px; 
-    z-index: 3000;
-}
-
-.image-section_game{
-    position: relative;
+.buttons {
+    width:100%;
     display: flex;
     flex-direction: column;
-    justify-content: center; 
-    align-items: center;
+    align-content: flex-start;
+    margin-top: 30px;
 }
-
-.answer-button {
-    background-color: #fff !important;
-    padding: 9px 24px;
-    line-height: 22px;
-    color: #262060;
-    width: calc(50vw - 42.5px);
-    border-radius: 16px;
+.button {
+    gap: 12px;
+}
+.result-title {
     font-weight: 700;
+    font-size: 22px;
+    line-height: 120%;
+    letter-spacing: 0%;
+    text-align: center;
+    color: #311D5D;
+}
+.result-title_left {
+    font-weight: 700;
+    font-size: 22px;
+    line-height: 120%;
+    letter-spacing: 0%;
+    text-align: start;
+    color: #311D5D;
+    width:100%;
+}
+.text-result {
+    font-weight: 400;
     font-size: 18px;
     line-height: 120%;
     letter-spacing: 0%;
 }
-.line {
-    display: flex;
-    max-width: 354px;
-    gap: 25px;
-    margin-left: 30px;
-    margin-right: 30px; 
-}
-.question {
+.result-add-star {
     font-weight: 800;
-    font-size: 71px;
+    font-size: 40px;
     line-height: 100%;
     letter-spacing: 0%;
-    text-align: center;
     vertical-align: middle;
 }
-.sound1 {
-    width: 43px;
-    height: auto;
+.result-star {
+    width: 33px;
+    height: auto;;
 }
-@media (min-width: 415px) {
-    .all, .meteor, .layout {
-       overflow: visible; 
+.result-stars {
+    display: flex;
+    width: 100%;
+}
+.avatar_result {
+    position: absolute;
+    bottom:104px;
+    right:10px;
+    z-index: 5000;
+}
+
+@media (max-height: 755px) {
+    .avatar_result {
+        width: 50%;
+        height: auto;
+        bottom:110px;
     }
 }
-@media (max-height: 700px) {
-    .page-container__game {
-        gap: 8px;
-        width:143px;
-        height: 153px; 
+
+@media (max-height: 715px) {
+    .avatar_result {
+        width: 40%;
+        height: auto;
+        bottom:114px;
     }
-    .question {
-        font-size: 60px;
+}
+
+@media (max-height: 665px) {
+    .avatar_result {
+        width: 35%;
+        height: auto;
+        bottom:104px;
     }
     .page-container{
-        gap: 18px;
-    }
-    .sound1 {
-        width: 38px;
-        height: auto;
-    }
-    .planet {
-        width: 200px;
-        height: auto;
+        margin-top: 0px;
+        padding-top: 0px;
     }
 }
-@media (max-height: 668px) {
-    .planet {
-        width: 180px;
-        height: auto;
-    }
-    .page-container__game {
-        gap: 7px;
-        width:140px;
-        height: 140px; 
-    }
-    .page-container{
-        gap: 16px;
-    }
-    .sound1 {
-        width: 34px;
-        height: auto;
+@media (max-width: 328px) {
+    .button {
+        font-size: 16px;
     }
 }
 </style>

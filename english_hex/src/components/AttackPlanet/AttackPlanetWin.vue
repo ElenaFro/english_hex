@@ -1,157 +1,162 @@
 <template>
     <div class="relative all">
-        <img src="@/assets/img/Games/метеор_small.png" alt="meteor" class="meteor">
         <section class="page-container">
             <section class="page-container__result">
-                <button class="button button--purple">
-                    Выиграл!
-                </button>
+                <p  class="result-title">Планета спасена!</p>
+                <p  class="text-result">Все ответы даны правильно. Защитная операция прошла идеально. </p>
+                <div class="container-result">
+                    <p  class="result-title_left">Награда:</p>
+                    <div class="result-stars">
+                        <p class="result-add-star"> +50</p>
+                        <img src="@/assets/icons/navBarIcon/star.svg" class="result-star" alt="Звезда" />
+                    </div>
+                </div>
+                <div class="buttons">
+                    <button class="button button--purple d-mt-12" @click="goToMainPage">
+                         Дальше
+                         <img src="@/assets/img/arrow_icon.svg" alt="arrow" />
+                    </button>
+                </div>
             </section> 
         </section>
+        <img src="@/assets/Di_avatar/girl_fly_win.png" alt="Di" class="avatar_result"/>
     </div>
 </template>
 <script setup>
+import { useRouter } from 'vue-router';
 
+const router = useRouter();
+const goToMainPage = () => {
+    router.push('/'); // Переходим на главную страницу
+};
 </script>
 <style scoped lang="scss">
 .page-container{
     overflow: auto;
     display: flex;
     flex-direction: column;
-    justify-content: center;
+    justify-content: start;
     background-color: transparent;
     width: 100vw; 
     max-width: 414px;  
     gap: 23px;
+    margin-top: 10px;
     &__result {
         display: flex;
         flex-direction: column;
         justify-content: center; 
         align-items: center; 
-        gap: 10px;
-        // width:173px;
+        gap: 12px;
         width:100%;
         max-width: 414px;
-        // height: calc(100vh - 350px);
         max-height: 422px;
         height: 422px;
-        // height: 183px;
         background-color: #FFFFFF;
         border-radius: 20px;
-        border: 3px solid #262060;
+        border: none;
         margin-left: 30px;
         margin-right: 30px; 
         color: #311D5D;
-       
+        padding: 20px;
     }
-        &__button {
-            width:100vw;
-            max-width: 414px;
-            margin-left: 30px;
-            margin-right: 30px; 
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-            margin-bottom: 93px;
-        }
 }
-
-.image-container {
-    display: flex;
-    justify-content: center; 
-    align-items: center; 
+.container-result {
+    width:100%;
 }
-
-.meteor {
-    position: absolute;
-    width:74px;
-    height:94px;
-    right: -4px;
-    top: -25px; 
-    z-index: 3000;
-}
-
-.image-section_game{
-    position: relative;
+.buttons {
+    width:100%;
     display: flex;
     flex-direction: column;
-    justify-content: center; 
-    align-items: center;
+    align-content: flex-start;
+    margin-top: 30px;
 }
-
-.answer-button {
-    background-color: #fff !important;
-    padding: 9px 24px;
-    line-height: 22px;
-    color: #262060;
-    width: calc(50vw - 42.5px);
-    border-radius: 16px;
+.button {
+    gap: 12px;
+}
+.result-title {
     font-weight: 700;
+    font-size: 22px;
+    line-height: 120%;
+    letter-spacing: 0%;
+    text-align: center;
+    color: #311D5D;
+}
+.result-title_left {
+    font-weight: 700;
+    font-size: 22px;
+    line-height: 120%;
+    letter-spacing: 0%;
+    text-align: start;
+    color: #311D5D;
+    width:100%;
+}
+.text-result {
+    font-weight: 400;
     font-size: 18px;
     line-height: 120%;
     letter-spacing: 0%;
 }
-.line {
-    display: flex;
-    max-width: 354px;
-    gap: 25px;
-    margin-left: 30px;
-    margin-right: 30px; 
-}
-.question {
+.result-add-star {
     font-weight: 800;
-    font-size: 71px;
+    font-size: 40px;
     line-height: 100%;
     letter-spacing: 0%;
-    text-align: center;
     vertical-align: middle;
 }
-.sound1 {
-    width: 43px;
-    height: auto;
+.result-star {
+    width: 33px;
+    height: auto;;
 }
-@media (min-width: 415px) {
-    .all, .meteor, .layout {
-       overflow: visible; 
-    }
+.result-stars {
+    display: flex;
+    width: 100%;
 }
-@media (max-height: 700px) {
-    .page-container__game {
-        gap: 8px;
-        width:143px;
-        height: 153px; 
-    }
-    .question {
-        font-size: 60px;
-    }
+.avatar_result {
+    position: absolute;
+    bottom:124px;
+    right:99px;
+    z-index: 5000;
+}
+
+@media (max-height: 810px) {
     .page-container{
         gap: 18px;
+        margin-top: 0px;
+        padding-top:10px;
     }
-    .sound1 {
-        width: 38px;
-        height: auto;
-    }
-    .planet {
-        width: 200px;
+    .avatar_result {
+        position: absolute;
+        bottom:120px;
+        right:99px;
+        z-index: 5000;
+        width: 45%;
         height: auto;
     }
 }
-@media (max-height: 668px) {
-    .planet {
-        width: 180px;
-        height: auto;
-    }
-    .page-container__game {
-        gap: 7px;
-        width:140px;
-        height: 140px; 
-    }
+@media (max-height: 768px) {
     .page-container{
-        gap: 16px;
+        gap: 18px;
+        margin-top: 0px;
+        padding-top:10px;
     }
-    .sound1 {
-        width: 34px;
+    .avatar_result {
+        position: absolute;
+        bottom:120px;
+        right:0px;
+        z-index: 5000;
+        width: 35%;
         height: auto;
     }
 }
+@media (max-height: 646px) {
+    .avatar_result {
+        position: absolute;
+        bottom:124px;
+        right:0px;
+        z-index: 5000;
+        width: 30%;
+        height: auto;
+    }
+}
+
 </style>

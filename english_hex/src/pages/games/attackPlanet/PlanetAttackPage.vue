@@ -3,8 +3,11 @@
 			<component 
 			:is="activeComponent" 
 			@switch-component="switchComponent" 
+            :lives="lives"
+            :earnedStars="earnedStars" 
+            @update:lives="updateLives"
+            @update:earnedStars="updateEarnedStars"
 			/>
-			<!-- <Popup /> -->
 		</div>
 </template>
 
@@ -15,6 +18,8 @@ import AttackPlanetResult from '@/components/AttackPlanet/AttackPlanetResult.vue
 import AttackPlanetLoss from '@/components/AttackPlanet/AttackPlanetLoss.vue';
 import AttackPlanetWin from '@/components/AttackPlanet/AttackPlanetWin.vue';
 const activeComponent = ref(markRaw(AttackPlanetGame));
+const lives = ref(5); // Изначальное количество жизней
+const earnedStars = ref(parseInt(localStorage.getItem('earnedStars')) || 0); 
 
 function switchComponent(componentName) {
     switch (componentName) {
@@ -33,24 +38,12 @@ function switchComponent(componentName) {
     }
 }
 
-// const activeComponent = ref(AttackPlanetGame);
-
-// function switchComponent(componentName) {
-//     switch (componentName) {
-//         case 'AttackPlanetResult':
-//             activeComponent.value = AttackPlanetResult;
-//             break;
-//         case 'AttackPlanetLoss':
-//             activeComponent.value = AttackPlanetLoss;
-//             break;
-//         case 'AttackPlanetWin':
-//             activeComponent.value = AttackPlanetWin;
-//             break;
-//         default:
-//             activeComponent.value = AttackPlanetGame;
-//             break;
-//     }
-// }
+const updateLives = (newLives) => {
+    lives.value = newLives; // Обновляем количество жизней
+};
+const updateEarnedStars = (newEarnedStars) => {
+    earnedStars.value = newEarnedStars; // Обновляем количество звезд
+};
 </script>
 
 <style scoped>

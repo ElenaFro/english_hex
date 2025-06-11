@@ -1,4 +1,5 @@
 <template>
+    
     <div class="relative all">
         <img src="@/assets/img/Games/метеор_small.png" alt="meteor" class="meteor">
         <section class="page-container">
@@ -17,7 +18,6 @@
                 <div class="line" v-for="(option, index) in currentQuestion.options" :key="index">
                     <button 
                         class="answer-button" 
-                        :style="{ backgroundColor: getButtonColor(option) }" 
                         @click="sendAnswer(option)">
                         {{ option }}
                     </button>
@@ -27,7 +27,7 @@
     </div>
 </template>
 <script setup>
-import { ref, computed, onMounted, defineEmits } from 'vue';
+import { ref, computed, onMounted, defineEmits, watch } from 'vue';
 
 import soundUrl from "@/assets/audio/sound.mp3";
 import soundUrl2 from "@/assets/audio/run.mp3";
@@ -35,6 +35,8 @@ const soundRef = ref(null);
 
 const emit = defineEmits(); 
 const lives = ref(5); // Количество жизней
+const earnedStars = ref(parseInt(localStorage.getItem('earnedStars')) || 0); // Загружаем earnedStars из localStorage
+
 const currentQuestionIndex = ref(0); // Индекс текущего вопроса
 const questions = ref([
     {
@@ -55,55 +57,17 @@ const currentQuestion = computed(() => {
        return questions.value[currentQuestionIndex.value] || {}; // Возвращаем пустой объект, если вопрос не найден
    });
 
-// const sendAnswer = (answer) => {
-//     const currentQuestionData = currentQuestion.value;
-
-//     if (answer === currentQuestionData.correctAnswer) {
-//         answers.value[answer] = '#31AF40';
-        
-//         setTimeout(nextQuestion, 1000); 
-//     } else {
-//         answers.value[answer] = '#881717'; 
-//         lives.value--; 
-//         emit('update:lives', lives.value);
-//             if (lives.value > 0 && currentQuestionIndex.value >= questions.value.length) {
-//                 console.log('Resultlives.value',lives.value);
-//             setTimeout(() => {
-//                  emit('switch-component', 'AttackPlanetResult');
-//             }, 3000);
-//         }
-//         if (lives.value <= 0) {
-//             console.log('Loss lives.value',lives.value);
-//                 emit('switch-component', 'AttackPlanetLoss');
-//         }
-//     }
-// };
-
-// const nextQuestion = () => {
-//     currentQuestionIndex.value++;
-//     if (lives.value == 5 && currentQuestionIndex.value >= questions.value.length) {
-//         console.log('Win lives.value',lives.value);
-//         emit('switch-component', 'AttackPlanetWin');
-//     }  else {
-//       if (lives.value < 5 && currentQuestionIndex.value >= questions.value.length) {
-//         console.log('Resultlives.value',lives.value);
-//         emit('switch-component', 'AttackPlanetResult');
-//         } 
-//     } 
-// };
-
 const sendAnswer = (answer) => {
     const currentQuestionData = currentQuestion.value;
     if (answer === currentQuestionData.correctAnswer) {
-        answers.value[answer] = '#31AF40'; // Установить цвет кнопки в зеленый
+        // answers.value[answer] = '#31AF40'; // Установить цвет кнопки в зеленый
         setTimeout(nextQuestion, 1000); // Переход к следующему вопросу через 1 секунду
     } else {
-        answers.value[answer] = '#881717'; // Установить цвет кнопки в красный
+        // answers.value[answer] = '#881717'; // Установить цвет кнопки в красный
         lives.value--; // Уменьшить количество жизней
         emit('update:lives', lives.value);
-
+        emit('update:earnedStars', earnedStars.value);
         if (lives.value <= 0) {
-            console.log('Loss lives.value', lives.value);
             emit('switch-component', 'AttackPlanetLoss');
         }
     }
@@ -113,19 +77,20 @@ const nextQuestion = () => {
     if (lives.value > 0 && currentQuestionIndex.value < questions.value.length - 1) {
         currentQuestionIndex.value++;
     } else if (lives.value === 5 && currentQuestionIndex.value >= questions.value.length - 1) {
-        console.log('Win lives.value', lives.value);
+                // Если игра закончена, обновляем earnedStars
+        earnedStars.value += 50 ; // Расчет звезд на основе жизней
+        localStorage.setItem('earnedStars', earnedStars.value); // Сохраняем в localStorage
+        emit('update:earnedStars', earnedStars.value);
         emit('switch-component', 'AttackPlanetWin');
     } else if (lives.value > 0 && lives.value < 5 && currentQuestionIndex.value >= questions.value.length - 1) {
-        console.log('Result lives.value', lives.value);
+                // Если игра закончена, обновляем earnedStars
+        earnedStars.value += (50 - 5 * (5 - lives.value)); // Расчет звезд на основе жизней
+        localStorage.setItem('earnedStars', earnedStars.value); // Сохраняем в localStorage
+        emit('update:earnedStars', earnedStars.value);
         emit('switch-component', 'AttackPlanetResult');
     } else if (lives.value <= 0) {
-        console.log('Loss lives.value', lives.value);
         emit('switch-component', 'AttackPlanetLoss');
     }
-};
-
-const getButtonColor = (answer) => {
-    return answers.value[answer] || 'white'; // Вернуть цвет кнопки или белый по умолчанию
 };
 
 const playSound = () => {
@@ -149,6 +114,7 @@ onMounted(() => {
     width: 100vw; 
     max-width: 414px;  
     gap: 23px;
+    padding-top: 20px;
     &__game {
         display: flex;
         flex-direction: column;
@@ -234,6 +200,37 @@ onMounted(() => {
        overflow: visible; 
     }
 }
+@media (max-height: 800px) {
+    .page-container{
+        gap: 18px;
+        padding-top: 10px;
+    }
+
+}
+@media (max-height: 780px) {
+    .page-container__game {
+        gap: 8px;
+        width:163px;
+        height: 173px; 
+    }
+    .question {
+        font-size: 60px;
+    }
+    .page-container{
+        gap: 18px;
+    }
+    .sound1 {
+        width: 38px;
+        height: auto;
+    }
+    .planet {
+        width: 200px;
+        height: auto;
+    }
+    .page-container__button {
+        margin-bottom: 93px;
+    }
+}
 @media (max-height: 740px) {
     .page-container__game {
         gap: 8px;
@@ -276,25 +273,25 @@ onMounted(() => {
         height: auto;
     }
 }
-@media (max-height: 568px) {
+@media (max-height: 600px) {
     .planet {
-        width: 160px;
+        width: 150px;
         height: auto;
     }
     .page-container__game {
         gap: 5px;
-        width:140px;
-        height: 140px; 
+        width:130px;
+        height: 135px; 
     }
     .page-container{
         gap: 12px;
     }
     .sound1 {
-        width: 30px;
+        width: 28px;
         height: auto;
     }
     .question {
-        font-size: 50px;
+        font-size: 46px;
     }
     .line {
     display: flex;
