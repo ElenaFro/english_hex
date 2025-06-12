@@ -64,7 +64,9 @@ const sendAnswer = (answer) => {
         setTimeout(nextQuestion, 1000); // Переход к следующему вопросу через 1 секунду
     } else {
         // answers.value[answer] = '#881717'; // Установить цвет кнопки в красный
+        
         lives.value--; // Уменьшить количество жизней
+        console.log('lives.value',lives.value);
         emit('update:lives', lives.value);
         emit('update:earnedStars', earnedStars.value);
         if (lives.value <= 0) {

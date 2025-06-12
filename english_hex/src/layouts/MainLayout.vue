@@ -1,7 +1,7 @@
 <template>
     <div class="layout">
-         <Header :lives="lives" :earnedStars="earnedStars" />
-        <RouterView @update:lives="lives = $event" @update:earnedStars="updateEarnedStars" />
+        <Header :lives="lives" :earnedStars="earnedStars" />
+        <RouterView @update:lives="updateLives" @update:earnedStars="updateEarnedStars" />
         <Navigation />
     </div>
 </template>
@@ -11,8 +11,13 @@ import Navigation from '../components/Navigation.vue';
 import Header from '../components/Header.vue';
 import { ref } from 'vue';
 const lives = ref(5); 
-// const earnedStars = ref(0);
+
 const earnedStars = ref(parseInt(localStorage.getItem('earnedStars')) || 0); 
+
+const updateLives = (newLives) => {
+    lives.value = newLives; // Обновляем количество жизней
+    console.log('lives.value',lives.value);
+};
 const updateEarnedStars = (newStars) => {
        earnedStars.value = newStars;
 } 

@@ -2,8 +2,8 @@
     <div class="relative all">
         <section class="page-container">
             <section class="page-container__result">
-                <p  class="result-title">Планета спасена, но с трудностями.</p>
-                <p  class="text-result">Были допущены ошибки, но атака остановлена. Хороший результат - есть к чему стремиться. </p>
+                <p  class="result-title">Планета спасена, но&nbsp;с&nbsp;трудностями.</p>
+                <p  class="text-result">Были допущены ошибки, но&nbsp;атака остановлена. Хороший результат&nbsp;&mdash; есть к&nbsp;чему стремиться.</p>
                 <div class="container-result">
                     <p  class="result-title_left">Награда:</p>
                     <div class="result-stars">
@@ -31,7 +31,7 @@
 import { useRouter } from 'vue-router';
 
 const router = useRouter();
-const props = defineProps(['lives', 'earnedStars']); // Получаем lives как пропс
+const props = defineProps(['lives']); // Получаем lives как пропс
 
 const goToMainPage = () => {
     router.push('/'); // Переходим на главную страницу
@@ -120,6 +120,7 @@ const goToGamePage = () => {
 .result-stars {
     display: flex;
     width: 100%;
+    gap:5px;
 }
 .avatar_result {
     position: absolute;

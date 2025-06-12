@@ -110,6 +110,7 @@ const goToMainPage = () => {
 .result-stars {
     display: flex;
     width: 100%;
+    gap:5px;
 }
 .avatar_result {
     position: absolute;
