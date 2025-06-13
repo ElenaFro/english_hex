@@ -18,6 +18,7 @@
                 <div class="line" v-for="(option, index) in currentQuestion.options" :key="index">
                     <button 
                         class="answer-button" 
+                        :style="buttonStyles[index]"
                         @click="sendAnswer(option)">
                         {{ option }}
                     </button>
@@ -52,18 +53,28 @@ const questions = ref([
     // Добавьте другие вопросы
 ]);
 
-const answers = ref({}); // Хранение состояния кнопок
+const buttonStyles = ref({}); // Объект для хранения стилей кнопок
+
+const resetButtonStyles = (currentQuestionData) => {
+    currentQuestionData.options.forEach((option, index) => {
+        buttonStyles.value[index] = { backgroundColor: '#fff' }; // Устанавливаем стандартный цвет
+    });
+};
 const currentQuestion = computed(() => {
        return questions.value[currentQuestionIndex.value] || {}; // Возвращаем пустой объект, если вопрос не найден
    });
 
 const sendAnswer = (answer) => {
     const currentQuestionData = currentQuestion.value;
+    resetButtonStyles(currentQuestionData); // Сброс стилей кнопок перед переходом к следующей попытке
     if (answer === currentQuestionData.correctAnswer) {
-        // answers.value[answer] = '#31AF40'; // Установить цвет кнопки в зеленый
-        setTimeout(nextQuestion, 1000); // Переход к следующему вопросу через 1 секунду
+        // Устанавливаем зеленый цвет для правильного ответа
+        buttonStyles.value[currentQuestionData.options.indexOf(answer)] = { backgroundColor: '#31AF40' };
+        setTimeout(nextQuestion, 1000); 
+        // Переход к следующему вопросу через 1 секунду
     } else {
-        // answers.value[answer] = '#881717'; // Установить цвет кнопки в красный
+        // Устанавливаем красный цвет для неправильного ответа
+        buttonStyles.value[currentQuestionData.options.indexOf(answer)] = { backgroundColor: '#881717' };
         
         lives.value--; // Уменьшить количество жизней
         console.log('lives.value',lives.value);
@@ -82,6 +93,8 @@ const sendAnswer = (answer) => {
 };
 
 const nextQuestion = () => {
+    const currentQuestionData = currentQuestion.value; // Получаем текущие данные вопроса
+    resetButtonStyles(currentQuestionData); // Сброс стилей кнопок перед переходом к следующему вопросу
     if (lives.value > 0 && currentQuestionIndex.value < questions.value.length - 1) {
         currentQuestionIndex.value++;
     } else if (lives.value === 5 && currentQuestionIndex.value >= questions.value.length - 1) {
@@ -174,7 +187,7 @@ onMounted(() => {
 }
 
 .answer-button {
-    background-color: #fff !important;
+    background-color: #fff ;
     padding: 9px 24px;
     line-height: 22px;
     color: #262060;
