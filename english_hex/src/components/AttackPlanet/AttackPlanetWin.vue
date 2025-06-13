@@ -28,6 +28,7 @@ import { useRouter } from 'vue-router';
 const router = useRouter();
 const goToMainPage = () => {
     router.push('/'); // Переходим на главную страницу
+    // router.go(-3); // Возвращаемся на 2 страницы назад
 };
 </script>
 <style scoped lang="scss">

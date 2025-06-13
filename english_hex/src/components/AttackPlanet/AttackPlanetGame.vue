@@ -1,7 +1,7 @@
 <template>
     
     <div class="relative all">
-        <img src="@/assets/img/Games/метеор_small.png" alt="meteor" class="meteor">
+        <img src="@/assets/img/Games/метеор_small.png" alt="meteor" class="meteor" :style="{ top: meteorTop, right: meteorRight, width: meteorWidth }">
         <section class="page-container">
             
             <section class="image-section_game">
@@ -67,6 +67,12 @@ const sendAnswer = (answer) => {
         
         lives.value--; // Уменьшить количество жизней
         console.log('lives.value',lives.value);
+
+        // Изменяем top и right
+        meteorTop.value = `${parseInt(meteorTop.value) + 8}px`; 
+        meteorRight.value = `${parseInt(meteorRight.value) + 8}px`; 
+        meteorWidth.value = `${parseInt(meteorWidth.value) + 6}px`; 
+
         emit('update:lives', lives.value);
         emit('update:earnedStars', earnedStars.value);
         if (lives.value <= 0) {
@@ -101,6 +107,10 @@ const playSound = () => {
 		soundRef.value.play()
 	}
 }
+
+const meteorTop = ref('-25px'); // Начальное значение для top
+const meteorRight = ref('-4px');  // Начальное значение для right
+const meteorWidth = ref('74px'); // Начальное значение для width
 
 onMounted(() => {
     // Здесь можно подгрузить вопросы с сервера
@@ -149,7 +159,7 @@ onMounted(() => {
 .meteor {
     position: absolute;
     width:74px;
-    height:94px;
+    height:auto;
     right: -4px;
     top: -25px; 
     z-index: 3000;

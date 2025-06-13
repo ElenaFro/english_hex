@@ -16,7 +16,6 @@ const earnedStars = ref(parseInt(localStorage.getItem('earnedStars')) || 0);
 
 const updateLives = (newLives) => {
     lives.value = newLives; // Обновляем количество жизней
-    console.log('lives.value',lives.value);
 };
 const updateEarnedStars = (newStars) => {
        earnedStars.value = newStars;
