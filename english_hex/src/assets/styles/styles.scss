@@ -1,6 +1,21 @@
-@import
-    'normalize',
-    'globals',
-    'spaces';
+// @import
+//     'normalize',
+//     'globals',
+//     'spaces';
 
-@import 'components/button', 'components/message-block', 'components/input', 'components/important';
+// @import 'components/button', 'components/message-block', 'components/input', 'components/important';
+// используемый вами синтаксис  @import  в Sass (или SCSS) устарел и будет удален в будущих версиях Dart Sass,
+//  начиная с версии 3.0.0. Это означает, что вам нужно будет обновить свой код, чтобы использовать новый синтаксис. 
+// Если вы будете продолжать использовать  @import , ваш код может перестать работать, когда вы обновите Sass до версии 3.0.0 или выше. 
+// нужно заменить  @import  на  @use .
+// кроме того  @use "@/assets/styles/styles.scss" as *; // Используйте `as *`, чтобы импортировать все стили
+// Ознакомьтесь с [документацией Sass](https://sass-lang.com/documentation/at-rules/use) для получения более подробной информации о новом синтаксисе. 
+
+@use 'normalize';
+@use 'globals';
+@use 'spaces';
+
+@use 'components/button';
+@use 'components/message-block';
+@use 'components/input';
+@use 'components/important';

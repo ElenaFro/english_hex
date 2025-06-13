@@ -80,9 +80,9 @@ const sendAnswer = (answer) => {
         console.log('lives.value',lives.value);
 
         // Изменяем top и right
-        meteorTop.value = `${parseInt(meteorTop.value) + 8}px`; 
-        meteorRight.value = `${parseInt(meteorRight.value) + 8}px`; 
-        meteorWidth.value = `${parseInt(meteorWidth.value) + 6}px`; 
+        meteorTop.value = `calc(${meteorTop.value} + 1.5vh)`; 
+        meteorRight.value = `calc${parseInt(meteorRight.value) + 15}px`; 
+        meteorWidth.value = `${parseInt(meteorWidth.value) + 7}px`; 
 
         emit('update:lives', lives.value);
         emit('update:earnedStars', earnedStars.value);

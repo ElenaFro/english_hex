@@ -60,7 +60,8 @@ export default defineConfig({
   css: {
     preprocessorOptions: {
       scss: {
-    	additionalData: '@import "@/assets/styles/styles.scss";',
+    	// additionalData: '@import "@/assets/styles/styles.scss";',
+		additionalData: '@use "@/assets/styles/styles.scss" as *;',// Используйте `as *`, чтобы импортировать все стили
       },
     },
   },
