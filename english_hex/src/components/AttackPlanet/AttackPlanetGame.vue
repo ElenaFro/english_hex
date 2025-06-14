@@ -57,7 +57,7 @@ const buttonStyles = ref({}); // Объект для хранения стиле
 
 const resetButtonStyles = (currentQuestionData) => {
     currentQuestionData.options.forEach((option, index) => {
-        buttonStyles.value[index] = { backgroundColor: '#fff' }; // Устанавливаем стандартный цвет
+        buttonStyles.value[index] = { backgroundColor: '#fff', color: '#262060'}; // Устанавливаем стандартный цвет
     });
 };
 const currentQuestion = computed(() => {
@@ -69,20 +69,30 @@ const sendAnswer = (answer) => {
     resetButtonStyles(currentQuestionData); // Сброс стилей кнопок перед переходом к следующей попытке
     if (answer === currentQuestionData.correctAnswer) {
         // Устанавливаем зеленый цвет для правильного ответа
-        buttonStyles.value[currentQuestionData.options.indexOf(answer)] = { backgroundColor: '#31AF40' };
+        buttonStyles.value[currentQuestionData.options.indexOf(answer)] = { 
+            backgroundColor: '#31AF40', 
+            color: '#FFFFFF' // Изменяем цвет текста на белый
+        };
         setTimeout(nextQuestion, 1000); 
         // Переход к следующему вопросу через 1 секунду
     } else {
         // Устанавливаем красный цвет для неправильного ответа
-        buttonStyles.value[currentQuestionData.options.indexOf(answer)] = { backgroundColor: '#881717' };
+        buttonStyles.value[currentQuestionData.options.indexOf(answer)] = { 
+            backgroundColor: '#881717', 
+            color: '#FFFFFF' // Изменяем цвет текста на белый
+        };
         
         lives.value--; // Уменьшить количество жизней
         console.log('lives.value',lives.value);
 
         // Изменяем top и right
-        meteorTop.value = `${parseInt(meteorTop.value) + 8}px`; 
-        meteorRight.value = `${parseInt(meteorRight.value) + 8}px`; 
+        // meteorTop.value = `${parseInt(meteorTop.value) + 8}px`; 
+        meteorTop.value = `calc(${meteorTop.value} + 2vh)`; 
+        meteorRight.value = `${parseInt(meteorRight.value) + 4}px`;  
         meteorWidth.value = `${parseInt(meteorWidth.value) + 6}px`; 
+        // meteorTop.value = `calc(${meteorTop.value} + 1vh)`; 
+        // meteorRight.value = `calc(${meteorRight.value} + 1vw)`; 
+        // meteorWidth.value = `${parseInt(meteorWidth.value) + 7}px`; 
 
         emit('update:lives', lives.value);
         emit('update:earnedStars', earnedStars.value);
