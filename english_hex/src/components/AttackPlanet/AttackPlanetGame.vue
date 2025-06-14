@@ -57,7 +57,7 @@ const buttonStyles = ref({}); // Объект для хранения стиле
 
 const resetButtonStyles = (currentQuestionData) => {
     currentQuestionData.options.forEach((option, index) => {
-        buttonStyles.value[index] = { backgroundColor: '#fff', color: '#262060'}; // Устанавливаем стандартный цвет
+        buttonStyles.value[index] = { backgroundColor: '#fff', color: '#262060', border: '2px solid rgba(49, 29, 93, 1)'}; // Устанавливаем стандартный цвет
     });
 };
 const currentQuestion = computed(() => {
@@ -71,7 +71,8 @@ const sendAnswer = (answer) => {
         // Устанавливаем зеленый цвет для правильного ответа
         buttonStyles.value[currentQuestionData.options.indexOf(answer)] = { 
             backgroundColor: '#31AF40', 
-            color: '#FFFFFF' // Изменяем цвет текста на белый
+            color: '#FFFFFF', // Изменяем цвет текста на белый
+            border: 'none'
         };
         setTimeout(nextQuestion, 1000); 
         // Переход к следующему вопросу через 1 секунду
@@ -79,7 +80,8 @@ const sendAnswer = (answer) => {
         // Устанавливаем красный цвет для неправильного ответа
         buttonStyles.value[currentQuestionData.options.indexOf(answer)] = { 
             backgroundColor: '#881717', 
-            color: '#FFFFFF' // Изменяем цвет текста на белый
+            color: '#FFFFFF', // Изменяем цвет текста на белый
+            border: 'none'
         };
         
         lives.value--; // Уменьшить количество жизней
