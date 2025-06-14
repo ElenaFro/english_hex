@@ -19,7 +19,8 @@
                     <button 
                         class="answer-button" 
                         :style="buttonStyles[index]"
-                        @click="sendAnswer(option)">
+                        @click="sendAnswer(option)"
+                        :disabled="!isQuestionPlayed"> 
                         {{ option }}
                     </button>
                 </div>
@@ -38,6 +39,24 @@ const emit = defineEmits();
 const lives = ref(5); // Количество жизней
 const earnedStars = ref(parseInt(localStorage.getItem('earnedStars')) || 0); // Загружаем earnedStars из localStorage
 
+const isQuestionPlayed = ref(false); // Состояние для отслеживания, был ли вопрос прослушан
+
+const playSound = () => {
+    if (soundRef.value) {
+        soundRef.value.currentTime = 0;
+        soundRef.value.play();
+        isQuestionPlayed.value = true; // Устанавливаем значение в true, когда звук начинает воспроизводиться
+    }
+};
+
+// Обработчик события 'ended' для аудио
+const onAudioEnded = () => {
+    isQuestionPlayed.value = true; // Устанавливаем значение в true, когда звук заканчивается
+     // Устанавливаем стили кнопок на стандартные
+    const currentQuestionData = currentQuestion.value;
+    resetButtonStyles(currentQuestionData, false); // Устанавливаем стандартные стили кнопок
+};
+
 const currentQuestionIndex = ref(0); // Индекс текущего вопроса
 const questions = ref([
     {
@@ -55,11 +74,21 @@ const questions = ref([
 
 const buttonStyles = ref({}); // Объект для хранения стилей кнопок
 
-const resetButtonStyles = (currentQuestionData) => {
+// const resetButtonStyles = (currentQuestionData) => {
+//     currentQuestionData.options.forEach((option, index) => {
+//         buttonStyles.value[index] = { backgroundColor: '#fff', color: '#262060', border: '2px solid rgba(49, 29, 93, 1)'}; // Устанавливаем стандартный цвет
+//     });
+// };
+const resetButtonStyles = (currentQuestionData, disableButtons = false) => {
     currentQuestionData.options.forEach((option, index) => {
-        buttonStyles.value[index] = { backgroundColor: '#fff', color: '#262060', border: '2px solid rgba(49, 29, 93, 1)'}; // Устанавливаем стандартный цвет
+        buttonStyles.value[index] = { 
+            backgroundColor: '#fff', 
+            color: '#262060', 
+            border: disableButtons ? '2px solid rgba(118, 118, 118, 0.3)' : '2px solid rgba(49, 29, 93, 1)' // Устанавливаем стиль в зависимости от состояния
+        }; 
     });
 };
+
 const currentQuestion = computed(() => {
        return questions.value[currentQuestionIndex.value] || {}; // Возвращаем пустой объект, если вопрос не найден
    });
@@ -106,7 +135,9 @@ const sendAnswer = (answer) => {
 
 const nextQuestion = () => {
     const currentQuestionData = currentQuestion.value; // Получаем текущие данные вопроса
-    resetButtonStyles(currentQuestionData); // Сброс стилей кнопок перед переходом к следующему вопросу
+    resetButtonStyles(currentQuestionData, true); // Сброс стилей кнопок перед переходом к следующему вопросу
+    isQuestionPlayed.value = false; // Сбрасываем состояние, чтобы кнопки были отключены
+
     if (lives.value > 0 && currentQuestionIndex.value < questions.value.length - 1) {
         currentQuestionIndex.value++;
     } else if (lives.value === 5 && currentQuestionIndex.value >= questions.value.length - 1) {
@@ -126,20 +157,34 @@ const nextQuestion = () => {
     }
 };
 
-const playSound = () => {
-	if (soundRef.value) {
-		soundRef.value.currentTime = 0
-		soundRef.value.play()
-	}
-}
+// const playSound = () => {
+// 	if (soundRef.value) {
+// 		soundRef.value.currentTime = 0
+// 		soundRef.value.play()
+// 	}
+// }
 
 const meteorTop = ref('-25px'); // Начальное значение для top
 const meteorRight = ref('-4px');  // Начальное значение для right
 const meteorWidth = ref('74px'); // Начальное значение для width
 
+// Слушатель события 'ended' для аудио
 onMounted(() => {
-    // Здесь можно подгрузить вопросы с сервера
+    if (soundRef.value) {
+        soundRef.value.addEventListener('ended', onAudioEnded);
+    }
 });
+// Удаляем слушатель при уничтожении компонента
+import { onBeforeUnmount } from 'vue';
+
+onBeforeUnmount(() => {
+    if (soundRef.value) {
+        soundRef.value.removeEventListener('ended', onAudioEnded);
+    }
+});
+// onMounted(() => {
+    // Здесь можно подгрузить вопросы с сервера
+// });
 </script>
 <style scoped lang="scss">
 .page-container{
