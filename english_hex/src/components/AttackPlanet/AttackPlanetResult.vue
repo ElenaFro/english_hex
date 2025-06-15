@@ -31,10 +31,10 @@
 import { useRouter } from 'vue-router';
 
 const router = useRouter();
-const props = defineProps(['lives']); // Получаем lives как пропс
+const props = defineProps(['lives']); 
 
 const goToMainPage = () => {
-    router.push('/'); // Переходим на главную страницу
+    router.push('/'); 
 };
 const goToGamePage = () => {
     window.location.reload();
