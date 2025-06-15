@@ -57,7 +57,6 @@ const goToGame = (item) => {
 }
 
 const redirectToMain = () => {
-    console.log('main');
     router.push({ name: 'mainPage' })
 }
 </script>
