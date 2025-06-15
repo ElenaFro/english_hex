@@ -42,11 +42,27 @@ const routes = [
         name: "notifications",
         component: () => import("@/pages/NotificationsPage.vue"),
       },
+	    {
+      path: "learning",
+      name: "learning",
+      component: () => import("@/pages/LearningPage.vue"),
+      },
       {
         path: "games",
         name: "games",
         component: () => import("@/pages/games/GameMainPage.vue"),
       },
+      {
+        path: "planetGame",
+        name: "planetGame",
+        component: () => import("@/pages/games/attackPlanet/PlanetAttack.vue"),
+      }, 
+      {
+        path: "planetAttackPage",
+        name: "planetAttackPage",
+        component: () => import("@/pages/games/attackPlanet/PlanetAttackPage.vue"),
+      },   
+          
     ],
     meta: { requiresAuth: false },
   },

@@ -15,36 +15,34 @@
                 </div>
                 <span v-if="errors.name" class="error-message">{{ errors.name }}</span>
             </div>
+				<div class="form-group">
+					<label>Пол</label>
+					<div class="gender-options">
+						<label class="gender-label">
+							<input type="radio" name="gender" value="male" v-model="form.gender" @change="updateAvatar" />
+							<span class="custom-radio"></span>
+							Мужской
+						</label>
+						<label class="gender-label">
+							<input type="radio" name="gender" value="female" v-model="form.gender" @change="updateAvatar" />
+							<span class="custom-radio"></span>
+							Женский
+						</label>
+					</div>
+					<span v-if="errors.gender" class="error-message">{{ errors.gender }}</span>
+				</div>
 
-            <div class="form-group">
-                <label>Пол</label>
-                <div class="gender-options">
-                    <label class="gender-label">
-                        <input type="radio" name="gender" value="male" v-model="form.gender" @change="updateAvatar" />
-                        <span class="custom-radio"></span>
-                        Мужской
-                    </label>
-                    <label class="gender-label">
-                        <input type="radio" name="gender" value="female" v-model="form.gender" @change="updateAvatar" />
-                        <span class="custom-radio"></span>
-                        Женский
-                    </label>
-                </div>
-                <span v-if="errors.gender" class="error-message">{{ errors.gender }}</span>
-            </div>
-
-            <div class="form-group">
-                <label for="email">Email</label>
-                <div class="input-with-icon">
-                    <input id="email" v-model="form.email" type="email" maxlength="30" placeholder="Ваш email"
-                        class="form-input" :class="{ 'error': errors.email }" @input="clearError('email')" />
-                    <span class="edit-icon" @click="focusInput('email')">
-                        <img v-if="edit" src="@/assets/icons/editPencil.svg" />
-                    </span>
-                </div>
-                <span v-if="errors.email" class="error-message">{{ errors.email }}</span>
-            </div>
-
+				<div class="form-group">
+					<label for="email">Email</label>
+					<div class="input-with-icon">
+						<input id="email" v-model="form.email" type="email" maxlength="30" placeholder="Ваш email"
+							class="form-input" :class="{ 'error': errors.email }" @input="clearError('email')" />
+						<span class="edit-icon" @click="focusInput('email')">
+							<img v-if="edit" src="@/assets/icons/editPencil.svg" />
+						</span>
+					</div>
+					<span v-if="errors.email" class="error-message">{{ errors.email }}</span>
+				</div>
             <div class="form-group">
                 <label for="password">Пароль</label>
                 <div class="input-with-icon">
@@ -76,6 +74,7 @@ import { useAuthStore } from "@/stores/auth";
 import apiClient from "@/api/axios";
 import { compareObjects } from "@/shared/compareObject";
 import defaultPopup from "@/components/popups/defaultPopup.vue";
+
 
 const form = ref({});
 const initialForm = ref({})
@@ -172,8 +171,40 @@ const confirmSave = async () => {
 </script>
 
 <style scoped>
+.profile-page {
+    width: 100%;
+    height: 100vh;
+    min-height: 100%;
+    padding: 40px 30px;
+    background-color: #F6F6FE;
+	border-radius: 40px;
+}
+
+.profile-page__inner {
+	overflow-y: scroll;
+	width: 100%;
+	height: 100%;
+	display: flex;
+    flex-direction: column;
+    align-items: center;
+	row-gap: 25px;
+	scrollbar-width: none;
+    overflow-y: auto;
+    border-top-left-radius: 40px;
+    border-top-right-radius: 40px;
+
+    @media (min-width:375px) {
+        width: 375px;
+    }
+
+    @media (max-width:375px) {
+        width: 100%;
+    }
+}
+
 .page-container {
     row-gap: 25px;
+
 }
 
 .profile-card {

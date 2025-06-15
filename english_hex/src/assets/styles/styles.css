@@ -141,6 +141,8 @@ body {
   Нормализация высоты элемента ссылки при его инспектировании в DevTools
  */
 a:where([class]) {
+  display: -webkit-inline-box;
+  display: -ms-inline-flexbox;
   display: inline-flex;
 }
 
@@ -176,6 +178,7 @@ label {
   Чиним баг задержки смены цвета при взаимодействии с svg-элементами
  */
 svg * {
+  -webkit-transition-property: fill, stroke;
   transition-property: fill, stroke;
 }
 
@@ -219,6 +222,8 @@ body, #app {
 .main-container {
   width: 100%;
   height: 100dvh;
+  display: -webkit-box;
+  display: -ms-flexbox;
   display: flex;
   -webkit-box-orient: vertical;
   -webkit-box-direction: normal;
@@ -238,6 +243,8 @@ body, #app {
 
 .content-container {
   width: 317px;
+  display: -webkit-box;
+  display: -ms-flexbox;
   display: flex;
   -webkit-box-orient: vertical;
   -webkit-box-direction: normal;
@@ -260,9 +267,8 @@ body, #app {
   margin-bottom: 40px;
   color: rgb(255, 255, 255);
 }
-/* 
+
 .layout {
-  width: 100vw;
   height: 100dvh;
   position: relative;
   display: -webkit-box;
@@ -270,21 +276,164 @@ body, #app {
   display: flex;
   -webkit-box-orient: vertical;
   -webkit-box-direction: normal;
-      -ms-flex-direction: column;
-          flex-direction: column;
+  -ms-flex-direction: column;
+  flex-direction: column;
   -webkit-box-align: center;
-      -ms-flex-align: center;
-          align-items: center;
+  -ms-flex-align: center;
+  align-items: center;
   -webkit-overflow-scrolling: touch;
   -ms-scroll-chaining: none;
-      overscroll-behavior: contain;
+  overscroll-behavior: contain;
   scrollbar-width: none;
-} */
+}
 .layout::-webkit-scrollbar {
   display: none;
 }
 
+.page-content {
+  overflow: hidden;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+      -ms-flex-direction: column;
+          flex-direction: column;
+  -webkit-box-flex: 1;
+      -ms-flex: 1;
+          flex: 1;
+  /* width: 100%; */
+  width: 100vw;
+  max-width: 414px;
+  border-radius: 40px 40px 0 0;
+  padding: 57px 30px 0;
+  background-color: rgb(246, 246, 254);
+}
+.page-content .scroll-container {
+  /* width: 100%;
+  max-width: 375px; */
+  width: 100vw;
+  max-width: 414px;
+  overflow-y: scroll;
+  padding-bottom: 150px;
+  scrollbar-width: none;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+      -ms-flex-direction: column;
+          flex-direction: column;
+}
+.page-content .scroll-container::-webkit-scrollbar {
+  width: 0;
+}
+
+.popup {
+  max-width: 315px;
+  margin: auto 20px;
+  padding: 20px 12px 20px 20px;
+  background-color: #F8F5FF;
+  border-radius: 20px;
+  color: #262060;
+  font-size: 18px;
+  font-weight: 400;
+  line-height: 120%;
+}
+.popup__header {
+  font-size: 22px;
+  font-weight: 700;
+  color: #262060;
+}
+
+.full_width {
+  width: 100%;
+}
+
+.flex {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+}
+
+.justify-center {
+  -webkit-box-pack: center;
+      -ms-flex-pack: center;
+          justify-content: center;
+}
+.justify-end {
+  -webkit-box-pack: end;
+      -ms-flex-pack: end;
+          justify-content: end;
+}
+.justify-start {
+  -webkit-box-pack: start;
+      -ms-flex-pack: start;
+          justify-content: start;
+}
+.justify-between {
+  -webkit-box-pack: justify;
+      -ms-flex-pack: justify;
+          justify-content: space-between;
+}
+.justify-around {
+  -ms-flex-pack: distribute;
+      justify-content: space-around;
+}
+
+.items-center {
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+}
+.items-end {
+  -webkit-box-align: end;
+      -ms-flex-align: end;
+          align-items: end;
+}
+.items-start {
+  -webkit-box-align: start;
+      -ms-flex-align: start;
+          align-items: start;
+}
+
+.relative {
+  position: relative;
+}
+
+.d-mb-16 {
+  margin-bottom: 16px;
+}
+
+.d-mt-16 {
+  margin-top: 16px;
+}
+
+.d-mr-16 {
+  margin-right: 16px;
+}
+
+.d-ml-16 {
+  margin-left: 16px;
+}
+
+.d-ma-16 {
+  margin: 16px;
+}
+
+.d-mx-16 {
+  margin-left: 16px;
+  margin-right: 16px;
+}
+
+.d-my-16 {
+  margin-top: 16px;
+  margin-bottom: 16px;
+}
+
 .button {
+  display: -webkit-inline-box;
+  display: -ms-inline-flexbox;
   display: inline-flex;
   -webkit-box-align: center;
       -ms-flex-align: center;
@@ -307,11 +456,13 @@ body, #app {
 .button--white {
   border: 2px solid rgb(49, 29, 93);
   background-color: rgb(255, 255, 255);
+  color: rgb(38, 32, 96);
 }
 .button--purple {
   background-color: rgb(38, 32, 96);
 }
 .button--blue {
+  background: -webkit-gradient(linear, left top, right top, from(rgb(53, 92, 213)), to(rgb(113, 74, 180)));
   background: linear-gradient(to right, rgb(53, 92, 213), rgb(113, 74, 180));
 }
 .button--big {
@@ -328,6 +479,8 @@ body, #app {
   height: 40px;
   border: 2px solid rgb(255, 255, 255);
   border-radius: 20px;
+  display: -webkit-box;
+  display: -ms-flexbox;
   display: flex;
   -webkit-box-pack: justify;
       -ms-flex-pack: justify;
@@ -364,6 +517,8 @@ body, #app {
 }
 
 .button-container {
+  display: -webkit-box;
+  display: -ms-flexbox;
   display: flex;
 }
 .button-container--column {
@@ -382,6 +537,8 @@ body, #app {
 
 .message-block {
   width: 100%;
+  display: -webkit-box;
+  display: -ms-flexbox;
   display: flex;
   -webkit-box-orient: vertical;
   -webkit-box-direction: normal;
@@ -421,6 +578,8 @@ body, #app {
 
 .login-form {
   width: 315px;
+  display: -webkit-box;
+  display: -ms-flexbox;
   display: flex;
   -webkit-box-orient: vertical;
   -webkit-box-direction: normal;
@@ -430,6 +589,8 @@ body, #app {
 }
 .login-form__input-container {
   position: relative;
+  display: -webkit-box;
+  display: -ms-flexbox;
   display: flex;
   -webkit-box-align: center;
       -ms-flex-align: center;
@@ -508,6 +669,8 @@ body, #app {
 }
 
 .agreement-container {
+  display: -webkit-box;
+  display: -ms-flexbox;
   display: flex;
   -webkit-box-orient: vertical;
   -webkit-box-direction: normal;
@@ -540,6 +703,8 @@ body, #app {
   line-height: 100%;
   letter-spacing: 0em;
   color: rgb(38, 32, 96);
+  display: -webkit-box;
+  display: -ms-flexbox;
   display: flex;
   -webkit-box-align: center;
       -ms-flex-align: center;
@@ -612,6 +777,8 @@ body, #app {
 }
 
 .important-block {
+  display: -webkit-box;
+  display: -ms-flexbox;
   display: flex;
   -webkit-box-orient: vertical;
   -webkit-box-direction: normal;
