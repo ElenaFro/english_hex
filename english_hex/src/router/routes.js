@@ -65,6 +65,11 @@ const routes = [
     ],
     meta: { requiresAuth: false },
   },
+  {
+	path: '/:pathMatch(.*)*',
+	name: 'error',
+	component: () => import("@/pages/ErrorPage.vue")
+  }  
 ];
 
 export default routes;
