@@ -22,8 +22,8 @@
 					:progress="section.progress"
 					:locked="section.locked"
 				/>
+			</div>
 		</div>
-	</div>
 	<loader v-if="loading" />
 	<HelloPopupWithSound v-if="openHelloPopup" 
 	:title="titlePopup" 
@@ -139,7 +139,8 @@ const messagePopup = 'Привет! Меня зовут Di, и я рада пр�
 }
 .scroll-container {
 	display: grid !important; 
-	grid-template-columns: repeat(2, 148px);
+	/* grid-template-columns: repeat(2, 148px); */
+	grid-template-columns:  repeat(2, 1fr);  
 	grid-auto-rows: 220px;
 	justify-content: space-between;
 	gap: 20px;

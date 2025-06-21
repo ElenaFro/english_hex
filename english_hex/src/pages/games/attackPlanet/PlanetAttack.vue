@@ -23,15 +23,14 @@ const router = useRouter();
 const describeGame = 'Спасите планету от метеоритной атаки';
 const message = 'Отвечайте на вопросы правильно, чтобы остановить приближение метеорита. За каждую ошибку он подлетает ближе. 5 ошибок — и планета будет разрушена. Максимальная награда — 50 звёзд. За каждую ошибку вычитается 5 звёзд.';
 
-// Метод для перехода на страницу игры
 const goToGamePage = () => {
-    router.push('/planetAttackGame'); 
+    router.push('/planetAttackPage'); 
 };
 
 </script>
 <style scoped lang="scss">
 .page-container {
-    overflow: auto;
+    overflow: visible;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
@@ -112,24 +111,24 @@ const goToGamePage = () => {
 }
 
 .image-container {
-    position: relative; // Позволяет позиционировать вложенные изображения относительно этого контейнера
+    position: relative; 
     display: flex;
-    justify-content: center; // Центрируем изображения
-    align-items: center; // Центрируем изображения по вертикали
+    justify-content: center; 
+    align-items: center; 
 }
 
 .meteor {
     position: absolute;
     right: -104px;
-    top: 50%; // Центрируем по вертикали
-    transform: translateY(-140%); // Сдвигаем на половину высоты изображения
+    top: 50%; 
+    transform: translateY(-140%); 
 }
 
 .image-section{
     position: relative;
     display: flex;
     flex-direction: column;
-    justify-content: center; /* Центрируем содержимое по вертикали */
+    justify-content: center; 
     align-items: center;
     height: 100%;
     padding-bottom: 120px;

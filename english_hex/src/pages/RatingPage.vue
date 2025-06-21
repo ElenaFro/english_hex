@@ -66,7 +66,9 @@ const otherUsers = computed(() => {
 <style scoped lang="scss">
 .raiting-page {
     height: 100vh;
-    width: 100%;
+    // width: 100%;
+    width: 100vw; 
+    max-width: 414px;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -74,13 +76,13 @@ const otherUsers = computed(() => {
     border-top-left-radius: 40px;
     border-top-right-radius: 40px;
 
-    @media (min-width: 375px) {
-        width: 375px;
-    }
+    // @media (min-width: 375px) {
+    //     width: 375px;
+    // }
 
-    @media (max-width: 375px) {
-        width: 100%;
-    }
+    // @media (max-width: 375px) {
+    //     width: 100%;
+    // }
 }
 
 .podium-container {

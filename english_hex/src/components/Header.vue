@@ -5,6 +5,14 @@
                 {{ earnedStars }} <img src="@/assets/icons/navBarIcon/star.svg" class="header-star-left" alt="Звезда" />
             </span>
         </template> 
+
+        <template v-else-if="isGamePlanetPage"> 
+            <span class="header-live">
+                <span v-for="index in lives" :key="index" class="live-icon">
+                    <img src="@/assets/icons/navBarIcon/live.svg" class="header-live-left" alt="Жизнь" />
+                </span>
+            </span>
+        </template>
         <template v-else>      
             <button @click="goBack" class="header-item-button">
                 <img src="@/assets/icons/navBarIcon/arrow_left.svg" class="header-icon-left" alt="Назад" />
@@ -13,8 +21,13 @@
         <p class="header-title">{{ currentTitle }}</p>
         <RouterLink v-for="item in headerItemsRight" :key="item.name + '-right'" :to="item.path" class="header-item"
             :class="{ active: $route.path === item.path }">
-            <img v-if="!route.fullPath.includes('games') && !route.fullPath.includes('Game')" :src="item.icon" class="header-icon" :alt="item.name" />
+            <img v-if="!route.fullPath.includes('games') && !route.fullPath.includes('planetAttackPage')" :src="item.icon" class="header-icon" :alt="item.name" />
         </RouterLink>
+        <template v-if="isGamePlanetPage">
+            <span class="header-star">
+                {{ earnedStars }} <img src="@/assets/icons/navBarIcon/star.svg" class="header-star-left" alt="Звезда" />
+            </span>
+        </template> 
     </div>
 
 </template>
@@ -23,17 +36,13 @@
 import { RouterLink } from "vue-router";
 import { ref, watch, computed  } from 'vue';
 import { useRoute} from 'vue-router';
+import { defineProps } from 'vue';
 
-// const headerItemsLeft = [
-//     {
-//         name: "left",
-//         path: "/",
-//         icon: 'src/assets/icons/navBarIcon/arrow_left.svg',
-//     },
-// ];
+const earnedStars = ref(parseInt(localStorage.getItem('earnedStars')) || 0);
 
-const earnedStars = ref(0); // Здесь вы можете динамически изменять количество звезд
-const isHomePage = computed(() => route.path === '/'); // Проверяем, находимся ли мы на главной странице
+const props = defineProps(['lives']); 
+
+const isGamePlanetPage = computed(() => route.path === '/planetAttackPage'); 
 
 const headerItemsRight = [
     {
@@ -45,7 +54,6 @@ const headerItemsRight = [
 
 const currentTitle = ref(" ");
 const route = useRoute();
-// const sections = ref([])
 
 function goBack() {
     window.history.back();
@@ -79,7 +87,10 @@ watch(() => route.path, (newPath) => {
             break;
         case '/planetGame':
             currentTitle.value = "Игры";
-            break;    
+            break;  
+        case '/planetAttackPage':
+            currentTitle.value = "";
+            break;   
         default:
             currentTitle.value = " ";
             break;
@@ -117,11 +128,29 @@ watch(() => route.path, (newPath) => {
     padding-bottom: 0px;
     align-items: center;
 }
+.header-live {
+    background-color: #ffffff;
+    display: flex;
+    width: 155px;
+    height: 42px;
+    border-bottom-left-radius: 20px;
+    border-bottom-right-radius: 20px;
+    padding-left: 8px;
+    padding-right: 3px;
+    padding-bottom: 0px;
+    align-items: center; 
+    gap: 5px; 
+}
 .header-star-left {
     width: 21px;
     height: 21px;
     padding-left: 2px;
     padding-bottom: 2px;
+}
+
+.header-live-left {
+    width: 23.85px;
+    height: 22.19px;
 }
 
 .header-item {
@@ -171,5 +200,9 @@ watch(() => route.path, (newPath) => {
     font-weight: 800;
     line-height: 35px;
     margin-top: 13px;
+}
+.live-icon {
+    width: 23.8px;
+    height: 22.2px;
 }
 </style>
