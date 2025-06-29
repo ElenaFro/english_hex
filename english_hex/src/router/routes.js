@@ -43,7 +43,7 @@ const routes = [
         component: () => import("@/pages/NotificationsPage.vue"),
       },
       {
-        path: "learning",
+        path: "learning/:id",
         name: "learning",
         component: () => import("@/pages/LearningPage.vue"),
       },
