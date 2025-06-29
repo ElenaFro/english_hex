@@ -18,7 +18,7 @@ const routes = [
     component: () => import("@/layouts/MainLayout.vue"),
     children: [
       {
-        path: "mainPage",
+        path: "",
         name: "mainPage",
         component: () => import("@/pages/MainPage.vue"),
       },
@@ -43,7 +43,7 @@ const routes = [
         component: () => import("@/pages/NotificationsPage.vue"),
       },
       {
-        path: "learning",
+        path: "learning/:id",
         name: "learning",
         component: () => import("@/pages/LearningPage.vue"),
       },

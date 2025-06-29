@@ -30,7 +30,7 @@ const props = defineProps({
 const errorCode = props.code
 
 const goToMainPage = () => {
-	router.push('/mainPage')
+	router.push({name: 'mainPage'})
 }
 </script>
 

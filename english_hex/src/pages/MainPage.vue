@@ -5,16 +5,13 @@
 				<img :src="avatarIcon" alt="" class="user-img">
 			</div>
 		</div>
-		<!-- <p class="username-container__name">{{ userName }}</p> -->
-
-		<!-- Черновик -->
 		<p class="username-container__name">{{ userName }}</p>
 	</div>
 	<div class="page-content">
 		<div class="scroll-container">
 			<CategoryChoice v-for="section in sections" :key="section.id" :id="section.id" :sectionName="section.name"
-				:imgUrl="section.image" :backgroundColor="section.color" :progress="section.progress"
-				:locked="section.locked" />
+				:imgUrl="section.category_photo" :backgroundColor="randomColor(section.id)"
+				:progress="section.completed_percentage" :locked="true" />
 		</div>
 	</div>
 	<loader v-if="loading" />
@@ -24,7 +21,6 @@
 
 <script setup>
 import { ref, onMounted, computed } from 'vue';
-import axios from 'axios';
 import CategoryChoice from '@/components/MainPage/CategoryChoice.vue';
 import BoyIcon from "@/assets/img/DefaultUserAvatar/male.svg";
 import GirlIcon from "@/assets/img/DefaultUserAvatar/female.svg";
@@ -32,25 +28,35 @@ import loader from '@/components/loader.vue';
 import HelloPopupWithSound from '@/components/popups/HelloPopupWithSound.vue';
 import SoundForPopup from '@/assets/audio/helloFromDi.mp3'
 import { useAuthStore } from '@/stores/auth';
+import { useCategoriesStore } from '@/stores/categories';
 
 const loading = ref(true);
 const openHelloPopup = ref(false);
-const sections = ref([]);
 
 onMounted(async () => {
-	try {
-		const res = await axios.get('/test.json')
-		sections.value = res.data
-	} catch (err) {
-		//Уточнить что делать в случае ошибки
-		console.error(err)
-	}
+	await useCategoriesStore().getCategories()
 })
 
-// onMounted(() => {
-// 	loading.value = false;
-// 	openHelloPopup.value = true;
-// })
+const colorPalette = [
+	'#BD8BCF',
+	'#F6B390',
+	'#79BBFB',
+	'#FF98A5',
+];
+
+const getRandomColorFromPalette = () => {
+	const randomIndex = Math.floor(Math.random() * colorPalette.length);
+	return colorPalette[randomIndex];
+};
+
+const colorCache = ref({});
+
+const randomColor = (id) => {
+	if (!colorCache.value[id]) {
+		colorCache.value[id] = getRandomColorFromPalette();
+	}
+	return colorCache.value[id];
+};
 
 const hasVisited = ref(sessionStorage.getItem('hasVisited') === 'true');
 
@@ -67,6 +73,7 @@ const currentUser = computed(() => useAuthStore().getCurrentUser());
 const userName = computed(() => currentUser.value.name);
 const avatarIcon = computed(() => currentUser.value.gender === "male" ? BoyIcon : GirlIcon
 );
+const sections = computed(() => useCategoriesStore().categories)
 
 const closePopup = () => {
 	// openHelloPopup.value = !openHelloPopup.value

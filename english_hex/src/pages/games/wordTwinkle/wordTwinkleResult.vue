@@ -96,7 +96,7 @@ const repeatGame = () => {
 }
 
 const goToMainPage = () => {
-	router.push({ path: '/mainPage', query: { stars: totalStars.value } })
+	router.push({ name: '/mainPage', query: { stars: totalStars.value } })
 }
 </script>
 

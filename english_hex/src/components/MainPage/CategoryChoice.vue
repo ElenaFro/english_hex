@@ -1,28 +1,25 @@
 <template>
-	<div class="container">
+	<div class="container" :style="{ backgroundColor: backgroundColor }">
 		<button type="button" class="nav-arrow" @click="goToLearningPage">
 			<img class="nav-arrow__img" src="@/assets/img/nav-arrow_icon.svg" alt="">
 		</button>
 		<div class="category-img">
-			<img :src="imgUrl" alt="">
+			<img :src="img_url" alt="">
 		</div>
 		<p class="category-name">{{ sectionName }}</p>
 		<div class="statusa-bar">
 			<div class="statusa-bar__active">
 				<img src="@/assets/img/open-lock_icon.svg" alt="">
 				<div class="status-circle">
-					<StatusCircle :percent="progress"/>
+					<StatusCircle :percent="progress" />
 				</div>
 			</div>
 			<div class="statusa-bar__active">
-				<img
-					:src="locked 
-					? closedLockIcon 
-					: openLockIcon" 
-					alt=""
-				>
+				<img :src="locked
+					? closedLockIcon
+					: openLockIcon" alt="">
 				<div class="status-circle">
-					<StatusCircle :percent="0"/>
+					<StatusCircle :percent="0" />
 				</div>
 			</div>
 		</div>
@@ -34,8 +31,9 @@ import { useRouter } from 'vue-router'
 import StatusCircle from './StatusCircle.vue';
 import closedLockIcon from '@/assets/img/closed-lock_icon.svg'
 import openLockIcon from '@/assets/img/open-lock_icon.svg'
+import { computed } from 'vue';
 
-defineProps({
+const props = defineProps({
 	id: Number,
 	sectionName: String,
 	imgUrl: String,
@@ -47,9 +45,9 @@ defineProps({
 const router = useRouter()
 
 const goToLearningPage = () => {
-	// router.push(`/learning/${id}`)
-	router.push('/learning/')
+	router.push({ name: 'learning', params: { id: props.id }, query: { name: props.sectionName } })
 }
+const img_url = computed(() => `http://62.109.0.225:8000/storage/categories/${props.id}/images/${props.imgUrl}`)
 </script>
 
 <style scoped>
@@ -63,9 +61,8 @@ const goToLearningPage = () => {
 	position: relative;
 	border-radius: 15px;
 	padding: 19px 14px 13px;
-	background: url('/src/assets/img/background_category.png');
-	background-size:100% auto !important;
-    background-position: center !important;
+	background-size: 100% auto !important;
+	background-position: center !important;
 	/* background-color: rgba(189, 139, 207, 1); */
 }
 
@@ -82,15 +79,20 @@ const goToLearningPage = () => {
 }
 
 .nav-arrow {
-	width: 16px;
-	height: 15px;
+	width: 50px;
+	height: 70px;
 	position: absolute;
 	background-color: transparent;
 	padding: 0;
 	border: 0;
+	background-color: rgb(246, 246, 254);
+	border-radius: 400px;
 	transform: translate(0%, -50%);
 	top: 50%;
-	left: 88%;
+	left: 80%;
+	display: flex;
+	justify-content: center;
+	align-items: center;
 }
 
 .statusa-bar {

@@ -36,7 +36,7 @@ const props = defineProps({
 
 const goToMainPage = () => {
     emit('close');
-    router.push('/mainPage');
+    router.push({name: ''});
 };
 </script>
 

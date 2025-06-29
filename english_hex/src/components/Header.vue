@@ -79,34 +79,37 @@ const isHomePage = computed(() => route.fullPath === '/')
 // 	}
 // })
 
-watch(() => route.path, (newPath) => {
-    switch (newPath) {
-        case '/profile':
+watch(() => route.path, () => {
+    switch (route.name) {
+        case 'profile':
             currentTitle.value = "Профиль";
             break;
-        case '/rating':
+        case 'rating':
             currentTitle.value = "Рейтинг";
             break;
-        case '/notifications':
+        case 'notifications':
             currentTitle.value = "Уведомления";
             break;
-        case '/addCategories':
+        case 'addCategories':
             currentTitle.value = "Редактирование";
             break;
-        case '/games':
+        case 'games':
             currentTitle.value = "Игры";
             break;
-        case '/planetGame':
+        case 'planetGame':
             currentTitle.value = "Игры";
             break;
-        case '/planetAttackPage':
+        case 'planetAttackPage':
             currentTitle.value = "";
             break;
-		case '/wordTwinkle':
+		case 'wordTwinkle':
             currentTitle.value = "Игры";
             break;
-		case '/wordTwinkleGame':
+		case 'wordTwinkleGame':
             currentTitle.value = "Игры";
+            break;
+        case 'learning':
+            currentTitle.value = route.query.name;
             break;
         default:
             currentTitle.value = " ";
