@@ -4,9 +4,9 @@
             <span class="header-star">
                 {{ earnedStars }} <img src="@/assets/icons/navBarIcon/star.svg" class="header-star-left" alt="Звезда" />
             </span>
-        </template> 
+        </template>
 
-        <template v-else-if="isGamePlanetPage"> 
+        <template v-else-if="isGamePlanetPage">
             <span class="header-live">
                 <span v-for="index in lives" :key="index" class="live-icon">
                     <img src="@/assets/icons/navBarIcon/live.svg" class="header-live-left" alt="Жизнь" />
@@ -18,36 +18,36 @@
                 {{ earnedStars }} <img src="@/assets/icons/navBarIcon/star.svg" class="header-star-left" alt="Звезда" />
             </span>
         </template> 
-        <template v-else>      
+        <template v-else>
             <button @click="goBack" class="header-item-button">
                 <img src="@/assets/icons/navBarIcon/arrow_left.svg" class="header-icon-left" alt="Назад" />
             </button>
-        </template> 
+        </template>
         <p class="header-title">{{ currentTitle }}</p>
         <RouterLink v-for="item in headerItemsRight" :key="item.name + '-right'" :to="item.path" class="header-item"
             :class="{ active: $route.path === item.path }">
-            <img v-if="!route.fullPath.includes('games') && !route.fullPath.includes('planetAttackPage')" :src="item.icon" class="header-icon" :alt="item.name" />
+            <img v-if="!route.fullPath.includes('games') && !route.fullPath.includes('planetAttackPage')"
+                :src="item.icon" class="header-icon" :alt="item.name" />
         </RouterLink>
         <template v-if="isGamePlanetPage">
             <span class="header-star">
                 {{ earnedStars }} <img src="@/assets/icons/navBarIcon/star.svg" class="header-star-left" alt="Звезда" />
             </span>
-        </template> 
+        </template>
     </div>
 
 </template>
 
 <script setup>
 import { RouterLink } from "vue-router";
-import { ref, watch, computed  } from 'vue';
-import { useRoute} from 'vue-router';
+import { ref, watch, computed } from 'vue';
+import { useRoute } from 'vue-router';
 import { defineProps } from 'vue';
+import { useAuthStore } from "@/stores/auth";
 
-const earnedStars = ref(parseInt(localStorage.getItem('earnedStars')) || 0);
-
+const currentUser = computed(() => useAuthStore().getCurrentUser())
+const earnedStars = computed(() => currentUser.value.rating)
 const props = defineProps(['lives']);
-
-const isMainPage = computed(() => route.path === '/mainPage'); 
 
 const isGamePlanetPage = computed(() => route.path === '/planetAttackPage'); 
 
@@ -67,6 +67,8 @@ const route = useRoute();
 function goBack() {
     window.history.back();
 }
+
+const isHomePage = computed(() => route.fullPath === '/')
 
 // onMounted(async () => {
 // 	try {
@@ -96,7 +98,7 @@ watch(() => route.path, (newPath) => {
             break;
         case '/planetGame':
             currentTitle.value = "Игры";
-            break;  
+            break;
         case '/planetAttackPage':
             currentTitle.value = "";
             break;
@@ -127,6 +129,7 @@ watch(() => route.path, (newPath) => {
     max-width: 414px;
 
 }
+
 .header-star {
     background-color: #ffffff;
     display: flex;
@@ -143,6 +146,7 @@ watch(() => route.path, (newPath) => {
     padding-bottom: 0px;
     align-items: center;
 }
+
 .header-live {
     background-color: #ffffff;
     display: flex;
@@ -153,9 +157,10 @@ watch(() => route.path, (newPath) => {
     padding-left: 8px;
     padding-right: 3px;
     padding-bottom: 0px;
-    align-items: center; 
-    gap: 5px; 
+    align-items: center;
+    gap: 5px;
 }
+
 .header-star-left {
     width: 21px;
     height: 21px;
@@ -216,6 +221,7 @@ watch(() => route.path, (newPath) => {
     line-height: 35px;
     margin-top: 13px;
 }
+
 .live-icon {
     width: 23.8px;
     height: 22.2px;

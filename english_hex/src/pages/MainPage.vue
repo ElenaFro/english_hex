@@ -52,7 +52,6 @@ onMounted(async () => {
 // 	openHelloPopup.value = true;
 // })
 
-// Проверяем значение hasVisited в sessionStorage
 const hasVisited = ref(sessionStorage.getItem('hasVisited') === 'true');
 
 onMounted(() => {
