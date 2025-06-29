@@ -32,17 +32,12 @@ import { useRouter } from 'vue-router';
 
 const router = useRouter();
 const goToMainPage = () => {
-    router.push('/'); // Переходим на главную страницу
+    router.push('/'); 
 };
 const goToGamePage = () => {
     window.location.reload();
 };
-// const resetGameState = () => {
-//     // Сбросим состояние игры:
-//     lives.value = 5;
-//     currentQuestionIndex.value = 0;
-//     answers.value = {};
-// };
+
 </script>
 <style scoped lang="scss">
 .page-container{

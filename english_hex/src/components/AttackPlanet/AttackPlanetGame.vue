@@ -13,7 +13,7 @@
                 <p class="question">?</p>
                 <img src="@/assets/img/Games/sound.svg" alt="sound" class="sound1">
             </button> 
-            <audio ref="soundRef" :src="currentQuestion.audio"></audio>
+            <audio ref="soundRef"></audio>
             <section class="page-container__button"  v-if="currentQuestion.options">
                 <div class="line" v-for="(option, index) in currentQuestion.options" :key="index">
                     <button 
@@ -29,101 +29,101 @@
     </div>
 </template>
 <script setup>
-import { ref, computed, onMounted, defineEmits, watch } from 'vue';
+import { ref, computed, onMounted, defineEmits } from 'vue';
 
-import soundUrl from "@/assets/audio/sound.mp3";
-import soundUrl2 from "@/assets/audio/run.mp3";
 const soundRef = ref(null);
 
 const emit = defineEmits(); 
-const lives = ref(5); // Количество жизней
-const earnedStars = ref(parseInt(localStorage.getItem('earnedStars')) || 0); // Загружаем earnedStars из localStorage
+const lives = ref(5); 
+const earnedStars = ref(parseInt(localStorage.getItem('earnedStars')) || 0); 
 
-const isQuestionPlayed = ref(false); // Состояние для отслеживания, был ли вопрос прослушан
+const isQuestionPlayed = ref(false); 
 
 const playSound = () => {
     if (soundRef.value) {
+        const audioUrl = `http://62.109.0.225:8000/storage/categories/15/video/${currentQuestion.value.id}/audio/${currentQuestion.value.audio}`;
+        soundRef.value.src = audioUrl;
         soundRef.value.currentTime = 0;
         soundRef.value.play();
-        isQuestionPlayed.value = true; // Устанавливаем значение в true, когда звук начинает воспроизводиться
+        isQuestionPlayed.value = true; 
+        console.log("audioUrl", audioUrl)
     }
 };
 
-// Обработчик события 'ended' для аудио
 const onAudioEnded = () => {
-    isQuestionPlayed.value = true; // Устанавливаем значение в true, когда звук заканчивается
-     // Устанавливаем стили кнопок на стандартные
+    isQuestionPlayed.value = true; 
     const currentQuestionData = currentQuestion.value;
-    resetButtonStyles(currentQuestionData, false); // Устанавливаем стандартные стили кнопок
+    resetButtonStyles(currentQuestionData, false); 
 };
 
-const currentQuestionIndex = ref(0); // Индекс текущего вопроса
-const questions = ref([
-    {
-        audio: soundUrl,
-        correctAnswer: 'Утка',
-        options: ['Утка', 'Конь', 'Щука', 'Собака'], // Варианты ответов
-    },
-        {
-        audio: soundUrl2,
-        correctAnswer: 'Бег',
-        options: ['Корова', 'Сметана', 'Локоть', 'Бег'], // Варианты ответов
-    },
-    // Добавьте другие вопросы
-]);
+const currentQuestionIndex = ref(0); 
+const questions = ref([]);
 
-const buttonStyles = ref({}); // Объект для хранения стилей кнопок
+async function fetchQuestions() {
+    try {
+        const token = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOi8vNjIuMTA5LjAuMjI1OjgwMDAvYXBpL2xvZ2luIiwiaWF0IjoxNzUwNzQzMjE4LCJleHAiOjE3NTg1MTkyMTgsIm5iZiI6MTc1MDc0MzIxOCwianRpIjoiZ21uVFpGM2dKMkVMeU0wcCIsInN1YiI6IjIiLCJwcnYiOiIyM2JkNWM4OTQ5ZjYwMGFkYjM5ZTcwMWM0MDA4NzJkYjdhNTk3NmY3In0.36MM59TNLhHSVA5zvJhdQQMdcW0gci9hbSkiASLppc0'; // Замените на ваш токен
+        const response = await fetch('http://62.109.0.225:8000/api/games/planet-attack/get/15', {
+            method: 'GET', 
+            headers: {
+                'Authorization': `Bearer ${token}`, 
+            }
+        });
+        if (!response.ok) {
+            throw new Error('Сеть не отвечает');
+        }
+        const data = await response.json();
+        questions.value = data.map(question => ({
+            id: question.id,  
+            audio: question.audio, 
+            correctAnswer: question.correctAnswer,
+            options: question.options,
+        }));
+    } catch (error) {
+        console.error('Ошибка при получении вопросов:', error);
+    }
+}
 
-// const resetButtonStyles = (currentQuestionData) => {
-//     currentQuestionData.options.forEach((option, index) => {
-//         buttonStyles.value[index] = { backgroundColor: '#fff', color: '#262060', border: '2px solid rgba(49, 29, 93, 1)'}; // Устанавливаем стандартный цвет
-//     });
-// };
+fetchQuestions();
+
+const buttonStyles = ref({}); 
+
 const resetButtonStyles = (currentQuestionData, disableButtons = false) => {
     currentQuestionData.options.forEach((option, index) => {
         buttonStyles.value[index] = { 
             backgroundColor: '#fff', 
             color: '#262060', 
-            border: disableButtons ? '2px solid rgba(118, 118, 118, 0.3)' : '2px solid rgba(49, 29, 93, 1)' // Устанавливаем стиль в зависимости от состояния
+            border: disableButtons ? '2px solid rgba(118, 118, 118, 0.3)' : '2px solid rgba(49, 29, 93, 1)' 
         }; 
     });
 };
 
 const currentQuestion = computed(() => {
-       return questions.value[currentQuestionIndex.value] || {}; // Возвращаем пустой объект, если вопрос не найден
+       return questions.value[currentQuestionIndex.value] || {}; 
    });
 
 const sendAnswer = (answer) => {
     const currentQuestionData = currentQuestion.value;
-    resetButtonStyles(currentQuestionData); // Сброс стилей кнопок перед переходом к следующей попытке
+    resetButtonStyles(currentQuestionData); 
     if (answer === currentQuestionData.correctAnswer) {
-        // Устанавливаем зеленый цвет для правильного ответа
         buttonStyles.value[currentQuestionData.options.indexOf(answer)] = { 
             backgroundColor: '#31AF40', 
-            color: '#FFFFFF', // Изменяем цвет текста на белый
+            color: '#FFFFFF', 
             border: 'none'
         };
         setTimeout(nextQuestion, 1000); 
-        // Переход к следующему вопросу через 1 секунду
     } else {
-        // Устанавливаем красный цвет для неправильного ответа
         buttonStyles.value[currentQuestionData.options.indexOf(answer)] = { 
             backgroundColor: '#881717', 
-            color: '#FFFFFF', // Изменяем цвет текста на белый
+            color: '#FFFFFF', 
             border: 'none'
         };
         
-        lives.value--; // Уменьшить количество жизней
+        lives.value--; 
         console.log('lives.value',lives.value);
 
-        // Изменяем top и right
-        // meteorTop.value = `${parseInt(meteorTop.value) + 8}px`; 
         meteorTop.value = `calc(${meteorTop.value} + 2vh)`; 
         meteorRight.value = `${parseInt(meteorRight.value) + 4}px`;  
         meteorWidth.value = `${parseInt(meteorWidth.value) + 6}px`; 
-        // meteorTop.value = `calc(${meteorTop.value} + 1vh)`; 
-        // meteorRight.value = `calc(${meteorRight.value} + 1vw)`; 
-        // meteorWidth.value = `${parseInt(meteorWidth.value) + 7}px`; 
 
         emit('update:lives', lives.value);
         emit('update:earnedStars', earnedStars.value);
@@ -134,47 +134,36 @@ const sendAnswer = (answer) => {
 };
 
 const nextQuestion = () => {
-    const currentQuestionData = currentQuestion.value; // Получаем текущие данные вопроса
-    resetButtonStyles(currentQuestionData, true); // Сброс стилей кнопок перед переходом к следующему вопросу
-    isQuestionPlayed.value = false; // Сбрасываем состояние, чтобы кнопки были отключены
+    const currentQuestionData = currentQuestion.value; 
+    resetButtonStyles(currentQuestionData, true);
+    isQuestionPlayed.value = false; 
 
     if (lives.value > 0 && currentQuestionIndex.value < questions.value.length - 1) {
         currentQuestionIndex.value++;
     } else if (lives.value === 5 && currentQuestionIndex.value >= questions.value.length - 1) {
-                // Если игра закончена, обновляем earnedStars
-        earnedStars.value += 50 ; // Расчет звезд на основе жизней
-        localStorage.setItem('earnedStars', earnedStars.value); // Сохраняем в localStorage
+        earnedStars.value += 50 ; 
+        localStorage.setItem('earnedStars', earnedStars.value);
         emit('update:earnedStars', earnedStars.value);
         emit('switch-component', 'AttackPlanetWin');
     } else if (lives.value > 0 && lives.value < 5 && currentQuestionIndex.value >= questions.value.length - 1) {
-                // Если игра закончена, обновляем earnedStars
-        earnedStars.value += (50 - 5 * (5 - lives.value)); // Расчет звезд на основе жизней
-        localStorage.setItem('earnedStars', earnedStars.value); // Сохраняем в localStorage
-        emit('update:earnedStars', earnedStars.value);
+        earnedStars.value += (50 - 5 * (5 - lives.value)); 
+        localStorage.setItem('earnedStars', earnedStars.value); 
         emit('switch-component', 'AttackPlanetResult');
     } else if (lives.value <= 0) {
         emit('switch-component', 'AttackPlanetLoss');
     }
 };
 
-// const playSound = () => {
-// 	if (soundRef.value) {
-// 		soundRef.value.currentTime = 0
-// 		soundRef.value.play()
-// 	}
-// }
+const meteorTop = ref('-25px'); 
+const meteorRight = ref('-4px');
+const meteorWidth = ref('74px'); 
 
-const meteorTop = ref('-25px'); // Начальное значение для top
-const meteorRight = ref('-4px');  // Начальное значение для right
-const meteorWidth = ref('74px'); // Начальное значение для width
-
-// Слушатель события 'ended' для аудио
 onMounted(() => {
     if (soundRef.value) {
         soundRef.value.addEventListener('ended', onAudioEnded);
     }
 });
-// Удаляем слушатель при уничтожении компонента
+
 import { onBeforeUnmount } from 'vue';
 
 onBeforeUnmount(() => {
@@ -182,9 +171,7 @@ onBeforeUnmount(() => {
         soundRef.value.removeEventListener('ended', onAudioEnded);
     }
 });
-// onMounted(() => {
-    // Здесь можно подгрузить вопросы с сервера
-// });
+
 </script>
 <style scoped lang="scss">
 .page-container{
@@ -258,7 +245,7 @@ onBeforeUnmount(() => {
 }
 .line {
     display: flex;
-    width: calc(50% - 12.5px); /* Устанавливаем ширину для 2 столбиков с учетом отступов */
+    width: calc(50% - 12.5px); 
     margin: 5px; 
 }
 .question {
@@ -377,8 +364,8 @@ onBeforeUnmount(() => {
     }
     .line {
     display: flex;
-    width: calc(50% - 6px); /* Устанавливаем ширину для 2 столбиков с учетом отступов */
+    width: calc(50% - 6px); 
     margin: 3px; 
-}
+    }
 }
 </style>

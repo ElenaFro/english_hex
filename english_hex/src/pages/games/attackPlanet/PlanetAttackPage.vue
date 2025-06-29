@@ -21,7 +21,7 @@ import AttackPlanetWin from '@/components/AttackPlanet/AttackPlanetWin.vue';
 const emit = defineEmits(['update:lives', 'update:earnedStars', 'switch-component']);
 
 const activeComponent = ref(markRaw(AttackPlanetGame));
-const lives = ref(5); // Изначальное количество жизней
+const lives = ref(5); 
 const earnedStars = ref(parseInt(localStorage.getItem('earnedStars')) || 0); 
 
 function switchComponent(componentName) {
@@ -42,12 +42,12 @@ function switchComponent(componentName) {
 }
 
 const updateLives = (newLives) => {
-    lives.value = newLives; // Обновляем количество жизней
-    emit('update:lives', newLives); // Эмитируем событие для родителя
+    lives.value = newLives; 
+    emit('update:lives', newLives); 
 };
 const updateEarnedStars = (newEarnedStars) => {
-    earnedStars.value = newEarnedStars; // Обновляем количество звезд
-    emit('update:earnedStars', newEarnedStars); // Эмитируем событие для родителя
+    earnedStars.value = newEarnedStars; 
+    emit('update:earnedStars', newEarnedStars); 
 };
 </script>
 

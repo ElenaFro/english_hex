@@ -6,7 +6,7 @@
             </span>
         </template> 
 
-        <template v-else-if="isGamePlanetPage"> <!-- Добавлено условие для страницы Game Planet -->
+        <template v-else-if="isGamePlanetPage"> 
             <span class="header-live">
                 <span v-for="index in lives" :key="index" class="live-icon">
                     <img src="@/assets/icons/navBarIcon/live.svg" class="header-live-left" alt="Жизнь" />
@@ -38,13 +38,11 @@ import { ref, watch, computed  } from 'vue';
 import { useRoute} from 'vue-router';
 import { defineProps } from 'vue';
 
-// const lives = ref(5);
 const earnedStars = ref(parseInt(localStorage.getItem('earnedStars')) || 0);
 
 const props = defineProps(['lives']); 
 
-const isHomePage = computed(() => route.path === '/'); // Проверяем, находимся ли мы на главной странице
-const isGamePlanetPage = computed(() => route.path === '/planetAttackPage'); // Проверяем, находимся ли мы на главной странице
+const isGamePlanetPage = computed(() => route.path === '/planetAttackPage'); 
 
 const headerItemsRight = [
     {
