@@ -60,7 +60,6 @@ const routes = [
       {
         path: "planetAttackPage",
         name: "planetAttackPage",
-<<<<<<< HEAD
         component: () => import("@/pages/games/attackPlanet/PlanetAttackPage.vue"),
       },
 	  {
@@ -77,18 +76,17 @@ const routes = [
         path: "wordTwinkleResult",
         name: "wordTwinkleResult",
         component: () => import("@/pages/games/wordTwinkle/wordTwinkleResult.vue"),
-      }
-=======
-        component: () =>
-          import("@/pages/games/attackPlanet/PlanetAttackPage.vue"),
       },
       {
         path: "constellationGame",
         name: "constellationGame",
-        component: () =>
-          import("@/pages/games/constellationGame/ConstellationPage.vue"),
+        component: () => import("@/pages/games/constellationGame/ConstellationPage.vue"),
       },
->>>>>>> d2522e97d28904384ab98deacbf57d4c91dc5e24
+	  {
+		path: "myPlanet",
+        name: "myPlanet",
+        component: () => import("@/pages/myPlanetPage.vue"),
+	  }
     ],
     meta: { requiresAuth: false },
   },

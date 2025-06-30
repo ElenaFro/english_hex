@@ -13,8 +13,8 @@
                 </span>
             </span>
         </template>
-		<template v-else-if="isGameWordTwinkle || isMainPage">
-            <span class="header-star">
+		<template v-else-if="isGameWordTwinkle || isMainPage || myPlanet">
+            <span @click="goToMyPlanet" class="header-star">
                 {{ earnedStars }} <img src="@/assets/icons/navBarIcon/star.svg" class="header-star-left" alt="Звезда" />
             </span>
         </template> 
@@ -41,7 +41,10 @@
 import { RouterLink } from "vue-router";
 import { ref, watch, computed  } from 'vue';
 import { useRoute} from 'vue-router';
+import { useRouter } from 'vue-router';
 import { defineProps } from 'vue';
+
+const router = useRouter();
 
 const earnedStars = ref(parseInt(localStorage.getItem('earnedStars')) || 0);
 
@@ -51,7 +54,9 @@ const isMainPage = computed(() => route.path === '/mainPage');
 
 const isGamePlanetPage = computed(() => route.path === '/planetAttackPage'); 
 
-const isGameWordTwinkle = computed(() => route.path === '/wordTwinkleResult'); 
+const isGameWordTwinkle = computed(() => route.path === '/wordTwinkleResult');
+
+const myPlanet = computed(() => route.path === '/myPlanet'); 
 
 const headerItemsRight = [
     {
@@ -66,6 +71,10 @@ const route = useRoute();
 
 function goBack() {
     window.history.back();
+}
+
+const goToMyPlanet = () => {
+	router.push({ path: '/myPlanet', query: { earnedStars: earnedStars.value } })
 }
 
 // onMounted(async () => {
