@@ -25,5 +25,6 @@ function switchComponent () {
 <style scoped>
 .page-content {
 	padding-top: 28px;
+	padding-bottom: 35px;
 }
 </style>

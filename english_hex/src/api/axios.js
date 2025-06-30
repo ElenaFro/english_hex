@@ -1,5 +1,6 @@
 import axios from "axios";
 import { useAuthStore } from "../stores/auth";
+import { useRouter } from "vue-router";
 
 const apiClient = axios.create({
   baseURL: "http://62.109.0.225:8000/api",
@@ -23,20 +24,27 @@ export function setupInterceptors(pinia) {
       }
       return config;
     },
-    (error) => Promise.reject(error)
-  );
+   		(error) => Promise.reject(error)
+  	);
 
-  apiClient.interceptors.response.use(
-    (response) => response,
-    (error) => {
-      if (error.response?.status === 401) {
-        authStore.logout();
-      }
-      return Promise.reject(
-        error.response?.data || { message: "Server error" }
-      );
-    }
-  );
+  	apiClient.interceptors.response.use(
+    	(response) => response,
+    	(error) => {
+			const status = error.response?.status
+
+			if (status === 401) {
+				authStore.logout();
+			}
+			
+			if ([404, 408, 410, 500, 501, 502, 503].includes(status)) {
+				router.push(`/error/${status}`)
+			}
+
+			return Promise.reject(
+				error.response?.data || { message: "Server error" }
+			);
+    	}
+  	);
 }
 
 export default apiClient;

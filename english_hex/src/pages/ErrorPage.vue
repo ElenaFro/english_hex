@@ -2,7 +2,7 @@
 	<div class="main-container">
 		<div class="content-container">
 			<div class="code-container">
-				<p class="error-code">404</p>
+				<p class="error-code">{{ errorCode }}</p>
 				<img src="@/assets/img/error-img.png" alt="" class="error-girl">
 			</div>
 			<div class="error-container">
@@ -10,16 +10,28 @@
 					Мы столкнулись с небольшой проблемой. Извиняемся за неудобства! 
 					Попробуйте обновить приложение или перезагрузить устройство.
 				</p>
-				<button class="button button--purple">Вернись обратно</button>
+				<button @click="goToMainPage" class="button button--purple">Вернись обратно</button>
 			</div>
 		</div>
 	</div>
 </template>
 
 <script setup>
+import { useRouter } from 'vue-router';
 
-// const errorCode = ref('')
+const router = useRouter()
+const props = defineProps({
+	code: {
+		type: [String, Number],
+		default: 404
+	}
+})
 
+const errorCode = props.code
+
+const goToMainPage = () => {
+	router.push('/mainPage')
+}
 </script>
 
 <style scoped>
