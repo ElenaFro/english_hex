@@ -60,50 +60,49 @@ const routes = [
       {
         path: "planetAttackPage",
         name: "planetAttackPage",
-<<<<<<< HEAD
-        component: () => import("@/pages/games/attackPlanet/PlanetAttackPage.vue"),
-      },
-	  {
-        path: "wordTwinkle",
-        name: "wordTwinkle",
-        component: () => import("@/pages/games/wordTwinkle/wordTwinklePage.vue"),
-      },
-	  {
-        path: "wordTwinkleGame",
-        name: "wordTwinkleGame",
-        component: () => import("@/pages/games/wordTwinkle/wordTwinkleGame.vue"),
-      },
-	  {
-        path: "wordTwinkleResult",
-        name: "wordTwinkleResult",
-        component: () => import("@/pages/games/wordTwinkle/wordTwinkleResult.vue"),
-      }
-=======
         component: () =>
           import("@/pages/games/attackPlanet/PlanetAttackPage.vue"),
       },
+      {
+        path: "wordTwinkle",
+        name: "wordTwinkle",
+        component: () =>
+          import("@/pages/games/wordTwinkle/wordTwinklePage.vue"),
+      },
+      {
+        path: "wordTwinkleGame",
+        name: "wordTwinkleGame",
+        component: () =>
+          import("@/pages/games/wordTwinkle/wordTwinkleGame.vue"),
+      },
+      {
+        path: "wordTwinkleResult",
+        name: "wordTwinkleResult",
+        component: () =>
+          import("@/pages/games/wordTwinkle/wordTwinkleResult.vue"),
+      },
+
       {
         path: "constellationGame",
         name: "constellationGame",
         component: () =>
           import("@/pages/games/constellationGame/ConstellationPage.vue"),
       },
->>>>>>> d2522e97d28904384ab98deacbf57d4c91dc5e24
     ],
     meta: { requiresAuth: false },
   },
-	{
-		path: '/error/:code',
-		name: 'ErrorPage',
-		component: () => import("@/pages/ErrorPage.vue"),
-		props: true
-	}, 
-	{
-		path: '/:pathMatch(.*)*',
-		name: 'error',
-		component: () => import("@/pages/ErrorPage.vue"),
-		props: {code: 404}
-	}
+  {
+    path: "/error/:code",
+    name: "ErrorPage",
+    component: () => import("@/pages/ErrorPage.vue"),
+    props: true,
+  },
+  {
+    path: "/:pathMatch(.*)*",
+    name: "error",
+    component: () => import("@/pages/ErrorPage.vue"),
+    props: { code: 404 },
+  },
 ];
 
 export default routes;
