@@ -49,7 +49,7 @@ const gameList = ref([
     {
         id: 3,
         name: 'Мерцание слов',
-        path: 'flickerGame',
+        path: 'wordTwinkle',
     }
 ])
 const goToGame = (item) => {

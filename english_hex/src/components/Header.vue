@@ -13,6 +13,11 @@
                 </span>
             </span>
         </template>
+		<template v-else-if="isGameWordTwinkle || isMainPage">
+            <span class="header-star">
+                {{ earnedStars }} <img src="@/assets/icons/navBarIcon/star.svg" class="header-star-left" alt="Звезда" />
+            </span>
+        </template> 
         <template v-else>      
             <button @click="goBack" class="header-item-button">
                 <img src="@/assets/icons/navBarIcon/arrow_left.svg" class="header-icon-left" alt="Назад" />
@@ -40,9 +45,13 @@ import { defineProps } from 'vue';
 
 const earnedStars = ref(parseInt(localStorage.getItem('earnedStars')) || 0);
 
-const props = defineProps(['lives']); 
+const props = defineProps(['lives']);
+
+const isMainPage = computed(() => route.path === '/mainPage'); 
 
 const isGamePlanetPage = computed(() => route.path === '/planetAttackPage'); 
+
+const isGameWordTwinkle = computed(() => route.path === '/wordTwinkleResult'); 
 
 const headerItemsRight = [
     {
@@ -90,7 +99,13 @@ watch(() => route.path, (newPath) => {
             break;  
         case '/planetAttackPage':
             currentTitle.value = "";
-            break;   
+            break;
+		case '/wordTwinkle':
+            currentTitle.value = "Игры";
+            break;
+		case '/wordTwinkleGame':
+            currentTitle.value = "Игры";
+            break;
         default:
             currentTitle.value = " ";
             break;
