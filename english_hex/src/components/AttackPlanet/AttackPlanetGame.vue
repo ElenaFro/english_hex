@@ -13,7 +13,7 @@
                 <p class="question">?</p>
                 <img src="@/assets/img/Games/sound.svg" alt="sound" class="sound1">
             </button> 
-            <audio ref="soundRef" :src="currentQuestion.audio"></audio>
+            <audio ref="soundRef"></audio>
             <section class="page-container__button"  v-if="currentQuestion.options">
                 <div class="line" v-for="(option, index) in currentQuestion.options" :key="index">
                     <button 
@@ -29,10 +29,8 @@
     </div>
 </template>
 <script setup>
-import { ref, computed, onMounted, defineEmits, watch } from 'vue';
+import { ref, computed, onMounted, defineEmits } from 'vue';
 
-import soundUrl from "@/assets/audio/sound.mp3";
-import soundUrl2 from "@/assets/audio/run.mp3";
 const soundRef = ref(null);
 
 const emit = defineEmits(); 
@@ -43,9 +41,12 @@ const isQuestionPlayed = ref(false);
 
 const playSound = () => {
     if (soundRef.value) {
+        const audioUrl = `http://62.109.0.225:8000/storage/categories/15/video/${currentQuestion.value.id}/audio/${currentQuestion.value.audio}`;
+        soundRef.value.src = audioUrl;
         soundRef.value.currentTime = 0;
         soundRef.value.play();
         isQuestionPlayed.value = true; 
+        console.log("audioUrl", audioUrl)
     }
 };
 
@@ -56,18 +57,33 @@ const onAudioEnded = () => {
 };
 
 const currentQuestionIndex = ref(0); 
-const questions = ref([
-    {
-        audio: soundUrl,
-        correctAnswer: 'Утка',
-        options: ['Утка', 'Конь', 'Щука', 'Собака'], 
-    },
-        {
-        audio: soundUrl2,
-        correctAnswer: 'Бег',
-        options: ['Корова', 'Сметана', 'Локоть', 'Бег'],
-    },
-]);
+const questions = ref([]);
+
+async function fetchQuestions() {
+    try {
+        const token = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOi8vNjIuMTA5LjAuMjI1OjgwMDAvYXBpL2xvZ2luIiwiaWF0IjoxNzUwNzQzMjE4LCJleHAiOjE3NTg1MTkyMTgsIm5iZiI6MTc1MDc0MzIxOCwianRpIjoiZ21uVFpGM2dKMkVMeU0wcCIsInN1YiI6IjIiLCJwcnYiOiIyM2JkNWM4OTQ5ZjYwMGFkYjM5ZTcwMWM0MDA4NzJkYjdhNTk3NmY3In0.36MM59TNLhHSVA5zvJhdQQMdcW0gci9hbSkiASLppc0'; // Замените на ваш токен
+        const response = await fetch('http://62.109.0.225:8000/api/games/planet-attack/get/15', {
+            method: 'GET', 
+            headers: {
+                'Authorization': `Bearer ${token}`, 
+            }
+        });
+        if (!response.ok) {
+            throw new Error('Сеть не отвечает');
+        }
+        const data = await response.json();
+        questions.value = data.map(question => ({
+            id: question.id,  
+            audio: question.audio, 
+            correctAnswer: question.correctAnswer,
+            options: question.options,
+        }));
+    } catch (error) {
+        console.error('Ошибка при получении вопросов:', error);
+    }
+}
+
+fetchQuestions();
 
 const buttonStyles = ref({}); 
 

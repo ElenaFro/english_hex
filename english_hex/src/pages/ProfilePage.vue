@@ -177,18 +177,18 @@ const confirmSave = async () => {
     min-height: 100%;
     padding: 40px 30px;
     background-color: #F6F6FE;
-	border-radius: 40px;
+    border-radius: 40px;
 }
 
 .profile-page__inner {
-	overflow-y: scroll;
-	width: 100%;
-	height: 100%;
-	display: flex;
+    overflow-y: scroll;
+    width: 100%;
+    height: 100%;
+    display: flex;
     flex-direction: column;
     align-items: center;
-	row-gap: 25px;
-	scrollbar-width: none;
+    row-gap: 25px;
+    scrollbar-width: none;
     overflow-y: auto;
     border-top-left-radius: 40px;
     border-top-right-radius: 40px;
@@ -204,7 +204,7 @@ const confirmSave = async () => {
 
 .page-container {
     row-gap: 25px;
-
+    scrollbar-width: none;
 }
 
 .profile-card {
