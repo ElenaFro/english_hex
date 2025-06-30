@@ -64,6 +64,25 @@ const routes = [
           import("@/pages/games/attackPlanet/PlanetAttackPage.vue"),
       },
       {
+        path: "wordTwinkle",
+        name: "wordTwinkle",
+        component: () =>
+          import("@/pages/games/wordTwinkle/wordTwinklePage.vue"),
+      },
+      {
+        path: "wordTwinkleGame",
+        name: "wordTwinkleGame",
+        component: () =>
+          import("@/pages/games/wordTwinkle/wordTwinkleGame.vue"),
+      },
+      {
+        path: "wordTwinkleResult",
+        name: "wordTwinkleResult",
+        component: () =>
+          import("@/pages/games/wordTwinkle/wordTwinkleResult.vue"),
+      },
+
+      {
         path: "constellationGame",
         name: "constellationGame",
         component: () =>
@@ -71,6 +90,18 @@ const routes = [
       },
     ],
     meta: { requiresAuth: false },
+  },
+  {
+    path: "/error/:code",
+    name: "ErrorPage",
+    component: () => import("@/pages/ErrorPage.vue"),
+    props: true,
+  },
+  {
+    path: "/:pathMatch(.*)*",
+    name: "error",
+    component: () => import("@/pages/ErrorPage.vue"),
+    props: { code: 404 },
   },
 ];
 

@@ -269,7 +269,7 @@ body, #app {
 }
 
 .layout {
-  height: 100dvh;
+  height: 100vh;
   position: relative;
   display: -webkit-box;
   display: -ms-flexbox;
@@ -290,6 +290,11 @@ body, #app {
   display: none;
 }
 
+@media (min-width: 415px) {
+  .layout, body {
+    overflow: visible;
+  }
+}
 .page-content {
   overflow: hidden;
   display: -webkit-box;
@@ -302,7 +307,6 @@ body, #app {
   -webkit-box-flex: 1;
       -ms-flex: 1;
           flex: 1;
-  /* width: 100%; */
   width: 100vw;
   max-width: 414px;
   border-radius: 40px 40px 0 0;
@@ -310,9 +314,7 @@ body, #app {
   background-color: rgb(246, 246, 254);
 }
 .page-content .scroll-container {
-  /* width: 100%;
-  max-width: 375px; */
-  width: 100vw;
+  width: 100%;
   max-width: 414px;
   overflow-y: scroll;
   padding-bottom: 150px;
@@ -401,12 +403,42 @@ body, #app {
   position: relative;
 }
 
+.page-container {
+  width: 100vw;
+  max-width: 414px;
+  height: 100vh;
+  min-height: 100%;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  padding: 40px 30px;
+  background-color: #F6F6FE;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+      -ms-flex-direction: column;
+          flex-direction: column;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+  overflow-y: auto;
+  border-top-left-radius: 40px;
+  border-top-right-radius: 40px;
+}
+
+.d-mb-12 {
+  margin-bottom: 12px;
+}
+
 .d-mb-16 {
   margin-bottom: 16px;
 }
 
 .d-mt-16 {
   margin-top: 16px;
+}
+
+.d-mt-12 {
+  margin-top: 12px;
 }
 
 .d-mr-16 {
@@ -431,6 +463,18 @@ body, #app {
   margin-bottom: 16px;
 }
 
+.d-mb-30 {
+  margin-bottom: 30px;
+}
+
+.d-pa-30 {
+  padding: 30px;
+}
+
+.full-height {
+  height: 100%;
+}
+
 .button {
   display: -webkit-inline-box;
   display: -ms-inline-flexbox;
@@ -449,7 +493,7 @@ body, #app {
   line-height: 100%;
   letter-spacing: 0em;
   color: rgb(255, 255, 255);
-  border: 0;
+  border: none;
   border-radius: 16px;
   padding: 12px 24px;
 }
@@ -533,6 +577,29 @@ body, #app {
 }
 .button-container--row {
   gap: 11px;
+}
+
+.action-button {
+  padding: 9px 22px;
+  border: none;
+  border-radius: 16px;
+  background: linear-gradient(94.6deg, #355cd5 4.52%, #714ab4 107.33%);
+  color: #ffffff;
+  font-size: 18px;
+  font-weight: 600;
+  cursor: pointer;
+  width: 100%;
+  -webkit-transition: background-color 0.2s;
+  transition: background-color 0.2s;
+}
+
+.action-button:hover {
+  background-color: #60a5fa;
+}
+
+.action-button:disabled {
+  background-color: #cccccc;
+  cursor: not-allowed;
 }
 
 .message-block {

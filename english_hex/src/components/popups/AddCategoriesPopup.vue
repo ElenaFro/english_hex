@@ -34,10 +34,9 @@ const props = defineProps({
     soundMp3: { type: String, default: '' }
 })
 
-// Метод для перехода на главную страницу
 const goToMainPage = () => {
-    emit('close'); // Эмитируем событие close
-    router.push('/'); // Переходим на главную страницу
+    emit('close');
+    router.push({name: 'mainPage'});
 };
 </script>
 

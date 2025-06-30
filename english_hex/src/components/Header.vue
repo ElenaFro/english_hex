@@ -13,6 +13,11 @@
                 </span>
             </span>
         </template>
+		<template v-else-if="isGameWordTwinkle || isMainPage">
+            <span class="header-star">
+                {{ earnedStars }} <img src="@/assets/icons/navBarIcon/star.svg" class="header-star-left" alt="Звезда" />
+            </span>
+        </template> 
         <template v-else>
             <button @click="goBack" class="header-item-button">
                 <img src="@/assets/icons/navBarIcon/arrow_left.svg" class="header-icon-left" alt="Назад" />
@@ -44,7 +49,9 @@ const currentUser = computed(() => useAuthStore().getCurrentUser())
 const earnedStars = computed(() => currentUser.value.rating)
 const props = defineProps(['lives']);
 
-const isGamePlanetPage = computed(() => route.path === '/planetAttackPage');
+const isGamePlanetPage = computed(() => route.path === '/planetAttackPage'); 
+
+const isGameWordTwinkle = computed(() => route.path === '/wordTwinkleResult'); 
 
 const headerItemsRight = [
     {
@@ -72,7 +79,7 @@ const isHomePage = computed(() => route.fullPath === '/')
 // 	}
 // })
 
-watch(() => route.path, (newPath) => {
+watch(() => route.path, () => {
     switch (route.name) {
         case 'profile':
             currentTitle.value = "Профиль";
@@ -94,6 +101,12 @@ watch(() => route.path, (newPath) => {
             break;
         case 'planetAttackPage':
             currentTitle.value = "";
+            break;
+		case 'wordTwinkle':
+            currentTitle.value = "Игры";
+            break;
+		case 'wordTwinkleGame':
+            currentTitle.value = "Игры";
             break;
         case 'learning':
             currentTitle.value = route.query.name;
