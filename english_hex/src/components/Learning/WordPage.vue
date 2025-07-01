@@ -1,31 +1,23 @@
 <template>
 	<div class="sound-container">
-		<!-- <p class="sound-container__word">{{ engWord }}</p> -->
-		<p class="sound-container__word">Duck</p>
+		<p class="sound-container__word">{{ engWord }}</p>
 		<button class="sound-container__sound-button" @click="playSound">
 			<img src="@/assets/img/sound-icon.svg" alt="" class="sound-container__sound-img">
 		</button>
-		<!-- <audio
-			ref="soundRef"
-			class="sound-container__lerning-sound"
-			:src="soundUrl"
-		></audio> -->
-		<audio ref="soundRef" :src="soundUrl"></audio>
-		<!-- <p class="sound-container__word">{{ rusWord }}</p> -->
-		<p class="sound-container__word">Утка</p>
+		<audio ref="soundRef" class="sound-container__lerning-sound" :src="soundUrl"></audio>
+		<p class="sound-container__word">{{ rusWord }}</p>
 		<img src="@/assets/img/girl-img.png" alt="" class="sound-container__girl-img">
 	</div>
 </template>
 
 <script setup>
 import { ref } from 'vue'
-import soundUrl from "@/assets/audio/sound.mp3"
 
-// const props = defineProps({
-//   engWord: String,
-//   rusWord: String,
-//   soundUrl: String
-// })
+const props = defineProps({
+	engWord: String,
+	rusWord: String,
+	soundUrl: String
+})
 const soundRef = ref(null)
 
 const playSound = () => {
@@ -37,7 +29,7 @@ const playSound = () => {
 </script>
 
 <style scoped>
-.sound-container{
+.sound-container {
 	overflow: hidden;
 	position: relative;
 	width: 315px;
@@ -70,5 +62,4 @@ const playSound = () => {
 	margin-top: auto;
 	align-self: end;
 }
-
 </style>

@@ -1,24 +1,15 @@
 <template>
 	<div class="video-container">
-			<!-- <video
-				ref="videoRef"
-				class="video-container__lerning-video" 
-				:src="videoUrl" 
-				autoplay
-			></video> -->
-			<video
-				ref="videoRef"
-				class="video-container__lerning-video" 
-				src="@/assets/video/video.mp4"
-				autoplay
-				playsinline
-				webkit-playsinline
-			></video>
-		</div>
+		<video ref="videoRef" class="video-container__lerning-video" :src="videoUrl" autoplay></video>
+	</div>
 </template>
 
 <script setup>
 import { ref } from 'vue'
+
+defineProps({
+	videoUrl: String
+})
 
 const videoRef = ref(null)
 
@@ -26,7 +17,7 @@ const replayVideo = () => {
 	if (videoRef.value) {
 		videoRef.value.currentTime = 0
 		videoRef.value.play()
-	} 
+	}
 }
 
 const pauseVideo = () => {
@@ -41,7 +32,7 @@ defineExpose({ replayVideo, pauseVideo })
 </script>
 
 <style scoped>
-.video-container{
+.video-container {
 	overflow: hidden;
 	position: relative;
 	width: 315px;

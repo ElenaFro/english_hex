@@ -3,69 +3,78 @@
 		<div class="flip-card" :class="{ flipped: activeComponent === 'WordPage' }">
 			<div class="flip-card__inner">
 				<div class="flip-card__side flip-card__front">
-          			<VideoPage ref="videoRef" />
-        		</div>
+					<VideoPage :videoUrl="getVideoUrl(currentCard)" ref="videoRef" />
+				</div>
 				<div class="flip-card__side flip-card__back">
-          			<WordPage />
-        		</div>
+					<WordPage :engWord="currentCard.translation_word" :rusWord="currentCard.word"
+						:soundUrl="getAudioUrl(currentCard)" />
+				</div>
 			</div>
 		</div>
-		<!-- <VideoPage :videoUrl="data.videoUrl"/>
-		<WordPage 
-			:engWord="data.engWord"
-			:rusWord="data.rusWord"
-			:soundUrl="data.soundUrl"	
-		/> -->
-		<!-- <component 
-			:is="components[activeComponent]" 
-			ref="videoRef"	
-		/> -->
 		<div class="button-container">
 			<button class="button button--white" @click="replayAgain">Повторить</button>
-			<button class="button button--blue" @click="goToCard">Продолжить</button>
+			<button class="button button--blue" @click="handleNextOrFinish">
+				{{ isLastCard ? 'Закончить' : 'Продолжить' }}
+			</button>
 		</div>
 	</div>
 </template>
 
 <script setup>
-import {ref} from 'vue'
-import axios from 'axios'
+import { ref, onMounted, computed } from 'vue'
+import { useRouter } from 'vue-router'
 import WordPage from './WordPage.vue'
 import VideoPage from './VideoPage.vue'
+import { useCategoriesStore } from '@/stores/categories'
 
-// const data = ref([])
-
+const cards = ref([])
+const currentCardIndex = ref(0)
+const chosedCategory = ref({})
 const videoRef = ref(null)
-
-// onMounted(async () => {
-// 	try {
-// 		const res = await axios.get('#')
-// 		data.value = res.data
-// 	} catch (err) {
-// 		console.error(err)
-// 	}
-// })
-
 const activeComponent = ref('VideoPage')
+const router = useRouter()
 
-const components = {
-	WordPage,
-	VideoPage
-}
+const currentCard = computed(() => cards.value[currentCardIndex.value] || {})
+const isLastCard = computed(() => currentCardIndex.value === cards.value.length - 1 && activeComponent.value === 'WordPage')
+
+onMounted(async () => {
+	chosedCategory.value = useCategoriesStore().chosedCategory
+	cards.value = chosedCategory.value.cards || []
+})
 
 const replayAgain = () => {
-	if (activeComponent.value == 'WordPage') {
+	if (activeComponent.value === 'WordPage') {
 		activeComponent.value = 'VideoPage'
 	}
-
 	if (videoRef.value?.replayVideo) {
 		videoRef.value.replayVideo()
- 	}
+	}
 }
 
-const goToCard = () => {
-	videoRef.value?.pauseVideo?.()
-	activeComponent.value = 'WordPage'
+const handleNextOrFinish = () => {
+	if (isLastCard.value) {
+		router.push({ name: 'games' })
+		return
+	}
+	if (activeComponent.value === 'VideoPage') {
+		if (videoRef.value?.pauseVideo) {
+			videoRef.value.pauseVideo()
+		}
+		activeComponent.value = 'WordPage'
+	} else {
+		currentCardIndex.value = (currentCardIndex.value + 1) % cards.value.length
+		activeComponent.value = 'VideoPage'
+	}
+}
+
+const getVideoUrl = (card) => {
+	if (!card || !card.id || !card.video) return ''
+	return `http://62.109.0.225:8000/storage/categories/${chosedCategory.value.id}/video/${card.id}/${card.video}`
+}
+
+const getAudioUrl = (card) => {
+	if (!card || !card.id || !card.audio) return ''
+	return `http://62.109.0.225:8000/storage/categories/${chosedCategory.value.id}/video/${card.id}/audio/${card.audio}`
 }
 </script>
 
@@ -112,5 +121,10 @@ const goToCard = () => {
 .button-container {
 	display: flex;
 	justify-content: space-between;
+}
+
+.button--blue {
+	background-color: #007bff;
+	color: white;
 }
 </style>
