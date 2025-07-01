@@ -26,6 +26,15 @@ export const useCategoriesStore = defineStore('categories', () => {
         }
     }
 
+    async function updateComplateCategory(id) {
+        try {
+            await apiClient.patch(`/category/finish`, { categoryId: id });
+        } catch (error) {
+            console.error(error);
+            throw error;
+        }
+    }
+
     function setChosedCategories(category) {
         chosedCategory.value = category;
     }
@@ -36,5 +45,6 @@ export const useCategoriesStore = defineStore('categories', () => {
         getCategories,
         setChosedCategories,
         getChosedCategory,
+        updateComplateCategory,
     };
 });

@@ -1,41 +1,50 @@
 <template>
-    <div class="page-container" :class="nonBg">
-        <div v-if="!allMatched" class="timer-area">
-            <span>{{ timer }} сек</span>
-            <span v-if="errorCount > 0" class="error-count">+1</span>
+    <section>
+        <div class="page-container" :class="nonBg">
+            <Loader v-if="loading" />
+            <section v-else class="game_section">
+                <div v-if="!allMatched" class="timer-area">
+                    <span>{{ timer }} сек</span>
+                    <span v-if="errorCount > 0" class="error-count">+1</span>
+                </div>
+                <div class="card-grid">
+                    <div
+                        v-for="(card, index) in cards"
+                        :key="index"
+                        class="card"
+                        :class="{
+                            selected: selectedCards.includes(card),
+                            correct: isCorrect(card),
+                            incorrect: incorrectCards.includes(card),
+                            hidden: !card.visible,
+                        }"
+                        @click="selectCard(card)"
+                    >
+                        {{ card.visible ? card.displayWord : '' }}
+                    </div>
+                </div>
+            </section>
         </div>
-        <div class="card-grid">
-            <div
-                v-for="(card, index) in cards"
-                :key="index"
-                class="card"
-                :class="{
-                    selected: selectedCards.includes(card),
-                    correct: isCorrect(card),
-                    incorrect: incorrectCards.includes(card),
-                    hidden: !card.visible,
-                }"
-                @click="selectCard(card)"
-            >
-                {{ card.visible ? (card.isEnglish ? card.english : card.russian) : '' }}
-            </div>
-        </div>
-    </div>
-    <CongratulationPopup
-        :is-visible="allMatched"
-        title="Поздравляю!"
-        :message="message"
-        @confirm="goToPlanet"
-    />
+        <CongratulationPopup
+            :is-visible="allMatched"
+            title="Поздравляю!"
+            :message="message"
+            @confirm="goToPlanet"
+        />
+    </section>
 </template>
 
 <script setup>
 import { ref, onMounted, onUnmounted, computed } from 'vue';
 import CongratulationPopup from './CongratulationPopup.vue';
-import { useRouter } from 'vue-router';
+import { useRoute, useRouter } from 'vue-router';
+import { useGamesStore } from '@/stores/games';
+import Loader from '../Loader.vue';
 
 const router = useRouter();
+const route = useRoute();
 const timer = ref(0);
+const loading = ref(true);
 const errorCount = ref(0);
 const selectedCards = ref([]);
 const matchedPairs = ref([]);
@@ -47,16 +56,7 @@ const message = ref('');
 
 let intervalId;
 
-const mockData = [
-    { id: 1, english: 'dog', russian: 'собака', isEnglish: true },
-    { id: 2, english: 'dog', russian: 'собака', isEnglish: false },
-    { id: 3, english: 'cat', russian: 'кот', isEnglish: true },
-    { id: 4, english: 'cat', russian: 'кот', isEnglish: false },
-    { id: 5, english: 'mouse', russian: 'мышь', isEnglish: true },
-    { id: 6, english: 'mouse', russian: 'мышь', isEnglish: false },
-    { id: 7, english: 'hare', russian: 'заяц', isEnglish: true },
-    { id: 8, english: 'hare', russian: 'заяц', isEnglish: false },
-];
+const data = ref([]);
 
 const shuffleCards = () => {
     for (let i = cards.value.length - 1; i > 0; i--) {
@@ -66,13 +66,13 @@ const shuffleCards = () => {
 };
 
 const isCorrect = computed(() => (card) => {
-    return correctCards.value.includes(card.id);
+    return correctCards.value.includes(card.pairId);
 });
 
 const nonBg = computed(() => (allMatched.value ? 'pageNoBg' : ''));
 
 const selectCard = (card) => {
-    if (selectedCards.value.length < 2 && !matchedPairs.value.includes(card.id)) {
+    if (selectedCards.value.length < 2 && !matchedPairs.value.includes(card.pairId)) {
         selectedCards.value.push(card);
         if (selectedCards.value.length === 2) {
             checkMatch();
@@ -82,16 +82,14 @@ const selectCard = (card) => {
 
 const checkMatch = () => {
     const [card1, card2] = selectedCards.value;
-    if (card1.isEnglish !== card2.isEnglish && card1.english === card2.english) {
-        matchedPairs.value.push(card1.id);
-        correctCards.value.push(card1.id, card2.id);
+    if (card1.pairId === card2.pairId && card1.isTranslation !== card2.isTranslation) {
+        matchedPairs.value.push(card1.pairId);
+        correctCards.value.push(card1.pairId);
         setTimeout(() => {
             card1.visible = card2.visible = false;
-            correctCards.value = correctCards.value.filter(
-                (id) => id !== card1.id && id !== card2.id
-            );
+            correctCards.value = correctCards.value.filter((id) => id !== card1.pairId);
             selectedCards.value = [];
-            if (matchedPairs.value.length === cards.value.length / 2) {
+            if (matchedPairs.value.length === data.value.length) {
                 message.value = `Вы завершили первую колоду за ${timer.value} секунд. Теперь вы можете создать свою планету и продвигать её, зарабатывая звёзды в каждой игре!`;
                 allMatched.value = true;
                 clearInterval(intervalId);
@@ -113,12 +111,28 @@ const goToPlanet = () => {
     router.push({ name: 'planetPage' });
 };
 
-onMounted(() => {
-    cards.value = mockData.map((card) => ({ ...card, visible: true }));
+onMounted(async () => {
+    loading.value = true;
+    data.value = await useGamesStore().getWordForConstellatonGame(route.query.id);
+    cards.value = data.value.flatMap((item) => [
+        {
+            pairId: item.id,
+            displayWord: item.translation_word,
+            isTranslation: false,
+            visible: true,
+        },
+        {
+            pairId: item.id,
+            displayWord: item.word,
+            isTranslation: true,
+            visible: true,
+        },
+    ]);
     shuffleCards();
     intervalId = setInterval(() => {
         timer.value++;
     }, 1000);
+    loading.value = false;
 });
 
 onUnmounted(() => {
@@ -129,6 +143,13 @@ onUnmounted(() => {
 <style scoped>
 .pageNoBg {
     background: none;
+}
+
+.game_section {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
 }
 
 .timer-area {

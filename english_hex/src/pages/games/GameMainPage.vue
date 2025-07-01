@@ -29,20 +29,29 @@
     />
 </template>
 <script setup>
-import { ref } from 'vue';
-import { useRouter } from 'vue-router';
+import { computed, onMounted, ref } from 'vue';
+import { useRoute, useRouter } from 'vue-router';
 import defaultPopup from '@/components/popups/defaultPopup.vue';
+import { useCategoriesStore } from '@/stores/categories';
 
 const router = useRouter();
+const route = useRoute();
+const category = ref({});
+onMounted(async () => {
+    await useCategoriesStore().getChosedCategory(route.query.id);
+    category.value = useCategoriesStore().chosedCategory;
+});
 
 const openPopup = ref(false);
-const headerTopic = 'Ты изучил тему «Животные»';
+const headerTopic = computed(() => `Ты изучил тему ${category.value?.name}`);
 const message =
     'Чтобы закрепить полученые знания — выбирай игру и продолжай покорять английский без потерь';
 
 const popupTitle = ' Уже уходите?';
-const popupMessage =
-    'Вы завершили обучение «Животные», вам будут начислены 20 звезд, если вы не хотите увеличить награду подтвердите выбор, если хотите поднять рейтинг вернитесь к игре!';
+const popupMessage = computed(
+    () =>
+        `Вы завершили обучение ${category.value?.name}, вам будут начислены 20 звезд, если вы не хотите увеличить награду подтвердите выбор, если хотите поднять рейтинг вернитесь к игре!`
+);
 
 const gameList = ref([
     {
@@ -62,7 +71,7 @@ const gameList = ref([
     },
 ]);
 const goToGame = (item) => {
-    router.push({ name: item.path });
+    router.push({ name: item.path, query: { id: category.value.id } });
 };
 
 const redirectToMain = () => {

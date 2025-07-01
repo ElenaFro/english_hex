@@ -11,7 +11,7 @@
             <div class="statusa-bar__active">
                 <img src="@/assets/img/open-lock_icon.svg" alt="" />
                 <div class="status-circle">
-                    <StatusCircle :percent="progress" />
+                    <StatusCircle :percent="checkedProgress" />
                 </div>
             </div>
             <div class="statusa-bar__active">
@@ -36,7 +36,7 @@ const props = defineProps({
     sectionName: String,
     imgUrl: String,
     backgroundColor: String,
-    progress: Number,
+    progress: Boolean,
     locked: Boolean,
 });
 
@@ -48,6 +48,8 @@ const goToLearningPage = () => {
 const img_url = computed(
     () => `http://62.109.0.225:8000/storage/categories/${props.id}/images/${props.imgUrl}`
 );
+
+const checkedProgress = computed(() => (props.progress ? 100 : 0));
 </script>
 
 <style scoped>

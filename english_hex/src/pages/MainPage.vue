@@ -16,7 +16,7 @@
                 :sectionName="section.name"
                 :imgUrl="section.category_photo"
                 :backgroundColor="randomColor(section.id)"
-                :progress="section.completed_percentage"
+                :progress="section.completed_category"
                 :locked="true"
             />
         </div>

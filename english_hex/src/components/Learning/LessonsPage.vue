@@ -56,10 +56,10 @@ const replayAgain = () => {
     }
 };
 
-const handleNextOrFinish = () => {
+const handleNextOrFinish = async () => {
     if (isLastCard.value) {
-        //Не забыть запрос на обновление категории после изучения как только Андрей сделает
-        router.push({ name: 'games' });
+        await useCategoriesStore().updateComplateCategory(chosedCategory.value.id);
+        router.push({ name: 'games', query: { id: chosedCategory.value.id } });
         return;
     }
     if (activeComponent.value === 'VideoPage') {

@@ -112,44 +112,37 @@ const isHomePage = computed(() => route.fullPath === '/');
 // 		console.error(err)
 // 	}
 // })
+const gameRoutes = ['games', 'planetGame', 'wordTwinkle', 'wordTwinkleGame', 'constellationGame'];
 
 watch(
     () => route.path,
     () => {
-        switch (route.name) {
-            case 'profile':
-                currentTitle.value = 'Профиль';
-                break;
-            case 'rating':
-                currentTitle.value = 'Рейтинг';
-                break;
-            case 'notifications':
-                currentTitle.value = 'Уведомления';
-                break;
-            case 'addCategories':
-                currentTitle.value = 'Редактирование';
-                break;
-            case 'games':
-                currentTitle.value = 'Игры';
-                break;
-            case 'planetGame':
-                currentTitle.value = 'Игры';
-                break;
-            case 'planetAttackPage':
-                currentTitle.value = '';
-                break;
-            case 'wordTwinkle':
-                currentTitle.value = 'Игры';
-                break;
-            case 'wordTwinkleGame':
-                currentTitle.value = 'Игры';
-                break;
-            case 'learning':
-                currentTitle.value = route.query.name;
-                break;
-            default:
-                currentTitle.value = ' ';
-                break;
+        if (gameRoutes.includes(route.name)) {
+            currentTitle.value = 'Игры';
+        } else {
+            switch (route.name) {
+                case 'profile':
+                    currentTitle.value = 'Профиль';
+                    break;
+                case 'rating':
+                    currentTitle.value = 'Рейтинг';
+                    break;
+                case 'notifications':
+                    currentTitle.value = 'Уведомления';
+                    break;
+                case 'addCategories':
+                    currentTitle.value = 'Редактирование';
+                    break;
+                case 'learning':
+                    currentTitle.value = route.query.name;
+                    break;
+                case 'planetAttackPage':
+                    currentTitle.value = '';
+                    break;
+                default:
+                    currentTitle.value = ' ';
+                    break;
+            }
         }
     },
     { immediate: true }
