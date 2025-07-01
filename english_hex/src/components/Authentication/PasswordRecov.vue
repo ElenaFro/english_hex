@@ -4,8 +4,12 @@
         <section v-if="!loading">
             <p class="content-container__title">Восстановление пароля</p>
             <form class="login-form" @submit.prevent>
-                <input v-model="email" type="email" placeholder="Укажите Email привязанный к аккаунту"
-                    class="login-form__input-field">
+                <input
+                    v-model="email"
+                    type="email"
+                    placeholder="Укажите Email привязанный к аккаунту"
+                    class="login-form__input-field"
+                />
                 <button class="button button--purple button--big" @click="sendRecoverEmail">
                     Продолжить
                 </button>
@@ -24,20 +28,22 @@ import { useAuthStore } from '../../stores/auth';
 import { ref } from 'vue';
 import loader from '../Loader.vue';
 
-const emit = defineEmits(['change-component'])
-const email = ref()
-const loading = ref(false)
+const emit = defineEmits(['change-component']);
+const email = ref();
+const loading = ref(false);
 
 async function sendRecoverEmail() {
-    loading.value = true
-    if (email.value) await useAuthStore().recoverPassword(email.value).then((response) => {
-        if (response.message) emit('change-component', 'PasswordRecovConfirm')
-    }).catch((error) => alert(error))
-    else alert('Email is empty')
+    loading.value = true;
+    if (email.value)
+        await useAuthStore()
+            .recoverPassword(email.value)
+            .then((response) => {
+                if (response.message) emit('change-component', 'PasswordRecovConfirm');
+            })
+            .catch((error) => alert(error));
+    else alert('Email is empty');
     loading.value = false;
 }
-
-
 </script>
 
 <style scoped>

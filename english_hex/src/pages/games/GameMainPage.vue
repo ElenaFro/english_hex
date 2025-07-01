@@ -10,7 +10,9 @@
         <section class="page-container__game-list">
             <div v-for="item in gameList" :key="item.id" class="page-container__game-card">
                 <p>{{ item.name }}</p>
-                <button class="page-container__game-card-btn" @click="goToGame(item)">Начать</button>
+                <button class="page-container__game-card-btn" @click="goToGame(item)">
+                    Начать
+                </button>
             </div>
         </section>
         <section class="mainPageResirect-section">
@@ -18,8 +20,13 @@
         </section>
     </section>
 
-    <defaultPopup :isVisible="openPopup" :title="popupTitle" :message="popupMessage" @confirm="redirectToMain"
-        @close="openPopup = false" />
+    <defaultPopup
+        :isVisible="openPopup"
+        :title="popupTitle"
+        :message="popupMessage"
+        @confirm="redirectToMain"
+        @close="openPopup = false"
+    />
 </template>
 <script setup>
 import { ref } from 'vue';
@@ -28,12 +35,14 @@ import defaultPopup from '@/components/popups/defaultPopup.vue';
 
 const router = useRouter();
 
-const openPopup = ref(false)
+const openPopup = ref(false);
 const headerTopic = 'Ты изучил тему «Животные»';
-const message = 'Чтобы закрепить полученые знания — выбирай игру и продолжай покорять английский без потерь'
+const message =
+    'Чтобы закрепить полученые знания — выбирай игру и продолжай покорять английский без потерь';
 
 const popupTitle = ' Уже уходите?';
-const popupMessage = 'Вы завершили обучение «Животные», вам будут начислены 20 звезд, если вы не хотите увеличить награду подтвердите выбор, если хотите поднять рейтинг вернитесь к игре!';
+const popupMessage =
+    'Вы завершили обучение «Животные», вам будут начислены 20 звезд, если вы не хотите увеличить награду подтвердите выбор, если хотите поднять рейтинг вернитесь к игре!';
 
 const gameList = ref([
     {
@@ -50,15 +59,15 @@ const gameList = ref([
         id: 3,
         name: 'Мерцание слов',
         path: 'wordTwinkle',
-    }
-])
+    },
+]);
 const goToGame = (item) => {
-    router.push({ name: item.path })
-}
+    router.push({ name: item.path });
+};
 
 const redirectToMain = () => {
-    router.push({ name: 'mainPage' })
-}
+    router.push({ name: 'mainPage' });
+};
 </script>
 <style scoped lang="scss">
 .page-container {
@@ -72,7 +81,7 @@ const redirectToMain = () => {
         font-weight: 700;
         line-height: 140%;
         text-align: start;
-        color: #311D5D;
+        color: #311d5d;
         margin-bottom: 8px;
 
         p {

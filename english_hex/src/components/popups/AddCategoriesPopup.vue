@@ -2,7 +2,7 @@
     <section class="popup-overlay">
         <section class="popup relative">
             <div class="girl_top">
-                <img src="@/assets/img/girl_popup.png" alt="girl" class="girl">
+                <img src="@/assets/img/girl_popup.png" alt="girl" class="girl" />
             </div>
             <p class="popup__header pt-45 pb-25">
                 {{ title }}
@@ -12,9 +12,7 @@
             </div>
             <div class="">
                 <div class="flex items-end">
-                    <button class="btn" @click="goToMainPage">
-                        Вернуться на главную
-                    </button>
+                    <button class="btn" @click="goToMainPage">Вернуться на главную</button>
                 </div>
             </div>
         </section>
@@ -31,12 +29,12 @@ const emit = defineEmits();
 const props = defineProps({
     title: { type: String, default: '' },
     message: { type: String, default: '' },
-    soundMp3: { type: String, default: '' }
-})
+    soundMp3: { type: String, default: '' },
+});
 
 const goToMainPage = () => {
     emit('close');
-    router.push({name: 'mainPage'});
+    router.push({ name: 'mainPage' });
 };
 </script>
 
@@ -67,16 +65,16 @@ const goToMainPage = () => {
     color: #fff;
     padding: 9px 24px;
     border-radius: 16px;
-    font-weight: 500!important;
+    font-weight: 500 !important;
     font-size: 18px;
-    line-height: 22px!important;
+    line-height: 22px !important;
     letter-spacing: 0%;
     border: none !important;
     margin-top: 29px;
     text-decoration: none;
 }
 .girl_top {
-    position : absolute;
+    position: absolute;
     right: -20px;
     top: -116px;
 }
@@ -86,5 +84,4 @@ const goToMainPage = () => {
 .pt-45 {
     padding-top: 27px;
 }
-
 </style>

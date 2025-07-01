@@ -3,30 +3,28 @@
         <section class="page-container__header">
             <p class="page-container__header_game">Атака планеты</p>
             <p class="page-container__describe_game">{{ describeGame }}</p>
-            <p  class="page-container__message">{{ message }}</p>
+            <p class="page-container__message">{{ message }}</p>
             <button class="action-button" @click="goToGamePage">Начать</button>
-
         </section>
-         <section class="image-section">
+        <section class="image-section">
             <div class="image-container">
-                <img src="@/assets/img/Games/метеор.png" alt="meteor" class="meteor">
-                <img src="@/assets/img/Games/Планета.png" alt="planet" class="planet">
-           </div>
-        </section>       
+                <img src="@/assets/img/Games/метеор.png" alt="meteor" class="meteor" />
+                <img src="@/assets/img/Games/Планета.png" alt="planet" class="planet" />
+            </div>
+        </section>
     </section>
-
 </template>
 <script setup>
 import { useRouter } from 'vue-router';
 
 const router = useRouter();
 const describeGame = 'Спасите планету от метеоритной атаки';
-const message = 'Отвечайте на вопросы правильно, чтобы остановить приближение метеорита. За каждую ошибку он подлетает ближе. 5 ошибок — и планета будет разрушена. Максимальная награда — 50 звёзд. За каждую ошибку вычитается 5 звёзд.';
+const message =
+    'Отвечайте на вопросы правильно, чтобы остановить приближение метеорита. За каждую ошибку он подлетает ближе. 5 ошибок — и планета будет разрушена. Максимальная награда — 50 звёзд. За каждую ошибку вычитается 5 звёзд.';
 
 const goToGamePage = () => {
-    router.push('/planetAttackPage'); 
+    router.push('/planetAttackPage');
 };
-
 </script>
 <style scoped lang="scss">
 .page-container {
@@ -42,7 +40,7 @@ const goToGamePage = () => {
         font-weight: 800;
         line-height: 100%;
         text-align: start;
-        color: #311D5D;
+        color: #311d5d;
         margin-bottom: 8px;
         margin-top: 16px;
         letter-spacing: 0%;
@@ -58,7 +56,7 @@ const goToGamePage = () => {
         letter-spacing: 0%;
         font-family: Mulish;
         text-align: center;
-        color: #311D5D;
+        color: #311d5d;
         margin-top: 12px;
     }
     &__message {
@@ -111,34 +109,33 @@ const goToGamePage = () => {
 }
 
 .image-container {
-    position: relative; 
+    position: relative;
     display: flex;
-    justify-content: center; 
-    align-items: center; 
+    justify-content: center;
+    align-items: center;
 }
 
 .meteor {
     position: absolute;
     right: -104px;
-    top: 50%; 
-    transform: translateY(-140%); 
+    top: 50%;
+    transform: translateY(-140%);
 }
 
-.image-section{
+.image-section {
     position: relative;
     display: flex;
     flex-direction: column;
-    justify-content: center; 
+    justify-content: center;
     align-items: center;
     height: 100%;
     padding-bottom: 120px;
-    flex: 1; 
+    flex: 1;
 }
 
 .action-button {
-  width: 107px !important; 
-  padding: 9px 24px;
-  line-height: 22px;
+    width: 107px !important;
+    padding: 9px 24px;
+    line-height: 22px;
 }
-
 </style>

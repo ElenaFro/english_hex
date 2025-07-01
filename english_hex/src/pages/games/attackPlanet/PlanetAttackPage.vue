@@ -1,18 +1,18 @@
 <template>
-		<div class="">
-			<component 
-			:is="activeComponent" 
-			@switch-component="switchComponent" 
+    <div class="">
+        <component
+            :is="activeComponent"
+            @switch-component="switchComponent"
             :lives="lives"
-            :earnedStars="earnedStars" 
+            :earnedStars="earnedStars"
             @update:lives="updateLives"
             @update:earnedStars="updateEarnedStars"
-			/>
-		</div>
+        />
+    </div>
 </template>
 
 <script setup>
-import { ref, markRaw, defineEmits } from 'vue'
+import { ref, markRaw, defineEmits } from 'vue';
 import AttackPlanetGame from '@/components/AttackPlanet/AttackPlanetGame.vue';
 import AttackPlanetResult from '@/components/AttackPlanet/AttackPlanetResult.vue';
 import AttackPlanetLoss from '@/components/AttackPlanet/AttackPlanetLoss.vue';
@@ -21,8 +21,8 @@ import AttackPlanetWin from '@/components/AttackPlanet/AttackPlanetWin.vue';
 const emit = defineEmits(['update:lives', 'update:earnedStars', 'switch-component']);
 
 const activeComponent = ref(markRaw(AttackPlanetGame));
-const lives = ref(5); 
-const earnedStars = ref(parseInt(localStorage.getItem('earnedStars')) || 0); 
+const lives = ref(5);
+const earnedStars = ref(parseInt(localStorage.getItem('earnedStars')) || 0);
 
 function switchComponent(componentName) {
     switch (componentName) {
@@ -42,17 +42,17 @@ function switchComponent(componentName) {
 }
 
 const updateLives = (newLives) => {
-    lives.value = newLives; 
-    emit('update:lives', newLives); 
+    lives.value = newLives;
+    emit('update:lives', newLives);
 };
 const updateEarnedStars = (newEarnedStars) => {
-    earnedStars.value = newEarnedStars; 
-    emit('update:earnedStars', newEarnedStars); 
+    earnedStars.value = newEarnedStars;
+    emit('update:earnedStars', newEarnedStars);
 };
 </script>
 
 <style scoped>
 .page-content {
-	padding-top: 28px;
+    padding-top: 28px;
 }
 </style>

@@ -5,15 +5,13 @@
             <p class="page-container__subtitle_game">{{ subtitle }}</p>
             <p class="page-container__message">{{ message }}</p>
             <button class="action-button" @click="start">Начать</button>
-
         </section>
         <section class="image-section">
             <div class="image-container">
-                <img src="@/assets/Di_avatar/girl_head.png" alt="girl" class="girl">
+                <img src="@/assets/Di_avatar/girl_head.png" alt="girl" class="girl" />
             </div>
         </section>
     </section>
-
 </template>
 <script setup>
 import { useRouter } from 'vue-router';
@@ -23,17 +21,15 @@ const props = defineProps({
     subtitle: { type: String, default: '' },
     message: { type: String, default: '' },
     routerPath: { type: String, default: '' },
+});
 
-})
-
-const emit = defineEmits(['start'])
+const emit = defineEmits(['start']);
 
 const router = useRouter();
 
 const start = () => {
-    emit('start')
+    emit('start');
 };
-
 </script>
 <style scoped lang="scss">
 .page-container {
@@ -50,7 +46,7 @@ const start = () => {
         font-weight: 800;
         line-height: 100%;
         text-align: start;
-        color: #311D5D;
+        color: #311d5d;
         margin-bottom: 24px;
         margin-top: 16px;
         letter-spacing: 0%;
@@ -68,7 +64,7 @@ const start = () => {
         letter-spacing: 0%;
         font-family: Mulish;
         text-align: center;
-        color: #311D5D;
+        color: #311d5d;
         margin-top: 12px;
         margin-bottom: 20px;
     }

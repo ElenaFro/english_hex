@@ -5,14 +5,28 @@
             <span v-if="errorCount > 0" class="error-count">+1</span>
         </div>
         <div class="card-grid">
-            <div v-for="(card, index) in cards" :key="index" class="card"
-                :class="{ 'selected': selectedCards.includes(card), 'correct': isCorrect(card), 'incorrect': incorrectCards.includes(card), 'hidden': !card.visible }"
-                @click="selectCard(card)">
+            <div
+                v-for="(card, index) in cards"
+                :key="index"
+                class="card"
+                :class="{
+                    selected: selectedCards.includes(card),
+                    correct: isCorrect(card),
+                    incorrect: incorrectCards.includes(card),
+                    hidden: !card.visible,
+                }"
+                @click="selectCard(card)"
+            >
                 {{ card.visible ? (card.isEnglish ? card.english : card.russian) : '' }}
             </div>
         </div>
     </div>
-    <CongratulationPopup :is-visible="allMatched" title="Поздравляю!" :message="message" @confirm="goToPlanet" />
+    <CongratulationPopup
+        :is-visible="allMatched"
+        title="Поздравляю!"
+        :message="message"
+        @confirm="goToPlanet"
+    />
 </template>
 
 <script setup>
@@ -20,7 +34,7 @@ import { ref, onMounted, onUnmounted, computed } from 'vue';
 import CongratulationPopup from './CongratulationPopup.vue';
 import { useRouter } from 'vue-router';
 
-const router = useRouter()
+const router = useRouter();
 const timer = ref(0);
 const errorCount = ref(0);
 const selectedCards = ref([]);
@@ -29,7 +43,7 @@ const incorrectCards = ref([]);
 const allMatched = ref(false);
 const correctCards = ref([]);
 const cards = ref([]);
-const message = ref('')
+const message = ref('');
 
 let intervalId;
 
@@ -55,7 +69,7 @@ const isCorrect = computed(() => (card) => {
     return correctCards.value.includes(card.id);
 });
 
-const nonBg = computed(() => allMatched.value ? 'pageNoBg' : '')
+const nonBg = computed(() => (allMatched.value ? 'pageNoBg' : ''));
 
 const selectCard = (card) => {
     if (selectedCards.value.length < 2 && !matchedPairs.value.includes(card.id)) {
@@ -73,10 +87,12 @@ const checkMatch = () => {
         correctCards.value.push(card1.id, card2.id);
         setTimeout(() => {
             card1.visible = card2.visible = false;
-            correctCards.value = correctCards.value.filter(id => id !== card1.id && id !== card2.id);
+            correctCards.value = correctCards.value.filter(
+                (id) => id !== card1.id && id !== card2.id
+            );
             selectedCards.value = [];
             if (matchedPairs.value.length === cards.value.length / 2) {
-                message.value = `Вы завершили первую колоду за ${timer.value} секунд. Теперь вы можете создать свою планету и продвигать её, зарабатывая звёзды в каждой игре!`
+                message.value = `Вы завершили первую колоду за ${timer.value} секунд. Теперь вы можете создать свою планету и продвигать её, зарабатывая звёзды в каждой игре!`;
                 allMatched.value = true;
                 clearInterval(intervalId);
             }
@@ -94,11 +110,11 @@ const checkMatch = () => {
 };
 
 const goToPlanet = () => {
-    router.push({ name: 'planetPage' })
-}
+    router.push({ name: 'planetPage' });
+};
 
 onMounted(() => {
-    cards.value = mockData.map(card => ({ ...card, visible: true }));
+    cards.value = mockData.map((card) => ({ ...card, visible: true }));
     shuffleCards();
     intervalId = setInterval(() => {
         timer.value++;
@@ -108,7 +124,6 @@ onMounted(() => {
 onUnmounted(() => {
     clearInterval(intervalId);
 });
-
 </script>
 
 <style scoped>
@@ -160,11 +175,11 @@ onUnmounted(() => {
 }
 
 .correct {
-    border-color: #3E9D47;
+    border-color: #3e9d47;
 }
 
 .incorrect {
-    border-color: #A90000;
+    border-color: #a90000;
 }
 
 .hidden {
