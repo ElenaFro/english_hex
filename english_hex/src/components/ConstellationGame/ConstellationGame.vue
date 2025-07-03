@@ -4,7 +4,7 @@
             <span>{{ timer }} сек</span>
             <span v-if="errorCount > 0" class="error-count">+1</span>
         </div>
-        <div class="card-grid">
+        <div v-if-else="" class="card-grid">
             <div v-for="(card, index) in cards" :key="index" class="card"
                 :class="{ 'selected': selectedCards.includes(card), 'correct': isCorrect(card), 'incorrect': incorrectCards.includes(card), 'hidden': !card.visible }"
                 @click="selectCard(card)">
@@ -17,9 +17,10 @@
 
 <script setup>
 import { ref, onMounted, onUnmounted, computed } from 'vue';
-import CongratulationPopup from './CongratulationPopup.vue';
-import { useRouter } from 'vue-router';
+import CongratulationPopup from '../myPlanetPopup/CongratulationPopup.vue';
+import { useRouter, useRoute } from 'vue-router';
 
+const route = useRoute()
 const router = useRouter()
 const timer = ref(0);
 const errorCount = ref(0);
@@ -30,6 +31,7 @@ const allMatched = ref(false);
 const correctCards = ref([]);
 const cards = ref([]);
 const message = ref('')
+const wrongCount = ref(0)
 
 let intervalId;
 
@@ -76,14 +78,16 @@ const checkMatch = () => {
             correctCards.value = correctCards.value.filter(id => id !== card1.id && id !== card2.id);
             selectedCards.value = [];
             if (matchedPairs.value.length === cards.value.length / 2) {
-                message.value = `Вы завершили первую колоду за ${timer.value} секунд. Теперь вы можете создать свою планету и продвигать её, зарабатывая звёзды в каждой игре!`
-                allMatched.value = true;
-                clearInterval(intervalId);
+                // message.value = `Вы завершили первую колоду за ${timer.value} секунд. Теперь вы можете создать свою планету и продвигать её, зарабатывая звёзды в каждой игре!`
+                // allMatched.value = true;
+                // clearInterval(intervalId);
+				router.push({ name: 'gameResult', query: { wrong: wrongCount.value, from: 'constellationGame' } })
             }
         }, 1000);
     } else {
         incorrectCards.value = [...selectedCards.value];
         errorCount.value++;
+		wrongCount.value++
         timer.value++;
         setTimeout(() => {
             incorrectCards.value = [];

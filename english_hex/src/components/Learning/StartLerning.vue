@@ -1,12 +1,16 @@
 <template>
 	<div class="scroll-container">
 		<div class="img-container">
-			<img class="learning-img" src="@/assets/img/learning-img-group.png" alt="">
+			<!-- <img class="learning-img" src="@/assets/img/learning-img-group.png" alt=""> -->
 		</div>
 		<h1 class="page-content__title">{{ title }}</h1>
 		<p class="page-content__text">{{ description }} </p>
-		<button @click="$emit('switch-component', 'LessonsPage')" class="button button--blue">Перейти к
-			изучению</button>
+		<button 
+		@click="$emit('switch-component', 'LessonsPage')" 
+		class="button button--blue"
+		>
+		Перейти к изучению
+		</button>
 	</div>
 </template>
 

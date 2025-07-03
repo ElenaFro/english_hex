@@ -41,12 +41,10 @@ onMounted(() => {
 
 const onGameFinished = () => {
 	const total = timeCalcul()
-	// router.push('/wordTwinkleResult'); 
 }
 
 const timeCalcul = () => {
 	const totalTime = time.value + timeWrong.value
-
 	return totalTime
 }
 </script>

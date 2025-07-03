@@ -60,8 +60,7 @@ const routes = [
       {
         path: "planetAttackPage",
         name: "planetAttackPage",
-        component: () =>
-          import("@/pages/games/attackPlanet/PlanetAttackPage.vue"),
+        component: () => import("@/pages/games/attackPlanet/PlanetAttackPage.vue"),
       },
       {
         path: "wordTwinkle",
@@ -70,24 +69,20 @@ const routes = [
           import("@/pages/games/wordTwinkle/wordTwinklePage.vue"),
       },
       {
-        path: "wordTwinkleGame",
-        name: "wordTwinkleGame",
-        component: () =>
-          import("@/pages/games/wordTwinkle/wordTwinkleGame.vue"),
+        path: "gameResult",
+        name: "gameResult",
+        component: () => import("@/pages/games/gameResult.vue"),
       },
-      {
-        path: "wordTwinkleResult",
-        name: "wordTwinkleResult",
-        component: () =>
-          import("@/pages/games/wordTwinkle/wordTwinkleResult.vue"),
-      },
-
       {
         path: "constellationGame",
         name: "constellationGame",
-        component: () =>
-          import("@/pages/games/constellationGame/ConstellationPage.vue"),
+        component: () => import("@/pages/games/constellationGame/ConstellationPage.vue"),
       },
+	  {
+		path: "myPlanet",
+        name: "myPlanet",
+        component: () => import("@/pages/MyPlanetPage.vue"),
+	  }
     ],
     meta: { requiresAuth: false },
   },

@@ -1,81 +1,29 @@
 <template>
-<div class="page-content">
-	<div class="content-container">
-		<div class="content-container-inner">
-			<h1 class="page-content__name-game">Мерцание слов</h1>
-			<p class="page-content__short-describe-game">Внимание и визуальная память - ключ к успеху!</p>				<p class="page-content__describe-game">
-				На экране появится изображение - его нужно внимательно рассмотреть за 4 секунды. 
-				Затем картинка исчезнет и откроется вопрос с четырьмя вариантами ответа на английском языке. 
-				Нужно выбрать правильный вариант. При ошибке добавляется 1 секунда ко времени. Готовы? <br> Начинаем! 
-			</p>
-			<button class="button button--blue" @click="goToGamePage">Начать</button>
-		</div>
-		<div class="img-container">
-			<img src="@/assets/img/girl-img2.png" alt="" class="img-container__girl-img">
-		</div>
-	</div>
-</div>
+	<startGame v-if="activeComponent === 'startGame'" @start="switchToGame"/>
+	<wordTwinkleGame v-if="activeComponent === 'wordTwinkleGame'"/>
 </template>
 
 <script setup>
-import { useRouter } from 'vue-router';
+import { ref, onMounted } from 'vue';
+import { useRoute } from 'vue-router';
+import startGame from '@/components/wordTwinkle/wordTwinkleStart.vue'
+import wordTwinkleGame from '@/components/wordTwinkle/wordTwinkleGame.vue';
 
-const router = useRouter();
+const route = useRoute()
+const activeComponent = ref('startGame')
 
-const goToGamePage = () => {
-    router.push('/wordTwinkleGame'); 
+const switchToGame = () => {
+	activeComponent.value = 'wordTwinkleGame'
+	firstGame()
 }
+
+onMounted(() => {
+	if (route.query.startGame === 'true') {
+		activeComponent.value = 'wordTwinkleGame'
+	}
+})
 </script>
 
 <style scoped lang="scss">
-.page-content {
-	.content-container {
-		height: 100%;
-		justify-content: start;
-		padding-bottom: 65px;
-	}
 
-	&__name-game {
-		font-size: 26px;
-		font-weight: 800;
-		line-height: 100%;
-		text-align: center;
-		color: #311D5D;
-		margin-bottom: 12px;
-	}
-
-	&__short-describe-game {
-		font-size: 22px;
-		font-weight: 800;
-		line-height: 100%;
-		text-align: center;
-		color: #311D5D;
-		margin-bottom: 12px;
-	}
-
-	&__describe-game {
-		font-size: 18px;
-		font-weight: 500;
-		line-height: 100%;
-		text-align: left;
-		color: #262060;
-		margin-bottom: 30px;
-	}
-
-	.button {
-		align-self: flex-start;
-	}
-
-	.content-container-inner {
-		position: relative;
-	}
-
-	.img-container {
-		width: 230px;
-		height: 230px;
-		position: fixed;
-		bottom: 19px;
-		right: 10px;
-	}
-}
 </style>

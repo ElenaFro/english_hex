@@ -97,6 +97,7 @@ body, #app {
 		width: 100%;
 		max-width: 414px;
 		overflow-y: scroll;
+		overflow-x: hidden;
 		padding-bottom: 150px;
 		scrollbar-width: none;
 		display: flex;

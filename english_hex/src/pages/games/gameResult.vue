@@ -91,12 +91,15 @@ const totalStars = computed(() => {
 	}
 }) 
 
+const fromGame = route.query.from
+
 const repeatGame = () => {
-	router.push('/wordTwinkleGame'); 
+	router.push({ name: fromGame, query: { startGame: true }}); 
 }
 
 const goToMainPage = () => {
-	router.push({ name: '/mainPage', query: { stars: totalStars.value } })
+	// router.push({ name: 'mainPage', query: { stars: totalStars.value } })
+	router.push({ name: 'mainPage' })
 }
 </script>
 

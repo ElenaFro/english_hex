@@ -1,4 +1,6 @@
 <template>
+	<watchStarsPopup v-if="!popupShowed" @close="handlePopup"/>
+	<!-- <watchStarsPopup /> -->
 	<div class="username-container">
 		<div class="username-container__img-container">
 			<div class="username-container__img-container-inner">
@@ -29,9 +31,13 @@ import HelloPopupWithSound from '@/components/popups/HelloPopupWithSound.vue';
 import SoundForPopup from '@/assets/audio/helloFromDi.mp3'
 import { useAuthStore } from '@/stores/auth';
 import { useCategoriesStore } from '@/stores/categories';
+import apiClient from '@/api/axios';
+import watchStarsPopup from '@/components/popups/watchStarsPopup.vue'
+import { markFirstGame } from '@/stores/progress';
 
 const loading = ref(true);
 const openHelloPopup = ref(false);
+const popupShowed = ref(null)
 
 onMounted(async () => {
 	await useCategoriesStore().getCategories()
@@ -71,16 +77,33 @@ onMounted(() => {
 
 const currentUser = computed(() => useAuthStore().getCurrentUser());
 const userName = computed(() => currentUser.value.name);
-const avatarIcon = computed(() => currentUser.value.gender === "male" ? BoyIcon : GirlIcon
-);
+const avatarIcon = computed(() => currentUser.value.gender === "male" ? BoyIcon : GirlIcon);
 const sections = computed(() => useCategoriesStore().categories)
 
 const closePopup = () => {
-	// openHelloPopup.value = !openHelloPopup.value
+	openHelloPopup.value = !openHelloPopup.value
 	openHelloPopup.value = false;
 }
+
 const titlePopup = 'Добро пожаловать!';
 const messagePopup = 'Привет! Меня зовут Di, и я рада приветствовать тебя в мире изучения английских слов! Ты сделал важный шаг к своей мечте - свободному владению иностранным языком.';
+
+onMounted(async () => {
+	try {
+		const response = await apiClient.get('/profile/get')
+		const data = response.data
+		if (data.everPlayedGame && !data.popupShowed) {
+			popupShowed.value = true
+		}
+	} catch(error) {
+		console.error(error)
+	}
+})
+
+const handlePopup = async () => {
+	await markFirstGame()
+	popupShowed.value = true
+}
 </script>
 
 <style scoped>
