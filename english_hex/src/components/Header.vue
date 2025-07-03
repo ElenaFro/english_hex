@@ -1,38 +1,39 @@
 <template>
     <div class="header-bar">
         <template v-if="isHomePage">
-            <span class="header-star">
+            <span @click="goToMyPlanet" class="header-star">
                 {{ earnedStars }} <img src="@/assets/icons/navBarIcon/star.svg" class="header-star-left" alt="Звезда" />
             </span>
-        </template> 
+        </template>
 
-        <template v-else-if="isGamePlanetPage"> 
+        <template v-else-if="isGamePlanetPage">
             <span class="header-live">
                 <span v-for="index in lives" :key="index" class="live-icon">
                     <img src="@/assets/icons/navBarIcon/live.svg" class="header-live-left" alt="Жизнь" />
                 </span>
             </span>
         </template>
-		<template v-else-if="isGameWordTwinkle || isMainPage || myPlanet">
+		<template v-else-if="isGameWordTwinkle || myPlanet">
             <span @click="goToMyPlanet" class="header-star">
                 {{ earnedStars }} <img src="@/assets/icons/navBarIcon/star.svg" class="header-star-left" alt="Звезда" />
             </span>
         </template> 
-        <template v-else>      
+        <template v-else>
             <button @click="goBack" class="header-item-button">
                 <img src="@/assets/icons/navBarIcon/arrow_left.svg" class="header-icon-left" alt="Назад" />
             </button>
-        </template> 
+        </template>
         <p class="header-title">{{ currentTitle }}</p>
         <RouterLink v-for="item in headerItemsRight" :key="item.name + '-right'" :to="item.path" class="header-item"
             :class="{ active: $route.path === item.path }">
-            <img v-if="!route.fullPath.includes('games') && !route.fullPath.includes('planetAttackPage')" :src="item.icon" class="header-icon" :alt="item.name" />
+            <img v-if="!route.fullPath.includes('games') && !route.fullPath.includes('planetAttackPage')"
+                :src="item.icon" class="header-icon" :alt="item.name" />
         </RouterLink>
         <template v-if="isGamePlanetPage">
             <span class="header-star">
                 {{ earnedStars }} <img src="@/assets/icons/navBarIcon/star.svg" class="header-star-left" alt="Звезда" />
             </span>
-        </template> 
+        </template>
     </div>
 
 </template>
@@ -43,14 +44,14 @@ import { ref, watch, computed  } from 'vue';
 import { useRoute} from 'vue-router';
 import { useRouter } from 'vue-router';
 import { defineProps } from 'vue';
+import { useAuthStore } from "@/stores/auth";
+
 
 const router = useRouter();
 
-const earnedStars = ref(parseInt(localStorage.getItem('earnedStars')) || 0);
-
+const currentUser = computed(() => useAuthStore().getCurrentUser())
+const earnedStars = computed(() => currentUser.value.rating)
 const props = defineProps(['lives']);
-
-const isMainPage = computed(() => route.path === '/mainPage'); 
 
 const isGamePlanetPage = computed(() => route.path === '/planetAttackPage'); 
 
@@ -76,6 +77,7 @@ function goBack() {
 const goToMyPlanet = () => {
 	router.push({ path: '/myPlanet', query: { earnedStars: earnedStars.value } })
 }
+const isHomePage = computed(() => route.fullPath === '/')
 
 // onMounted(async () => {
 // 	try {
@@ -86,34 +88,37 @@ const goToMyPlanet = () => {
 // 	}
 // })
 
-watch(() => route.path, (newPath) => {
-    switch (newPath) {
-        case '/profile':
+watch(() => route.path, () => {
+    switch (route.name) {
+        case 'profile':
             currentTitle.value = "Профиль";
             break;
-        case '/rating':
+        case 'rating':
             currentTitle.value = "Рейтинг";
             break;
-        case '/notifications':
+        case 'notifications':
             currentTitle.value = "Уведомления";
             break;
-        case '/addCategories':
+        case 'addCategories':
             currentTitle.value = "Редактирование";
             break;
-        case '/games':
+        case 'games':
             currentTitle.value = "Игры";
             break;
-        case '/planetGame':
+        case 'planetGame':
             currentTitle.value = "Игры";
-            break;  
-        case '/planetAttackPage':
+            break;
+        case 'planetAttackPage':
             currentTitle.value = "";
             break;
-		case '/wordTwinkle':
+		case 'wordTwinkle':
             currentTitle.value = "Игры";
             break;
-		case '/wordTwinkleGame':
+		case 'wordTwinkleGame':
             currentTitle.value = "Игры";
+            break;
+        case 'learning':
+            currentTitle.value = route.query.name;
             break;
         default:
             currentTitle.value = " ";
@@ -136,6 +141,7 @@ watch(() => route.path, (newPath) => {
     max-width: 414px;
 
 }
+
 .header-star {
     background-color: #ffffff;
     display: flex;
@@ -152,6 +158,7 @@ watch(() => route.path, (newPath) => {
     padding-bottom: 0px;
     align-items: center;
 }
+
 .header-live {
     background-color: #ffffff;
     display: flex;
@@ -162,9 +169,10 @@ watch(() => route.path, (newPath) => {
     padding-left: 8px;
     padding-right: 3px;
     padding-bottom: 0px;
-    align-items: center; 
-    gap: 5px; 
+    align-items: center;
+    gap: 5px;
 }
+
 .header-star-left {
     width: 21px;
     height: 21px;
@@ -225,6 +233,7 @@ watch(() => route.path, (newPath) => {
     line-height: 35px;
     margin-top: 13px;
 }
+
 .live-icon {
     width: 23.8px;
     height: 22.2px;

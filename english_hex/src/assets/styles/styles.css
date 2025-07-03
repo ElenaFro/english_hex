@@ -317,6 +317,7 @@ body, #app {
   width: 100%;
   max-width: 414px;
   overflow-y: scroll;
+  overflow-x: hidden;
   padding-bottom: 150px;
   scrollbar-width: none;
   display: -webkit-box;
@@ -488,6 +489,7 @@ body, #app {
   width: -webkit-fit-content;
   width: -moz-fit-content;
   width: fit-content;
+  gap: 12px;
   font-size: 18px;
   font-weight: 600;
   line-height: 100%;

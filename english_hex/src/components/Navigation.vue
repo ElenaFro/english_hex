@@ -15,7 +15,7 @@ const route = useRoute();
 const navItems = [
     {
         name: "mainPage",
-        path: "/mainPage",
+        path: "/",
         icon: 'src/assets/icons/navBarIcon/Home.svg',
     },
     {
