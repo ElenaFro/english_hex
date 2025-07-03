@@ -1,16 +1,16 @@
 <template>
-    <div v-if="isVisible" class="popup-overlay" @click.self="closePopup">
+    <div class="popup-overlay">
         <div class="popup-content">
             <div class="image-container">
                 <img src="@/assets/Di_avatar/girl_head.png" alt="girl" class="girl" />
             </div>
-            <h2 v-if="title" class="popup-title" :class="titleMargin">{{ title }}</h2>
-            <p v-if="message" class="popup-message">{{ message }}</p>
+            <h2 class="popup-title" :class="titleMargin">Поздравляю!</h2>
+            <p class="popup-message">Вы успешно завершили первую колоду. Теперь вы можете создать свою планету и продвигать её, зарабатывая звезды в каждой игре!</p>
             <slot name="content"></slot>
             <div class="popup-actions">
                 <slot name="actions">
-                    <button class="confirm-button" @click="confirmAction">
-                        Дальше <img src="@/assets/icons/arrow_right.svg" alt="arrow_right" />
+                    <button class="confirm-button" @click="goToNext">
+                        Дальше <img src="@/assets/icons/arrow_right.svg" alt="arrow_right">
                     </button>
                 </slot>
             </div>
@@ -19,7 +19,7 @@
 </template>
 
 <script setup>
-import { computed, ref, watch } from 'vue';
+import { computed } from "vue";
 
 const props = defineProps({
     isVisible: { type: Boolean, default: false },
@@ -27,29 +27,14 @@ const props = defineProps({
     message: { type: String, default: '' },
 });
 
-const emit = defineEmits(['update:isVisible', 'confirm', 'close']);
+const emit = defineEmits([ "next" ]);
 
-const localVisible = ref(props.isVisible);
+const goToNext = () => {
+	emit('next', 'toPlanet')
+}
 
 const titleMargin = computed(() => (props.message ? 'd-mb-12' : 'd-mb-30'));
 
-watch(
-    () => props.isVisible,
-    (newValue) => {
-        localVisible.value = newValue;
-    }
-);
-
-const closePopup = () => {
-    localVisible.value = false;
-    emit('update:isVisible', false);
-    emit('close');
-};
-
-const confirmAction = () => {
-    emit('confirm');
-    closePopup();
-};
 </script>
 
 <style scoped>
@@ -87,7 +72,7 @@ const confirmAction = () => {
     font-size: 18px;
     font-weight: 400;
     line-height: 120%;
-    text-align: center;
+    text-align: left;
     margin-bottom: 30px;
 }
 

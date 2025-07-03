@@ -52,7 +52,8 @@ const incorrectCards = ref([]);
 const allMatched = ref(false);
 const correctCards = ref([]);
 const cards = ref([]);
-const message = ref('');
+const message = ref('')
+const wrongCount = ref(0)
 
 let intervalId;
 
@@ -89,15 +90,17 @@ const checkMatch = () => {
             card1.visible = card2.visible = false;
             correctCards.value = correctCards.value.filter((id) => id !== card1.pairId);
             selectedCards.value = [];
-            if (matchedPairs.value.length === data.value.length) {
-                message.value = `Вы завершили первую колоду за ${timer.value} секунд. Теперь вы можете создать свою планету и продвигать её, зарабатывая звёзды в каждой игре!`;
-                allMatched.value = true;
-                clearInterval(intervalId);
+            if (matchedPairs.value.length === cards.value.length / 2) {
+                // message.value = `Вы завершили первую колоду за ${timer.value} секунд. Теперь вы можете создать свою планету и продвигать её, зарабатывая звёзды в каждой игре!`
+                // allMatched.value = true;
+                // clearInterval(intervalId);
+				router.push({ name: 'gameResult', query: { wrong: wrongCount.value, from: 'constellationGame' } })
             }
         }, 1000);
     } else {
         incorrectCards.value = [...selectedCards.value];
         errorCount.value++;
+		wrongCount.value++
         timer.value++;
         setTimeout(() => {
             incorrectCards.value = [];

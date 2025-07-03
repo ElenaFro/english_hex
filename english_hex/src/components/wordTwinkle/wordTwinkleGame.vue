@@ -40,15 +40,13 @@ onMounted(() => {
 });
 
 const onGameFinished = () => {
-    const total = timeCalcul();
-    // router.push('/wordTwinkleResult');
-};
+	const total = timeCalcul()
+}
 
 const timeCalcul = () => {
-    const totalTime = time.value + timeWrong.value;
-
-    return totalTime;
-};
+	const totalTime = time.value + timeWrong.value
+	return totalTime
+}
 </script>
 
 <style scoped lang="scss">

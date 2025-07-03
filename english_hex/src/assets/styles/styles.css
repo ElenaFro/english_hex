@@ -335,18 +335,19 @@ body,
     background-color: rgb(246, 246, 254);
 }
 .page-content .scroll-container {
-    width: 100%;
-    max-width: 414px;
-    overflow-y: scroll;
-    padding-bottom: 150px;
-    scrollbar-width: none;
-    display: -webkit-box;
-    display: -ms-flexbox;
-    display: flex;
-    -webkit-box-orient: vertical;
-    -webkit-box-direction: normal;
-    -ms-flex-direction: column;
-    flex-direction: column;
+  width: 100%;
+  max-width: 414px;
+  overflow-y: scroll;
+  overflow-x: hidden;
+  padding-bottom: 150px;
+  scrollbar-width: none;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+      -ms-flex-direction: column;
+          flex-direction: column;
 }
 .page-content .scroll-container::-webkit-scrollbar {
     width: 0;
@@ -497,26 +498,27 @@ body,
 }
 
 .button {
-    display: -webkit-inline-box;
-    display: -ms-inline-flexbox;
-    display: inline-flex;
-    -webkit-box-align: center;
-    -ms-flex-align: center;
-    align-items: center;
-    -webkit-box-pack: center;
-    -ms-flex-pack: center;
-    justify-content: center;
-    width: -webkit-fit-content;
-    width: -moz-fit-content;
-    width: fit-content;
-    font-size: 18px;
-    font-weight: 600;
-    line-height: 100%;
-    letter-spacing: 0em;
-    color: rgb(255, 255, 255);
-    border: none;
-    border-radius: 16px;
-    padding: 12px 24px;
+  display: -webkit-inline-box;
+  display: -ms-inline-flexbox;
+  display: inline-flex;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+  -webkit-box-pack: center;
+      -ms-flex-pack: center;
+          justify-content: center;
+  width: -webkit-fit-content;
+  width: -moz-fit-content;
+  width: fit-content;
+  gap: 12px;
+  font-size: 18px;
+  font-weight: 600;
+  line-height: 100%;
+  letter-spacing: 0em;
+  color: rgb(255, 255, 255);
+  border: none;
+  border-radius: 16px;
+  padding: 12px 24px;
 }
 .button--white {
     border: 2px solid rgb(49, 29, 93);

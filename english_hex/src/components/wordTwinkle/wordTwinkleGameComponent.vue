@@ -27,11 +27,13 @@
 </template>
 
 <script setup>
-import { onMounted, ref, computed } from 'vue';
+import { markFirstGame } from '@/stores/progress';
+import { onMounted, ref, computed } from 'vue'
 import { useRouter } from 'vue-router';
-import axios from 'axios';
-import ImgPage from '@/components/wordTwinkle/ImgPage.vue';
-import AnswersPage from '@/components/wordTwinkle/AnswersPage.vue';
+import axios from 'axios'
+import ImgPage from '@/components/wordTwinkle/ImgPage.vue'
+import AnswersPage from '@/components/wordTwinkle/AnswersPage.vue'
+import apiClient from '@/api/axios';
 
 const router = useRouter();
 const activeComponent = ref('ImgPage');
@@ -86,23 +88,41 @@ const checkAnswer = (item) => {
     }
 };
 
-const goToNext = () => {
-    if (currentIndex.value < answerList.value.length - 1) {
-        currentIndex.value += 1;
-        selectedAnswerIds.value = [];
-        showAnswer.value = false;
-        activeComponent.value = 'ImgPage';
+const goToNext = async () => {
+	if (currentIndex.value < answerList.value.length - 1) {
+		currentIndex.value += 1;
+		selectedAnswerIds.value = [];
+		showAnswer.value = false;
+		activeComponent.value = 'ImgPage';
 
-        setTimeout(goToAnswers, 4000);
-    } else {
-        goToResult();
-    }
-};
+		setTimeout(goToAnswers, 4000)
+	} else {
+		await chekFirstGame()
+
+		if (everPlayedGame.value === true) {
+			goToResult()
+		} else {
+			router.push({ name: 'myPlanet'})
+		}
+
+	}
+}
+
+const everPlayedGame = ref(null)
+
+const chekFirstGame = async () => {
+	try {
+		const response = await apiClient.get('/profile/get')
+		everPlayedGame.value = response.data.ever_played_game
+	} catch (error) {
+		console.error(error)
+	}
+}
 
 const goToResult = () => {
-    emit('game-finished');
-    router.push({ path: '/wordTwinkleResult', query: { wrong: wrongCount.value } });
-};
+	emit('game-finished')
+	router.push({ name: 'gameResult', query: { wrong: wrongCount.value, from: 'wordTwinkle' } })
+}
 </script>
 
 <style scoped>
