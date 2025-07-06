@@ -1,6 +1,6 @@
-import axios from "axios";
-import { useAuthStore } from "../stores/auth";
-import { useRouter } from "vue-router";
+import axios from 'axios';
+import { useUserStore } from '../stores/user';
+import { useRouter } from 'vue-router';
 
 const apiClient = axios.create({
   baseURL: "http://62.109.0.225:8000/api",
@@ -14,7 +14,7 @@ export function setupInterceptors(pinia) {
     return;
   }
 
-  const authStore = useAuthStore(pinia);
+    const authStore = useUserStore(pinia);
 
   apiClient.interceptors.request.use(
     (config) => {

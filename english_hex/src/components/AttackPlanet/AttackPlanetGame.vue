@@ -1,52 +1,73 @@
 <template>
     
     <div class="relative all">
-        <img src="@/assets/img/Games/метеор_small.png" alt="meteor" class="meteor" :style="{ top: meteorTop, right: meteorRight, width: meteorWidth }">
-        <section class="page-container">
-            
-            <section class="image-section_game">
-                <div class="image-container">
-                    <img src="@/assets/img/Games/Планеты_big.png" alt="planet" class="planet">
-                </div>
-            </section> 
-            <button class="page-container__game" @click="playSound">
-                <p class="question">?</p>
-                <img src="@/assets/img/Games/sound.svg" alt="sound" class="sound1">
-            </button> 
-            <audio ref="soundRef"></audio>
-            <section class="page-container__button"  v-if="currentQuestion.options">
-                <div class="line" v-for="(option, index) in currentQuestion.options" :key="index">
-                    <button 
-                        class="answer-button" 
-                        :style="buttonStyles[index]"
-                        @click="sendAnswer(option)"
-                        :disabled="!isQuestionPlayed"> 
-                        {{ option }}
-                    </button>
-                </div>
+        <loader v-if="!questions.length" class="loader" />
+        <section v-else>
+            <img
+                src="@/assets/img/Games/метеор_small.png"
+                alt="meteor"
+                class="meteor"
+                :style="{ top: meteorTop, right: meteorRight, width: meteorWidth }"
+            />
+            <section class="page-container">
+                <section class="image-section_game">
+                    <div class="image-container">
+                        <img src="@/assets/img/Games/Планеты_big.png" alt="planet" class="planet" />
+                    </div>
+                </section>
+                <button class="page-container__game" @click="playSound">
+                    <p class="question">?</p>
+                    <img src="@/assets/img/Games/sound.svg" alt="sound" class="sound1" />
+                </button>
+                <audio ref="soundRef"></audio>
+                <section class="page-container__button" v-if="currentQuestion.options">
+                    <div
+                        class="line"
+                        v-for="(option, index) in currentQuestion.options"
+                        :key="index"
+                    >
+                        <button
+                            class="answer-button"
+                            :style="buttonStyles[index]"
+                            @click="sendAnswer(option)"
+                            :disabled="!isQuestionPlayed"
+                        >
+                            {{ option }}
+                        </button>
+                    </div>
+                </section>
             </section>
         </section>
     </div>
 </template>
 <script setup>
 import { ref, computed, onMounted, defineEmits } from 'vue';
+import { onBeforeUnmount } from 'vue';
+import { useUserStore } from '@/stores/user';
+import { useCategoriesStore } from '@/stores/categories';
+import { useGamesStore } from '@/stores/games';
+import { useRoute } from 'vue-router';
+import Loader from '../Loader.vue';
 
 const soundRef = ref(null);
+const route = useRoute();
+const currentUser = useUserStore().getCurrentUser();
+const emit = defineEmits(['update:lives', 'update:earnedStars', 'switch-component']);
+const lives = ref(5);
+const earnedStars = ref(currentUser.rating);
+const chosedCategory = ref(useCategoriesStore().chosedCategory);
 
-const emit = defineEmits(); 
-const lives = ref(5); 
-const earnedStars = ref(parseInt(localStorage.getItem('earnedStars')) || 0); 
+const categoryId = computed(() => chosedCategory.value.is || route.query.id);
 
 const isQuestionPlayed = ref(false); 
 
 const playSound = () => {
     if (soundRef.value) {
-        const audioUrl = `http://62.109.0.225:8000/storage/categories/15/video/${currentQuestion.value.id}/audio/${currentQuestion.value.audio}`;
+        const audioUrl = `http://62.109.0.225:8000/storage/categories/${categoryId.value}/cards/${currentQuestion.value.id}/audio/${currentQuestion.value.audio}`;
         soundRef.value.src = audioUrl;
         soundRef.value.currentTime = 0;
         soundRef.value.play();
-        isQuestionPlayed.value = true; 
-        console.log("audioUrl", audioUrl)
+        isQuestionPlayed.value = true;
     }
 };
 
@@ -58,32 +79,6 @@ const onAudioEnded = () => {
 
 const currentQuestionIndex = ref(0); 
 const questions = ref([]);
-
-async function fetchQuestions() {
-    try {
-        const token = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOi8vNjIuMTA5LjAuMjI1OjgwMDAvYXBpL2xvZ2luIiwiaWF0IjoxNzUwNzQzMjE4LCJleHAiOjE3NTg1MTkyMTgsIm5iZiI6MTc1MDc0MzIxOCwianRpIjoiZ21uVFpGM2dKMkVMeU0wcCIsInN1YiI6IjIiLCJwcnYiOiIyM2JkNWM4OTQ5ZjYwMGFkYjM5ZTcwMWM0MDA4NzJkYjdhNTk3NmY3In0.36MM59TNLhHSVA5zvJhdQQMdcW0gci9hbSkiASLppc0'; // Замените на ваш токен
-        const response = await fetch('http://62.109.0.225:8000/api/games/planet-attack/get/15', {
-            method: 'GET', 
-            headers: {
-                'Authorization': `Bearer ${token}`, 
-            }
-        });
-        if (!response.ok) {
-            throw new Error('Сеть не отвечает');
-        }
-        const data = await response.json();
-        questions.value = data.map(question => ({
-            id: question.id,  
-            audio: question.audio, 
-            correctAnswer: question.correctAnswer,
-            options: question.options,
-        }));
-    } catch (error) {
-        console.error('Ошибка при получении вопросов:', error);
-    }
-}
-
-fetchQuestions();
 
 const buttonStyles = ref({}); 
 
@@ -117,13 +112,10 @@ const sendAnswer = (answer) => {
             color: '#FFFFFF', 
             border: 'none'
         };
-        
-        lives.value--; 
-        console.log('lives.value',lives.value);
-
-        meteorTop.value = `calc(${meteorTop.value} + 2vh)`; 
-        meteorRight.value = `${parseInt(meteorRight.value) + 4}px`;  
-        meteorWidth.value = `${parseInt(meteorWidth.value) + 6}px`; 
+        lives.value--;
+        meteorTop.value = `calc(${meteorTop.value} + 2vh)`;
+        meteorRight.value = `${parseInt(meteorRight.value) + 4}px`;
+        meteorWidth.value = `${parseInt(meteorWidth.value) + 6}px`;
 
         emit('update:lives', lives.value);
         emit('update:earnedStars', earnedStars.value);
@@ -158,13 +150,20 @@ const meteorTop = ref('-25px');
 const meteorRight = ref('-4px');
 const meteorWidth = ref('74px'); 
 
-onMounted(() => {
+onMounted(async () => {
     if (soundRef.value) {
         soundRef.value.addEventListener('ended', onAudioEnded);
     }
-});
+    if (!chosedCategory.value) return;
+    const response = await useGamesStore().fetchDataForPlanetAttack(categoryId.value);
 
-import { onBeforeUnmount } from 'vue';
+    questions.value = response.map((question) => ({
+        id: question.id,
+        audio: question.audio,
+        correctAnswer: question.correctAnswer,
+        options: question.options,
+    }));
+});
 
 onBeforeUnmount(() => {
     if (soundRef.value) {
@@ -367,5 +366,11 @@ onBeforeUnmount(() => {
     width: calc(50% - 6px); 
     margin: 3px; 
     }
+}
+
+.loader {
+    margin: 70% 0;
+    min-width: 360px;
+    min-height: auto;
 }
 </style>

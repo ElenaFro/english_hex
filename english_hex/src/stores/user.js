@@ -2,10 +2,10 @@ import { defineStore } from "pinia";
 import { ref } from "vue";
 import apiClient from "../api/axios";
 
-export const useAuthStore = defineStore("auth", () => {
-  const user = ref(JSON.parse(localStorage.getItem("user")) || null);
-  const token = ref(localStorage.getItem("access_token") || null);
-  const isAuthenticated = ref(!!localStorage.getItem("access_token"));
+export const useUserStore = defineStore('user', () => {
+    const user = ref(JSON.parse(localStorage.getItem('user')) || null);
+    const token = ref(localStorage.getItem('access_token') || null);
+    const isAuthenticated = ref(!!localStorage.getItem('access_token'));
 
   const getCurrentUser = () => {
     return user.value;
@@ -65,27 +65,40 @@ export const useAuthStore = defineStore("auth", () => {
     }
   }
 
-  async function getRaiting() {
-    if (!token.value) return;
-    try {
-      const response = await apiClient.get("/rating/get");
-      return response.data;
-    } catch (error) {
-      console.error("Get rating error:", error);
-      throw error;
+    async function getRaiting() {
+        if (!token.value) return;
+        try {
+            const response = await apiClient.get('/rating/get');
+            return response.data;
+        } catch (error) {
+            console.error('Get rating error:', error);
+            throw error;
+        }
     }
-  }
 
-  return {
-    user,
-    token,
-    isAuthenticated,
-    register,
-    login,
-    logout,
-    getCurrentUser,
-    recoverPassword,
-    fetchUser,
-    getRaiting,
-  };
+    async function markFirstGame() {
+        if (!token.value) return;
+        try {
+            await apiClient.patch('/profile/update', {
+                ever_played_game: true,
+            });
+            await fetchUser();
+        } catch (error) {
+            console.error(error);
+        }
+    }
+
+    return {
+        user,
+        token,
+        isAuthenticated,
+        register,
+        login,
+        logout,
+        getCurrentUser,
+        recoverPassword,
+        fetchUser,
+        getRaiting,
+        markFirstGame,
+    };
 });

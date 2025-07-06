@@ -20,7 +20,7 @@
 </template>
 
 <script setup>
-import { useAuthStore } from '../../stores/auth';
+import { useUserStore } from '../../stores/user';
 import { ref } from 'vue';
 import loader from '../Loader.vue';
 
@@ -29,11 +29,15 @@ const email = ref()
 const loading = ref(false)
 
 async function sendRecoverEmail() {
-    loading.value = true
-    if (email.value) await useAuthStore().recoverPassword(email.value).then((response) => {
-        if (response.message) emit('change-component', 'PasswordRecovConfirm')
-    }).catch((error) => alert(error))
-    else alert('Email is empty')
+    loading.value = true;
+    if (email.value)
+        await useUserStore()
+            .recoverPassword(email.value)
+            .then((response) => {
+                if (response.message) emit('change-component', 'PasswordRecovConfirm');
+            })
+            .catch((error) => alert(error));
+    else alert('Email is empty');
     loading.value = false;
 }
 

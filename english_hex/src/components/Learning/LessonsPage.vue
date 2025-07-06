@@ -63,10 +63,32 @@ const replayAgain = () => {
  	}
 }
 
-const goToCard = () => {
-	videoRef.value?.pauseVideo?.()
-	activeComponent.value = 'WordPage'
-}
+const handleNextOrFinish = async () => {
+    if (isLastCard.value) {
+        await useCategoriesStore().updateComplateCategory(chosedCategory.value.id);
+        router.push({ name: 'games', query: { id: chosedCategory.value.id } });
+        return;
+    }
+    if (activeComponent.value === 'VideoPage') {
+        if (videoRef.value?.pauseVideo) {
+            videoRef.value.pauseVideo();
+        }
+        activeComponent.value = 'WordPage';
+    } else {
+        currentCardIndex.value = (currentCardIndex.value + 1) % cards.value.length;
+        activeComponent.value = 'VideoPage';
+    }
+};
+
+const getVideoUrl = (card) => {
+    if (!card || !card.id || !card.video) return '';
+    return `http://62.109.0.225:8000/storage/categories/${chosedCategory.value.id}/cards/${card.id}/video/${card.video}`;
+};
+
+const getAudioUrl = (card) => {
+    if (!card || !card.id || !card.audio) return '';
+    return `http://62.109.0.225:8000/storage/categories/${chosedCategory.value.id}/cards/${card.id}/audio/${card.audio}`;
+};
 </script>
 
 <style scoped>

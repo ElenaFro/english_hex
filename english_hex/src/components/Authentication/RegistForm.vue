@@ -70,11 +70,11 @@
 </template>
 
 <script setup>
-import { computed, ref } from 'vue'
-import visibilityIcon from '@/assets/img/visibility_icon.svg'
-import visibilityOffIcon from '@/assets/img/visibility_off_icon.svg'
-import { useAuthStore } from '../../stores/auth'
-import loader from '@/components/loader.vue'
+import { computed, ref } from 'vue';
+import visibilityIcon from '@/assets/img/visibility_icon.svg';
+import visibilityOffIcon from '@/assets/img/visibility_off_icon.svg';
+import { useUserStore } from '../../stores/user';
+import loader from '@/components/loader.vue';
 
 const nick = ref('')
 const email = ref('')
@@ -163,11 +163,16 @@ const formValidator = () => {
 
 async function login() {
     loading.value = true;
-    await useAuthStore().register(nick.value, email.value, password.value, agreementCheckbox.value).then((response) => {
-        if (response?.message) {
-            response?.message?.includes('send to email') ? confirmEmailSend.value = true : alert('Что то пошло не так, попробуйте еще раз')
-        }
-    }).catch((error) => alert(error))
+    await useUserStore()
+        .register(nick.value, email.value, password.value, agreementCheckbox.value)
+        .then((response) => {
+            if (response?.message) {
+                response?.message?.includes('send to email')
+                    ? (confirmEmailSend.value = true)
+                    : alert('Что то пошло не так, попробуйте еще раз');
+            }
+        })
+        .catch((error) => alert(error));
     loading.value = false;
 }
 </script>

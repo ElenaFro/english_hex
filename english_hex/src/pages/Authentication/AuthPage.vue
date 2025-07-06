@@ -36,8 +36,8 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
-import { useAuthStore } from '../../stores/auth'
+import { ref } from 'vue';
+import { useUserStore } from '../../stores/user';
 
 const step = ref('email')
 const email = ref('')
@@ -56,10 +56,10 @@ const emailVerif = () => {
 }
 
 const login = async () => {
-    await useAuthStore().login(email.value, password.value).then(
-        await useAuthStore().fetchUser()
-    );
-}
+    await useUserStore()
+        .login(email.value, password.value)
+        .then(await useUserStore().fetchUser());
+};
 </script>
 
 <style scoped>

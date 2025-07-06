@@ -1,12 +1,8 @@
 <template>
-<img src="@/assets/img/swan-img.png" alt="">
+    <img :src="src" alt="card_image" />
 </template>
-
 <script setup>
-import { onMounted, ref } from 'vue';
-
+defineProps({
+    src: { type: String, default: '' },
+});
 </script>
-
-<style scoped>
-
-</style>

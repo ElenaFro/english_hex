@@ -71,11 +71,13 @@ const img_url = computed(() => `http://62.109.0.225:8000/storage/categories/${pr
 }
 
 .category-name {
-	font-size: 16px;
-	font-weight: 700;
-	line-height: 100%;
-	color: rgba(38, 32, 96, 1);
-	padding-bottom: 16px;
+    font-size: 16px;
+    font-weight: 700;
+    line-height: 100%;
+    color: rgba(38, 32, 96, 1);
+    padding-bottom: 16px;
+    max-width: 100px;
+    overflow-x: hidden;
 }
 
 .nav-arrow {

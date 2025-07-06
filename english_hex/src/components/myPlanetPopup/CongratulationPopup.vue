@@ -22,9 +22,8 @@
 import { computed } from "vue";
 
 const props = defineProps({
-    isVisible: { type: Boolean, default: false, },
-    title: { type: String, default: "", },
-    message: { type: String, default: "", },
+    title: { type: String, default: '' },
+    message: { type: String, default: '' },
 });
 
 const emit = defineEmits([ "next" ]);

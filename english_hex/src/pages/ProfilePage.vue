@@ -67,14 +67,13 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from "vue";
-import BoyIcon from "@/assets/img/DefaultUserAvatar/male.svg";
-import GirlIcon from "@/assets/img/DefaultUserAvatar/female.svg";
-import { useAuthStore } from "@/stores/auth";
-import apiClient from "@/api/axios";
-import { compareObjects } from "@/shared/compareObject";
-import defaultPopup from "@/components/popups/defaultPopup.vue";
-
+import { ref, computed, onMounted } from 'vue';
+import BoyIcon from '@/assets/img/DefaultUserAvatar/male.svg';
+import GirlIcon from '@/assets/img/DefaultUserAvatar/female.svg';
+import { useUserStore } from '@/stores/user';
+import apiClient from '@/api/axios';
+import { compareObjects } from '@/shared/compareObject';
+import defaultPopup from '@/components/popups/defaultPopup.vue';
 
 const form = ref({});
 const initialForm = ref({})
@@ -87,7 +86,7 @@ const errors = ref({
 });
 
 onMounted(async () => {
-    form.value = useAuthStore().getCurrentUser();
+    form.value = useUserStore().getCurrentUser();
     initialForm.value = JSON.parse(JSON.stringify(form.value));
 })
 
@@ -158,14 +157,14 @@ const confirmSave = async () => {
         const payload = compareObjects(initialForm.value, form.value);
         await apiClient.patch('/profile/update', payload)
             .then(async () => {
-                await useAuthStore().fetchUser();
+                await useUserStore().fetchUser();
                 closePopup();
             }).catch((error) => { throw error })
     } catch (error) {
         console.error("Ошибка сохранения:", error);
     } finally {
         isSaving.value = false;
-        form.value = useAuthStore().getCurrentUser()
+        form.value = useUserStore().getCurrentUser();
     }
 };
 </script>

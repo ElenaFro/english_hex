@@ -17,14 +17,15 @@
 
 </template>
 <script setup>
-import { useRouter } from 'vue-router';
+import { useRouter, useRoute } from 'vue-router';
 
 const router = useRouter();
+const route = useRoute();
 const describeGame = 'Спасите планету от метеоритной атаки';
 const message = 'Отвечайте на вопросы правильно, чтобы остановить приближение метеорита. За каждую ошибку он подлетает ближе. 5 ошибок — и планета будет разрушена. Максимальная награда — 50 звёзд. За каждую ошибку вычитается 5 звёзд.';
 
 const goToGamePage = () => {
-    router.push('/planetAttackPage'); 
+    router.push({ name: 'planetAttackPage', query: { id: route.query.id } });
 };
 
 </script>
