@@ -47,13 +47,13 @@
 
 <script setup>
 import { ref, computed, onMounted } from 'vue';
-import { useAuthStore } from '@/stores/auth';
+import { useUserStore } from '@/stores/user';
 
 const raitingData = ref([]);
 const currentUser = ref(null);
 
 onMounted(async () => {
-    const authStore = useAuthStore();
+    const authStore = useUserStore();
     raitingData.value = await authStore.getRaiting();
     currentUser.value = await authStore.getCurrentUser();
 });

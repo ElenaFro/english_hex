@@ -22,7 +22,6 @@
 import { computed } from "vue";
 
 const props = defineProps({
-    isVisible: { type: Boolean, default: false },
     title: { type: String, default: '' },
     message: { type: String, default: '' },
 });

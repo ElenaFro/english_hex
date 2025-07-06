@@ -2,7 +2,12 @@
     <div class="header-bar">
         <template v-if="isHomePage">
             <span @click="goToMyPlanet" class="header-star">
-                {{ earnedStars }} <img src="@/assets/icons/navBarIcon/star.svg" class="header-star-left" alt="Звезда" />
+                {{ earnedStars }}
+                <img
+                    src="@/assets/icons/navBarIcon/star.svg"
+                    class="header-star-left"
+                    alt="Звезда"
+                />
             </span>
         </template>
 
@@ -17,9 +22,14 @@
                 </span>
             </span>
         </template>
-		<template v-else-if="isGameWordTwinkle || myPlanet">
+        <template v-else-if="isGameWordTwinkle || myPlanet">
             <span @click="goToMyPlanet" class="header-star">
-                {{ earnedStars }} <img src="@/assets/icons/navBarIcon/star.svg" class="header-star-left" alt="Звезда" />
+                {{ earnedStars }}
+                <img
+                    src="@/assets/icons/navBarIcon/star.svg"
+                    class="header-star-left"
+                    alt="Звезда"
+                />
             </span>
         </template>
         <template v-else>
@@ -63,17 +73,16 @@
 </template>
 
 <script setup>
-import { RouterLink } from "vue-router";
-import { ref, watch, computed  } from 'vue';
-import { useRoute} from 'vue-router';
+import { RouterLink } from 'vue-router';
+import { ref, watch, computed } from 'vue';
+import { useRoute } from 'vue-router';
 import { useRouter } from 'vue-router';
 import { defineProps } from 'vue';
-import { useAuthStore } from "@/stores/auth";
-
+import { useUserStore } from '@/stores/user';
 
 const router = useRouter();
 
-const currentUser = computed(() => useAuthStore().getCurrentUser());
+const currentUser = computed(() => useUserStore().getCurrentUser());
 const earnedStars = computed(() => currentUser.value.rating);
 const props = defineProps(['lives']);
 
@@ -81,7 +90,7 @@ const isGamePlanetPage = computed(() => route.path === '/planetAttackPage');
 
 const isGameWordTwinkle = computed(() => route.path === '/wordTwinkleResult');
 
-const myPlanet = computed(() => route.path === '/myPlanet'); 
+const myPlanet = computed(() => route.path === '/myPlanet');
 
 const headerItemsRight = [
     {
@@ -99,9 +108,9 @@ function goBack() {
 }
 
 const goToMyPlanet = () => {
-	router.push({ path: '/myPlanet', query: { earnedStars: earnedStars.value } })
-}
-const isHomePage = computed(() => route.fullPath === '/')
+    router.push({ path: '/myPlanet', query: { earnedStars: earnedStars.value } });
+};
+const isHomePage = computed(() => route.fullPath === '/');
 
 // onMounted(async () => {
 // 	try {

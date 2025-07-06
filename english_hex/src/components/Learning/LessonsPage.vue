@@ -75,12 +75,12 @@ const handleNextOrFinish = async () => {
 
 const getVideoUrl = (card) => {
     if (!card || !card.id || !card.video) return '';
-    return `http://62.109.0.225:8000/storage/categories/${chosedCategory.value.id}/video/${card.id}/${card.video}`;
+    return `http://62.109.0.225:8000/storage/categories/${chosedCategory.value.id}/cards/${card.id}/video/${card.video}`;
 };
 
 const getAudioUrl = (card) => {
     if (!card || !card.id || !card.audio) return '';
-    return `http://62.109.0.225:8000/storage/categories/${chosedCategory.value.id}/video/${card.id}/audio/${card.audio}`;
+    return `http://62.109.0.225:8000/storage/categories/${chosedCategory.value.id}/cards/${card.id}/audio/${card.audio}`;
 };
 </script>
 

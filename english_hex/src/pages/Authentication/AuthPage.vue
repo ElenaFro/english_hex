@@ -60,7 +60,7 @@
 
 <script setup>
 import { ref } from 'vue';
-import { useAuthStore } from '../../stores/auth';
+import { useUserStore } from '../../stores/user';
 
 const step = ref('email');
 const email = ref('');
@@ -79,9 +79,9 @@ const emailVerif = () => {
 };
 
 const login = async () => {
-    await useAuthStore()
+    await useUserStore()
         .login(email.value, password.value)
-        .then(await useAuthStore().fetchUser());
+        .then(await useUserStore().fetchUser());
 };
 </script>
 

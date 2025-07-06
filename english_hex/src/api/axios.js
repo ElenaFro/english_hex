@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { useAuthStore } from '../stores/auth';
+import { useUserStore } from '../stores/user';
 import { useRouter } from 'vue-router';
 
 const apiClient = axios.create({
@@ -14,7 +14,7 @@ export function setupInterceptors(pinia) {
         return;
     }
 
-    const authStore = useAuthStore(pinia);
+    const authStore = useUserStore(pinia);
 
     apiClient.interceptors.request.use(
         (config) => {

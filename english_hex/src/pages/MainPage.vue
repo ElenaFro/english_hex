@@ -1,24 +1,37 @@
 <template>
-	<watchStarsPopup v-if="!popupShowed" @close="handlePopup"/>
-	<!-- <watchStarsPopup /> -->
-	<div class="username-container">
-		<div class="username-container__img-container">
-			<div class="username-container__img-container-inner">
-				<img :src="avatarIcon" alt="" class="user-img">
-			</div>
-		</div>
-		<p class="username-container__name">{{ userName }}</p>
-	</div>
-	<div class="page-content">
-		<div class="scroll-container">
-			<CategoryChoice v-for="section in sections" :key="section.id" :id="section.id" :sectionName="section.name"
-				:imgUrl="section.category_photo" :backgroundColor="randomColor(section.id)"
-				:progress="section.completed_percentage" :locked="true" />
-		</div>
-	</div>
-	<loader v-if="loading" />
-	<HelloPopupWithSound v-if="openHelloPopup" :title="titlePopup" :message="messagePopup" :sound-mp3="SoundForPopup"
-		@close="closePopup" @arrow-click="closePopup" />
+    <watchStarsPopup v-if="!popupShowed" @close="handlePopup" />
+    <!-- <watchStarsPopup /> -->
+    <div class="username-container">
+        <div class="username-container__img-container">
+            <div class="username-container__img-container-inner">
+                <img :src="avatarIcon" alt="" class="user-img" />
+            </div>
+        </div>
+        <p class="username-container__name">{{ userName }}</p>
+    </div>
+    <div class="page-content">
+        <div class="scroll-container">
+            <CategoryChoice
+                v-for="section in sections"
+                :key="section.id"
+                :id="section.id"
+                :sectionName="section.name"
+                :imgUrl="section.category_photo"
+                :backgroundColor="randomColor(section.id)"
+                :progress="section.completed_category"
+                :locked="true"
+            />
+        </div>
+    </div>
+    <loader v-if="loading" />
+    <HelloPopupWithSound
+        v-if="openHelloPopup"
+        :title="titlePopup"
+        :message="messagePopup"
+        :sound-mp3="SoundForPopup"
+        @close="closePopup"
+        @arrow-click="closePopup"
+    />
 </template>
 
 <script setup>
@@ -29,15 +42,13 @@ import GirlIcon from '@/assets/img/DefaultUserAvatar/female.svg';
 import loader from '@/components/loader.vue';
 import HelloPopupWithSound from '@/components/popups/HelloPopupWithSound.vue';
 import SoundForPopup from '@/assets/audio/helloFromDi.mp3';
-import { useAuthStore } from '@/stores/auth';
+import { useUserStore } from '@/stores/user';
 import { useCategoriesStore } from '@/stores/categories';
-import apiClient from '@/api/axios';
-import watchStarsPopup from '@/components/popups/watchStarsPopup.vue'
-import { markFirstGame } from '@/stores/progress';
+import watchStarsPopup from '@/components/popups/watchStarsPopup.vue';
 
 const loading = ref(true);
 const openHelloPopup = ref(false);
-const popupShowed = ref(null)
+const popupShowed = ref(true);
 
 onMounted(async () => {
     await useCategoriesStore().getCategories();
@@ -70,35 +81,34 @@ onMounted(() => {
     }
 });
 
-const currentUser = computed(() => useAuthStore().getCurrentUser());
+const currentUser = computed(() => useUserStore().getCurrentUser());
 const userName = computed(() => currentUser.value.name);
-const avatarIcon = computed(() => currentUser.value.gender === "male" ? BoyIcon : GirlIcon);
-const sections = computed(() => useCategoriesStore().categories)
+const avatarIcon = computed(() => (currentUser.value.gender === 'male' ? BoyIcon : GirlIcon));
+const sections = computed(() => useCategoriesStore().categories);
 
 const closePopup = () => {
-	openHelloPopup.value = !openHelloPopup.value
-	openHelloPopup.value = false;
-}
+    openHelloPopup.value = !openHelloPopup.value;
+    openHelloPopup.value = false;
+};
 
 const titlePopup = 'Добро пожаловать!';
-const messagePopup = 'Привет! Меня зовут Di, и я рада приветствовать тебя в мире изучения английских слов! Ты сделал важный шаг к своей мечте - свободному владению иностранным языком.';
+const messagePopup =
+    'Привет! Меня зовут Di, и я рада приветствовать тебя в мире изучения английских слов! Ты сделал важный шаг к своей мечте - свободному владению иностранным языком.';
 
-onMounted(async () => {
-	try {
-		const response = await apiClient.get('/profile/get')
-		const data = response.data
-		if (data.everPlayedGame && !data.popupShowed) {
-			popupShowed.value = true
-		}
-	} catch(error) {
-		console.error(error)
-	}
-})
+onMounted(() => {
+    if (!localStorage.getItem('checkFirstGame')) return;
+    try {
+        popupShowed.value = useUserStore().getCurrentUser().ever_played_game;
+        localStorage.removeItem('checkFirstGame');
+    } catch (error) {
+        console.error(error);
+    }
+});
 
 const handlePopup = async () => {
-	await markFirstGame()
-	popupShowed.value = true
-}
+    await useUserStore().markFirstGame();
+    popupShowed.value = true;
+};
 </script>
 
 <style scoped>

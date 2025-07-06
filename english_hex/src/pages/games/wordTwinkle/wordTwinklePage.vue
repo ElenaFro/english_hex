@@ -14,7 +14,6 @@ const activeComponent = ref('startGame')
 
 const switchToGame = () => {
 	activeComponent.value = 'wordTwinkleGame'
-	firstGame()
 }
 
 onMounted(() => {

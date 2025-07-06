@@ -78,6 +78,8 @@ const checkedProgress = computed(() => (props.progress ? 100 : 0));
     line-height: 100%;
     color: rgba(38, 32, 96, 1);
     padding-bottom: 16px;
+    max-width: 100px;
+    overflow-x: hidden;
 }
 
 .nav-arrow {

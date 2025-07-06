@@ -2,59 +2,71 @@
     <div class="flip-card" :class="{ flipped: activeComponent === 'AnswersPage' }">
         <div class="flip-card__inner">
             <div class="flip-card__side flip-card__front">
-                <ImgPage />
+                <ImgPage :src="currentQuestion.image" />
             </div>
             <div class="flip-card__side flip-card__back">
                 <AnswersPage />
             </div>
         </div>
     </div>
-    <div v-show="showAnswer" class="answer-container">
+    <div v-if="showAnswer" class="answer-container">
         <button
-            v-for="item in currentQuestion?.answers"
-            :key="item.id"
-            @click="checkAnswer(item)"
-            :disabled="selectedAnswerIds.includes(item.id)"
+            v-for="(option, index) in currentQuestion.options"
+            :key="index"
+            @click="checkAnswer(option)"
+            :disabled="selectedOptions.includes(option)"
             :class="[
                 'button button--white',
-                selectedAnswerIds.includes(item.id) && !item.isCorrect ? 'button--wrong' : '',
-                selectedAnswerIds.includes(item.id) && item.isCorrect ? 'button--correct' : '',
+                selectedOptions.includes(option) && option !== currentQuestion.correctAnswer
+                    ? 'button--wrong'
+                    : '',
+                selectedOptions.includes(option) && option === currentQuestion.correctAnswer
+                    ? 'button--correct'
+                    : '',
             ]"
         >
-            {{ item.text }}
+            {{ option }}
         </button>
     </div>
 </template>
 
 <script setup>
-import { markFirstGame } from '@/stores/progress';
-import { onMounted, ref, computed } from 'vue'
-import { useRouter } from 'vue-router';
-import axios from 'axios'
-import ImgPage from '@/components/wordTwinkle/ImgPage.vue'
-import AnswersPage from '@/components/wordTwinkle/AnswersPage.vue'
-import apiClient from '@/api/axios';
+import { onMounted, ref, computed } from 'vue';
+import ImgPage from './ImgPage.vue';
+import { useRouter, useRoute } from 'vue-router';
+import AnswersPage from '@/components/wordTwinkle/AnswersPage.vue';
+import { useGamesStore } from '@/stores/games';
+import { useCategoriesStore } from '@/stores/categories';
 
 const router = useRouter();
+const route = useRoute();
 const activeComponent = ref('ImgPage');
 const showAnswer = ref(false);
 const answerList = ref([]);
 const currentIndex = ref(0);
-const selectedAnswerId = ref(null);
-const selectedAnswerIds = ref([]);
+const selectedOptions = ref([]);
 const wrongCount = ref(0);
+const everPlayedGame = ref(null);
+const chosedCategoryId = computed(() => useCategoriesStore().chosedCategory?.id || route.query.id);
+
 const emit = defineEmits(['wrong-answer', 'game-finished']);
 
-const currentQuestion = computed(() => answerList.value[currentIndex.value]);
+const currentQuestion = computed(() => {
+    const question = answerList.value[currentIndex.value] || {};
+    return {
+        id: question.id || null,
+        image: `http://62.109.0.225:8000/storage/categories/${chosedCategoryId.value}/cards/${question.id}/image/${question.image}`,
+        correctAnswer: question.correctAnswer || '',
+        options: question.options || [],
+    };
+});
 
 onMounted(async () => {
     try {
-        const response = await axios.get('/wordTwinkleTest.json');
-        answerList.value = response.data;
-    } catch {
-        console.log('Error', error);
+        answerList.value = await useGamesStore().getWordForTwinkleGame(chosedCategoryId.value);
+    } catch (error) {
+        console.error('Error fetching game data:', error);
     }
-
     setTimeout(goToAnswers, 4000);
 });
 
@@ -66,22 +78,22 @@ const goToAnswers = () => {
 };
 
 const showAnswers = () => {
-    if (activeComponent.value == 'AnswersPage') {
+    if (activeComponent.value === 'AnswersPage') {
         showAnswer.value = true;
     }
 };
 
-const checkAnswer = (item) => {
-    if (!selectedAnswerIds.value.includes(item.id)) {
-        selectedAnswerIds.value.push(item.id);
+const checkAnswer = (option) => {
+    if (!selectedOptions.value.includes(option)) {
+        selectedOptions.value.push(option);
     }
 
-    if (!item.isCorrect) {
+    if (option !== currentQuestion.value.correctAnswer) {
         wrongCount.value++;
         emit('wrong-answer', 1);
     }
 
-    if (item.isCorrect) {
+    if (option === currentQuestion.value.correctAnswer) {
         setTimeout(() => {
             goToNext();
         }, 1000);
@@ -89,40 +101,36 @@ const checkAnswer = (item) => {
 };
 
 const goToNext = async () => {
-	if (currentIndex.value < answerList.value.length - 1) {
-		currentIndex.value += 1;
-		selectedAnswerIds.value = [];
-		showAnswer.value = false;
-		activeComponent.value = 'ImgPage';
+    if (currentIndex.value < answerList.value.length - 1) {
+        currentIndex.value += 1;
+        selectedOptions.value = [];
+        showAnswer.value = false;
+        activeComponent.value = 'ImgPage';
 
-		setTimeout(goToAnswers, 4000)
-	} else {
-		await chekFirstGame()
+        setTimeout(goToAnswers, 4000);
+    } else {
+        await checkFirstGame();
+        if (everPlayedGame.value === true) {
+            goToResult();
+        } else {
+            router.push({ name: 'myPlanet' });
+        }
+    }
+};
 
-		if (everPlayedGame.value === true) {
-			goToResult()
-		} else {
-			router.push({ name: 'myPlanet'})
-		}
-
-	}
-}
-
-const everPlayedGame = ref(null)
-
-const chekFirstGame = async () => {
-	try {
-		const response = await apiClient.get('/profile/get')
-		everPlayedGame.value = response.data.ever_played_game
-	} catch (error) {
-		console.error(error)
-	}
-}
+const checkFirstGame = async () => {
+    try {
+        await useUserStore().fetchUser();
+        everPlayedGame.value = useUserStore().getCurrentUser().ever_played_game;
+    } catch (error) {
+        console.error('Error checking first game:', error);
+    }
+};
 
 const goToResult = () => {
-	emit('game-finished')
-	router.push({ name: 'gameResult', query: { wrong: wrongCount.value, from: 'wordTwinkle' } })
-}
+    emit('game-finished');
+    router.push({ name: 'gameResult', query: { wrong: wrongCount.value, from: 'wordTwinkle' } });
+};
 </script>
 
 <style scoped>
@@ -132,6 +140,7 @@ const goToResult = () => {
     position: relative;
     margin: auto;
     margin-bottom: 20px;
+    width: 100%;
 }
 
 .flip-card__inner {
