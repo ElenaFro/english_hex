@@ -1,0 +1,32 @@
+[
+	{
+	  "id": 1,
+	  "image": "cat.jpg",
+	  "answers": [
+		{ "id": 1, "text": "Swan", "isCorrect": true },
+		{ "id": 2, "text": "Pig", "isCorrect": false },
+		{ "id": 3, "text": "Duck", "isCorrect": false },
+		{ "id": 4, "text": "Rabbit", "isCorrect": false }
+	  ]
+	},
+	{
+	  "id": 2,
+	  "image": "dog.jpg",
+	  "answers": [
+		{ "id": 1, "text": "Кот", "isCorrect": false },
+		{ "id": 2, "text": "Собака", "isCorrect": true },
+		{ "id": 3, "text": "Заяц", "isCorrect": false },
+		{ "id": 4, "text": "Лев", "isCorrect": false }
+	  ]
+	},
+	{
+	  "id": 3,
+	  "image": "mouse.jpg",
+	  "answers": [
+		{ "id": 1, "text": "Лошадь", "isCorrect": false },
+		{ "id": 2, "text": "Мышь", "isCorrect": true },
+		{ "id": 3, "text": "Крыса", "isCorrect": false },
+		{ "id": 4, "text": "Слон", "isCorrect": false }
+	  ]
+	}
+  ]
