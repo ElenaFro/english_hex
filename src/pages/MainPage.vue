@@ -39,7 +39,7 @@ import { ref, onMounted, computed } from 'vue';
 import CategoryChoice from '@/components/MainPage/CategoryChoice.vue';
 import BoyIcon from "@/assets/img/DefaultUserAvatar/male.svg";
 import GirlIcon from "@/assets/img/DefaultUserAvatar/female.svg";
-import loader from '@/components/loader.vue';
+import loader from '@/components/Loader.vue';
 import HelloPopupWithSound from '@/components/popups/HelloPopupWithSound.vue';
 import SoundForPopup from '@/assets/audio/helloFromDi.mp3';
 import { useUserStore } from '@/stores/user';
