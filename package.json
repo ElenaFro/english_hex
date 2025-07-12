@@ -6,7 +6,8 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "hello_world_qwer": exit 1
   },
   "dependencies": {
     "axios": "^1.9.0",
