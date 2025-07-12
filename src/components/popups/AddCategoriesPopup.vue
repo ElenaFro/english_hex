@@ -22,7 +22,7 @@
 </template>
 
 <script setup>
-import { useRouter } from 'vue-router';
+import { useRouter } from 'vue-route';
 import { defineProps, defineEmits } from 'vue';
 
 const router = useRouter();
