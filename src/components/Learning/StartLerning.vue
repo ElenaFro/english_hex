@@ -17,7 +17,7 @@
 <script setup>
 import { useCategoriesStore } from '@/stores/categories';
 import { computed, onMounted, ref } from 'vue';
-import { useRoute } from 'vue-router';
+import { useRoute } from 'vue-route';
 import Loader from '../Loader.vue';
 
 const route = useRoute();
