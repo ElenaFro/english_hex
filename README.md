@@ -6,5 +6,3 @@ Learn more about IDE Support for Vue in the [Vue Docs Scaling up Guide](https://
 
 # запуск проекта
 npm run dev
-
-test
