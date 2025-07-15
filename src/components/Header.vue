@@ -14,7 +14,11 @@
         <template v-else-if="isGamePlanetPage">
             <span class="header-live">
                 <span v-for="index in lives" :key="index" class="live-icon">
-                    <img src="@/assets/icons/navBarIcon/live.svg" class="header-live-left" alt="Жизнь" />
+                    <img
+                        src="@/assets/icons/navBarIcon/live.svg"
+                        class="header-live-left"
+                        alt="Жизнь"
+                    />
                 </span>
             </span>
         </template>
@@ -27,25 +31,45 @@
                     alt="Звезда"
                 />
             </span>
-        </template> 
+        </template>
         <template v-else>
             <button @click="goBack" class="header-item-button">
-                <img src="@/assets/icons/navBarIcon/arrow_left.svg" class="header-icon-left" alt="Назад" />
+                <img
+                    src="@/assets/icons/navBarIcon/arrow_left.svg"
+                    class="header-icon-left"
+                    alt="Назад"
+                />
             </button>
         </template>
         <p class="header-title">{{ currentTitle }}</p>
-        <RouterLink v-for="item in headerItemsRight" :key="item.name + '-right'" :to="item.path" class="header-item"
-            :class="{ active: $route.path === item.path }">
-            <img v-if="!route.fullPath.includes('games') && !route.fullPath.includes('planetAttackPage')"
-                :src="item.icon" class="header-icon" :alt="item.name" />
+        <RouterLink
+            v-for="item in headerItemsRight"
+            :key="item.name + '-right'"
+            :to="item.path"
+            class="header-item"
+            :class="{ active: $route.path === item.path }"
+        >
+            <img
+                v-if="
+                    !route.fullPath.includes('games') &&
+                    !route.fullPath.includes('planetAttackPage')
+                "
+                :src="item.icon"
+                class="header-icon"
+                :alt="item.name"
+            />
         </RouterLink>
         <template v-if="isGamePlanetPage">
             <span class="header-star">
-                {{ earnedStars }} <img src="@/assets/icons/navBarIcon/star.svg" class="header-star-left" alt="Звезда" />
+                {{ earnedStars }}
+                <img
+                    src="@/assets/icons/navBarIcon/star.svg"
+                    class="header-star-left"
+                    alt="Звезда"
+                />
             </span>
         </template>
     </div>
-
 </template>
 
 <script setup>
@@ -62,7 +86,7 @@ const currentUser = computed(() => useUserStore().getCurrentUser());
 const earnedStars = computed(() => currentUser.value.rating);
 const props = defineProps(['lives']);
 
-const isGamePlanetPage = computed(() => route.path === '/planetAttackPage'); 
+const isGamePlanetPage = computed(() => route.path === '/planetAttackPage');
 
 const isGameWordTwinkle = computed(() => route.path === '/wordTwinkleResult');
 
@@ -70,13 +94,13 @@ const myPlanet = computed(() => route.path === '/myPlanet');
 
 const headerItemsRight = [
     {
-        name: "notifications",
-        path: "/notifications",
+        name: 'notifications',
+        path: '/notifications',
         icon: 'src/assets/icons/navBarIcon/Bell.svg',
     },
 ];
 
-const currentTitle = ref(" ");
+const currentTitle = ref(' ');
 const route = useRoute();
 
 function goBack() {
@@ -96,44 +120,41 @@ const isHomePage = computed(() => route.fullPath === '/');
 // 		console.error(err)
 // 	}
 // })
+const gameRoutes = ['games', 'planetGame', 'wordTwinkle', 'wordTwinkleGame', 'constellationGame'];
 
-watch(() => route.path, () => {
-    switch (route.name) {
-        case 'profile':
-            currentTitle.value = "Профиль";
-            break;
-        case 'rating':
-            currentTitle.value = "Рейтинг";
-            break;
-        case 'notifications':
-            currentTitle.value = "Уведомления";
-            break;
-        case 'addCategories':
-            currentTitle.value = "Редактирование";
-            break;
-        case 'games':
-            currentTitle.value = "Игры";
-            break;
-        case 'planetGame':
-            currentTitle.value = "Игры";
-            break;
-        case 'planetAttackPage':
-            currentTitle.value = "";
-            break;
-		case 'wordTwinkle':
-            currentTitle.value = "Игры";
-            break;
-		case 'wordTwinkleGame':
-            currentTitle.value = "Игры";
-            break;
-        case 'learning':
-            currentTitle.value = route.query.name;
-            break;
-        default:
-            currentTitle.value = " ";
-            break;
-    }
-}, { immediate: true });
+watch(
+    () => route.path,
+    () => {
+        if (gameRoutes.includes(route.name)) {
+            currentTitle.value = 'Игры';
+        } else {
+            switch (route.name) {
+                case 'profile':
+                    currentTitle.value = 'Профиль';
+                    break;
+                case 'rating':
+                    currentTitle.value = 'Рейтинг';
+                    break;
+                case 'notifications':
+                    currentTitle.value = 'Уведомления';
+                    break;
+                case 'addCategories':
+                    currentTitle.value = 'Редактирование';
+                    break;
+                case 'learning':
+                    currentTitle.value = route.query.name;
+                    break;
+                case 'planetAttackPage':
+                    currentTitle.value = '';
+                    break;
+                default:
+                    currentTitle.value = ' ';
+                    break;
+            }
+        }
+    },
+    { immediate: true }
+);
 </script>
 
 <style scoped>
@@ -148,7 +169,6 @@ watch(() => route.path, () => {
     padding-right: 20px;
     width: 100%;
     max-width: 414px;
-
 }
 
 .header-star {

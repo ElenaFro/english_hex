@@ -2,33 +2,56 @@
     <div class="main-container">
         <div class="content-container">
             <div class="authorization-toggle">
-                <button class="authorization-toggle__select-button" :class="{ active: mode === 'login' }"
-                    @click="switchToLogin">
+                <button
+                    class="authorization-toggle__select-button"
+                    :class="{ active: mode === 'login' }"
+                    @click="switchToLogin"
+                >
                     Вход
                 </button>
-                <button class="authorization-toggle__select-button" :class="{ active: mode === 'register' }"
-                    @click="$emit('change-component', 'RegistForm')">
+                <button
+                    class="authorization-toggle__select-button"
+                    :class="{ active: mode === 'register' }"
+                    @click="$emit('change-component', 'RegistForm')"
+                >
                     Регистрация
                 </button>
             </div>
 
             <div v-if="step === 'email'" class="login-form">
                 <p class="content-container__title">Укажи свой email</p>
-                <input ref="emailInput" v-model="email" type="email" placeholder="Начните ввод" :class="{
-                    'login-form__input-field': true,
-                    'login-form__input-field--error': inputError
-                }" />
-                <button @click="emailVerif" class="button button--purple button--big">Продолжить</button>
-                <button class="login-form__link" @click="$emit('change-component', 'PasswordRecov')">Забыли
-                    пароль?</button>
+                <input
+                    ref="emailInput"
+                    v-model="email"
+                    type="email"
+                    placeholder="Начните ввод"
+                    :class="{
+                        'login-form__input-field': true,
+                        'login-form__input-field--error': inputError,
+                    }"
+                />
+                <button @click="emailVerif" class="button button--purple button--big">
+                    Продолжить
+                </button>
+                <button
+                    class="login-form__link"
+                    @click="$emit('change-component', 'PasswordRecov')"
+                >
+                    Забыли пароль?
+                </button>
             </div>
 
             <div v-if="step === 'password'" class="login-form">
                 <p class="content-container__title">Укажи свой пароль</p>
-                <input v-model="password" type="password" placeholder="Начните ввод" :class="{
-                    'login-form__input-field': true,
-                    'login-form__input-field--error': inputError
-                }" />
+                <input
+                    v-model="password"
+                    type="password"
+                    placeholder="Начните ввод"
+                    :class="{
+                        'login-form__input-field': true,
+                        'login-form__input-field--error': inputError,
+                    }"
+                />
                 <button class="button button--purple button--big" @click="login">Войти</button>
             </div>
         </div>
@@ -39,21 +62,21 @@
 import { ref } from 'vue';
 import { useUserStore } from '../../stores/user';
 
-const step = ref('email')
-const email = ref('')
-const password = ref('')
-const mode = ref('login')
-const inputError = ref(false)
+const step = ref('email');
+const email = ref('');
+const password = ref('');
+const mode = ref('login');
+const inputError = ref(false);
 
 const switchToLogin = () => {
-    step.value = 'email'
-    mode.value = 'login'
-}
+    step.value = 'email';
+    mode.value = 'login';
+};
 
 const emailVerif = () => {
-    inputError.value = false
-    step.value = 'password'
-}
+    inputError.value = false;
+    step.value = 'password';
+};
 
 const login = async () => {
     await useUserStore()

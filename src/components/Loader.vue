@@ -1,9 +1,23 @@
 <template>
     <div class="loader-overlay">
-        <svg class="loader" :width="size" :height="size" :style="{ width: size + 'px', height: size + 'px' }">
-            <circle class="loader-spinner" :cx="size / 2" :cy="size / 2" :r="radius" :stroke="spinnerColor"
-                :stroke-width="strokeWidth" fill="none" stroke-linecap="round" :stroke-dasharray="dashArray"
-                :stroke-dashoffset="dashOffset" />
+        <svg
+            class="loader"
+            :width="size"
+            :height="size"
+            :style="{ width: size + 'px', height: size + 'px' }"
+        >
+            <circle
+                class="loader-spinner"
+                :cx="size / 2"
+                :cy="size / 2"
+                :r="radius"
+                :stroke="spinnerColor"
+                :stroke-width="strokeWidth"
+                fill="none"
+                stroke-linecap="round"
+                :stroke-dasharray="dashArray"
+                :stroke-dashoffset="dashOffset"
+            />
         </svg>
         <slot>
             <span v-if="showText" class="loader-text">Загрузка...</span>
@@ -12,7 +26,7 @@
 </template>
 
 <script setup>
-import { computed } from "vue";
+import { computed } from 'vue';
 
 const props = defineProps({
     size: {
@@ -21,7 +35,7 @@ const props = defineProps({
     },
     spinnerColor: {
         type: String,
-        default: "#FCB258",
+        default: '#FCB258',
     },
     strokeWidth: {
         type: Number,
@@ -36,7 +50,7 @@ const props = defineProps({
 const radius = computed(() => (props.size - props.strokeWidth) / 2);
 const circumference = computed(() => 2 * Math.PI * radius.value);
 const dashArray = computed(() => `${circumference.value * 0.75} ${circumference.value * 0.25}`);
-const dashOffset = computed(() => circumference.value * 0.125); 
+const dashOffset = computed(() => circumference.value * 0.125);
 </script>
 
 <style scoped>

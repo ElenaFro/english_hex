@@ -17,7 +17,7 @@
 </template>
 
 <script setup>
-import { computed, ref, watch } from "vue";
+import { computed, ref, watch } from 'vue';
 
 const props = defineProps({
     isVisible: {
@@ -26,23 +26,23 @@ const props = defineProps({
     },
     title: {
         type: String,
-        default: "",
+        default: '',
     },
     message: {
         type: String,
-        default: "",
+        default: '',
     },
     confirmText: {
         type: String,
-        default: "Продолжить",
+        default: 'Продолжить',
     },
 });
 
-const emit = defineEmits(["update:isVisible", "confirm", "close"]);
+const emit = defineEmits(['update:isVisible', 'confirm', 'close']);
 
 const localVisible = ref(props.isVisible);
 
-const titleMargin = computed(() => props.message ? 'd-mb-12' : 'd-mb-30')
+const titleMargin = computed(() => (props.message ? 'd-mb-12' : 'd-mb-30'));
 
 watch(
     () => props.isVisible,
@@ -53,12 +53,12 @@ watch(
 
 const closePopup = () => {
     localVisible.value = false;
-    emit("update:isVisible", false);
-    emit("close");
+    emit('update:isVisible', false);
+    emit('close');
 };
 
 const confirmAction = () => {
-    emit("confirm");
+    emit('confirm');
     closePopup();
 };
 </script>
@@ -87,7 +87,7 @@ const confirmAction = () => {
     width: 90%;
     max-width: 315px;
     position: relative;
-    color: #311D5D;
+    color: #311d5d;
     text-align: center;
 }
 

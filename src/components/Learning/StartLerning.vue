@@ -23,36 +23,35 @@ import Loader from '../Loader.vue';
 const route = useRoute();
 const currentCategory = ref({});
 onMounted(async () => {
-	await useCategoriesStore().getChosedCategory(route.params.id);
-	currentCategory.value = useCategoriesStore().chosedCategory
+    await useCategoriesStore().getChosedCategory(route.params.id);
+    currentCategory.value = useCategoriesStore().chosedCategory;
+});
 
-})
-
-const title = computed(() => `Заголовок для ${currentCategory.value.name}`)
-const description = computed(() => useCategoriesStore().chosedCategory.description)
+const title = computed(() => `Заголовок для ${currentCategory.value.name}`);
+const description = computed(() => useCategoriesStore().chosedCategory.description);
 </script>
 <style scoped>
 .img-container {
-	display: block;
-	position: relative;
-	padding-bottom: 19px;
-	align-self: center;
+    display: block;
+    position: relative;
+    padding-bottom: 19px;
+    align-self: center;
 }
 
 .page-content__title {
-	font-size: 24px;
-	font-weight: 700;
-	line-height: 100%;
-	color: rgba(49, 29, 93, 1);
-	margin-bottom: 25px;
+    font-size: 24px;
+    font-weight: 700;
+    line-height: 100%;
+    color: rgba(49, 29, 93, 1);
+    margin-bottom: 25px;
 }
 
 .page-content__text {
-	font-size: 14px;
-	font-weight: 400;
-	line-height: 20px;
-	color: rgba(38, 32, 96, 1);
-	margin-bottom: 25px;
+    font-size: 14px;
+    font-weight: 400;
+    line-height: 20px;
+    color: rgba(38, 32, 96, 1);
+    margin-bottom: 25px;
 }
 .loader {
     margin-top: 35vh;

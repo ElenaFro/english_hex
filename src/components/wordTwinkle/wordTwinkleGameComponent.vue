@@ -71,11 +71,11 @@ onMounted(async () => {
 });
 
 const goToAnswers = () => {
-	activeComponent.value = 'AnswersPage'
-	setTimeout(() => {
-		showAnswers()
-	}, 800)
-}
+    activeComponent.value = 'AnswersPage';
+    setTimeout(() => {
+        showAnswers();
+    }, 800);
+};
 
 const showAnswers = () => {
     if (activeComponent.value === 'AnswersPage') {
@@ -144,63 +144,63 @@ const goToResult = () => {
 }
 
 .flip-card__inner {
-	position: relative;
-	width: 100%;
-	min-height: 100%;
-	transform-style: preserve-3d;
-	transition: transform 0.8s ease-in-out;
-	display: flex;
+    position: relative;
+    width: 100%;
+    min-height: 100%;
+    transform-style: preserve-3d;
+    transition: transform 0.8s ease-in-out;
+    display: flex;
 }
 
 .flip-card.flipped .flip-card__inner {
-	transform: rotateY(180deg);
+    transform: rotateY(180deg);
 }
 
 .flip-card__side {
-	width: 100%;
-	backface-visibility: hidden;
-	flex-shrink: 0;
-	flex-grow: 1;
+    width: 100%;
+    backface-visibility: hidden;
+    flex-shrink: 0;
+    flex-grow: 1;
 }
 
 .flip-card__front {
-	z-index: 2;
+    z-index: 2;
 }
 
 .flip-card__back {
-	transform: rotateY(180deg);
-	position: absolute;
-	top: 0;
-	left: 0;
+    transform: rotateY(180deg);
+    position: absolute;
+    top: 0;
+    left: 0;
 }
 
 .answer-container {
-	align-self: center;
-	width: 100%;
-	max-width: 315px;
-	display: grid;
-	grid-template-rows: repeat(2, 40px);
-	grid-template-columns: repeat(2, 140px);
-	row-gap: 10px;
-	justify-content: space-between;
+    align-self: center;
+    width: 100%;
+    max-width: 315px;
+    display: grid;
+    grid-template-rows: repeat(2, 40px);
+    grid-template-columns: repeat(2, 140px);
+    row-gap: 10px;
+    justify-content: space-between;
 }
 
 .button {
-	width: 140px;
-	height: 40px;
-	border: 2px solid #262060;
-	font-weight: 700;
+    width: 140px;
+    height: 40px;
+    border: 2px solid #262060;
+    font-weight: 700;
 }
 
 .button--wrong {
-	border: 0;
-	background-color: #881717;
-	color: #FFFFFF;
+    border: 0;
+    background-color: #881717;
+    color: #ffffff;
 }
 
 .button--correct {
-	border: 0;
-	background-color: #31AF40;
-	color: #FFFFFF;
+    border: 0;
+    background-color: #31af40;
+    color: #ffffff;
 }
 </style>

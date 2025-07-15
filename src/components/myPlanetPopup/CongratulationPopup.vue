@@ -2,7 +2,7 @@
     <div class="popup-overlay">
         <div class="popup-content">
             <div class="image-container">
-                <img src="@/assets/Di_avatar/girl_head.png" alt="girl" class="girl">
+                <img src="@/assets/Di_avatar/girl_head.png" alt="girl" class="girl" />
             </div>
             <h2 class="popup-title" :class="titleMargin">Поздравляю!</h2>
             <p class="popup-message">Вы успешно завершили первую колоду. Теперь вы можете создать свою планету и продвигать её, зарабатывая звезды в каждой игре!</p>
@@ -32,7 +32,7 @@ const goToNext = () => {
 	emit('next', 'toPlanet')
 }
 
-const titleMargin = computed(() => props.message ? 'd-mb-12' : 'd-mb-30')
+const titleMargin = computed(() => (props.message ? 'd-mb-12' : 'd-mb-30'));
 
 </script>
 
@@ -58,7 +58,7 @@ const titleMargin = computed(() => props.message ? 'd-mb-12' : 'd-mb-30')
     width: 90%;
     max-width: 315px;
     position: relative;
-    color: #311D5D;
+    color: #311d5d;
     text-align: center;
 }
 

@@ -1,15 +1,15 @@
 <template>
     <div class="notification-page">
-		<Notification />
-	</div>
+        <Notification />
+    </div>
 </template>
 <script setup>
-import Notification from '@/components/Notification.vue'
+import Notification from '@/components/Notification.vue';
 </script>
 <style scoped lang="scss">
 .notification-page {
     height: 100vh;
-    width: 100vw; 
+    width: 100vw;
     max-width: 414px;
     display: flex;
     flex-direction: column;

@@ -1,5 +1,4 @@
 <template>
-    
     <div class="relative all">
         <loader v-if="!questions.length" class="loader" />
         <section v-else>
@@ -59,7 +58,7 @@ const chosedCategory = ref(useCategoriesStore().chosedCategory);
 
 const categoryId = computed(() => chosedCategory.value.is || route.query.id);
 
-const isQuestionPlayed = ref(false); 
+const isQuestionPlayed = ref(false);
 
 const playSound = () => {
     if (soundRef.value) {
@@ -72,45 +71,47 @@ const playSound = () => {
 };
 
 const onAudioEnded = () => {
-    isQuestionPlayed.value = true; 
+    isQuestionPlayed.value = true;
     const currentQuestionData = currentQuestion.value;
-    resetButtonStyles(currentQuestionData, false); 
+    resetButtonStyles(currentQuestionData, false);
 };
 
-const currentQuestionIndex = ref(0); 
+const currentQuestionIndex = ref(0);
 const questions = ref([]);
 
-const buttonStyles = ref({}); 
+const buttonStyles = ref({});
 
 const resetButtonStyles = (currentQuestionData, disableButtons = false) => {
     currentQuestionData.options.forEach((option, index) => {
-        buttonStyles.value[index] = { 
-            backgroundColor: '#fff', 
-            color: '#262060', 
-            border: disableButtons ? '2px solid rgba(118, 118, 118, 0.3)' : '2px solid rgba(49, 29, 93, 1)' 
-        }; 
+        buttonStyles.value[index] = {
+            backgroundColor: '#fff',
+            color: '#262060',
+            border: disableButtons
+                ? '2px solid rgba(118, 118, 118, 0.3)'
+                : '2px solid rgba(49, 29, 93, 1)',
+        };
     });
 };
 
 const currentQuestion = computed(() => {
-       return questions.value[currentQuestionIndex.value] || {}; 
-   });
+    return questions.value[currentQuestionIndex.value] || {};
+});
 
 const sendAnswer = (answer) => {
     const currentQuestionData = currentQuestion.value;
-    resetButtonStyles(currentQuestionData); 
+    resetButtonStyles(currentQuestionData);
     if (answer === currentQuestionData.correctAnswer) {
-        buttonStyles.value[currentQuestionData.options.indexOf(answer)] = { 
-            backgroundColor: '#31AF40', 
-            color: '#FFFFFF', 
-            border: 'none'
+        buttonStyles.value[currentQuestionData.options.indexOf(answer)] = {
+            backgroundColor: '#31AF40',
+            color: '#FFFFFF',
+            border: 'none',
         };
-        setTimeout(nextQuestion, 1000); 
+        setTimeout(nextQuestion, 1000);
     } else {
-        buttonStyles.value[currentQuestionData.options.indexOf(answer)] = { 
-            backgroundColor: '#881717', 
-            color: '#FFFFFF', 
-            border: 'none'
+        buttonStyles.value[currentQuestionData.options.indexOf(answer)] = {
+            backgroundColor: '#881717',
+            color: '#FFFFFF',
+            border: 'none',
         };
         lives.value--;
         meteorTop.value = `calc(${meteorTop.value} + 2vh)`;
@@ -126,29 +127,33 @@ const sendAnswer = (answer) => {
 };
 
 const nextQuestion = () => {
-    const currentQuestionData = currentQuestion.value; 
+    const currentQuestionData = currentQuestion.value;
     resetButtonStyles(currentQuestionData, true);
-    isQuestionPlayed.value = false; 
+    isQuestionPlayed.value = false;
 
     if (lives.value > 0 && currentQuestionIndex.value < questions.value.length - 1) {
         currentQuestionIndex.value++;
     } else if (lives.value === 5 && currentQuestionIndex.value >= questions.value.length - 1) {
-        earnedStars.value += 50 ; 
+        earnedStars.value += 50;
         localStorage.setItem('earnedStars', earnedStars.value);
         emit('update:earnedStars', earnedStars.value);
         emit('switch-component', 'AttackPlanetWin');
-    } else if (lives.value > 0 && lives.value < 5 && currentQuestionIndex.value >= questions.value.length - 1) {
-        earnedStars.value += (50 - 5 * (5 - lives.value)); 
-        localStorage.setItem('earnedStars', earnedStars.value); 
+    } else if (
+        lives.value > 0 &&
+        lives.value < 5 &&
+        currentQuestionIndex.value >= questions.value.length - 1
+    ) {
+        earnedStars.value += 50 - 5 * (5 - lives.value);
+        localStorage.setItem('earnedStars', earnedStars.value);
         emit('switch-component', 'AttackPlanetResult');
     } else if (lives.value <= 0) {
         emit('switch-component', 'AttackPlanetLoss');
     }
 };
 
-const meteorTop = ref('-25px'); 
+const meteorTop = ref('-25px');
 const meteorRight = ref('-4px');
-const meteorWidth = ref('74px'); 
+const meteorWidth = ref('74px');
 
 onMounted(async () => {
     if (soundRef.value) {
@@ -170,72 +175,70 @@ onBeforeUnmount(() => {
         soundRef.value.removeEventListener('ended', onAudioEnded);
     }
 });
-
 </script>
 <style scoped lang="scss">
-.page-container{
+.page-container {
     overflow: auto;
     display: flex;
     flex-direction: column;
     justify-content: center;
     background-color: transparent;
-    width: 100vw; 
-    max-width: 414px;  
+    width: 100vw;
+    max-width: 414px;
     gap: 23px;
     padding-top: 20px;
     &__game {
         display: flex;
         flex-direction: column;
-        justify-content: center; 
-        align-items: center; 
+        justify-content: center;
+        align-items: center;
         gap: 10px;
-        width:173px;
+        width: 173px;
         height: 183px;
-        background-color: #FFFFFF;
+        background-color: #ffffff;
         border-radius: 20px;
         border: 3px solid #262060;
         margin-left: 30px;
-        margin-right: 30px; 
-        color: #311D5D;
-       
+        margin-right: 30px;
+        color: #311d5d;
     }
-        &__button {
-            display: flex;
-            flex-wrap: wrap; 
-            margin: -5px; 
-        }
+    &__button {
+        display: flex;
+        flex-wrap: wrap;
+        margin: -5px;
+    }
 }
 
 .image-container {
     display: flex;
-    justify-content: center; 
-    align-items: center; 
+    justify-content: center;
+    align-items: center;
 }
 
 .meteor {
     position: absolute;
-    width:74px;
-    height:auto;
+    width: 74px;
+    height: auto;
     right: -4px;
-    top: -25px; 
+    top: -25px;
     z-index: 3000;
 }
 
-.image-section_game{
+.image-section_game {
     position: relative;
     display: flex;
     flex-direction: column;
-    justify-content: center; 
+    justify-content: center;
     align-items: center;
 }
 
 .answer-button {
-    background-color: #fff ;
+    background-color: #fff;
     padding: 9px 24px;
     line-height: 22px;
     color: #262060;
-    width: 100%; 
-    padding: 9px 24px; 
+    width: 100%;
+    padding: 9px 24px;
     border-radius: 16px;
     font-weight: 700;
     font-size: 18px;
@@ -244,8 +247,8 @@ onBeforeUnmount(() => {
 }
 .line {
     display: flex;
-    width: calc(50% - 12.5px); 
-    margin: 5px; 
+    width: calc(50% - 12.5px);
+    margin: 5px;
 }
 .question {
     font-weight: 800;
@@ -260,31 +263,32 @@ onBeforeUnmount(() => {
     height: auto;
 }
 .sound0 {
-    border : none;
+    border: none;
     background-color: transparent;
 }
 @media (min-width: 415px) {
-    .all, .meteor, .layout {
-       overflow: visible; 
+    .all,
+    .meteor,
+    .layout {
+        overflow: visible;
     }
 }
 @media (max-height: 800px) {
-    .page-container{
+    .page-container {
         gap: 18px;
         padding-top: 10px;
     }
-
 }
 @media (max-height: 780px) {
     .page-container__game {
         gap: 8px;
-        width:163px;
-        height: 173px; 
+        width: 163px;
+        height: 173px;
     }
     .question {
         font-size: 60px;
     }
-    .page-container{
+    .page-container {
         gap: 18px;
     }
     .sound1 {
@@ -302,13 +306,13 @@ onBeforeUnmount(() => {
 @media (max-height: 740px) {
     .page-container__game {
         gap: 8px;
-        width:143px;
-        height: 153px; 
+        width: 143px;
+        height: 153px;
     }
     .question {
         font-size: 60px;
     }
-    .page-container{
+    .page-container {
         gap: 18px;
     }
     .sound1 {
@@ -330,10 +334,10 @@ onBeforeUnmount(() => {
     }
     .page-container__game {
         gap: 7px;
-        width:140px;
-        height: 140px; 
+        width: 140px;
+        height: 140px;
     }
-    .page-container{
+    .page-container {
         gap: 16px;
     }
     .sound1 {
@@ -348,10 +352,10 @@ onBeforeUnmount(() => {
     }
     .page-container__game {
         gap: 5px;
-        width:130px;
-        height: 135px; 
+        width: 130px;
+        height: 135px;
     }
-    .page-container{
+    .page-container {
         gap: 12px;
     }
     .sound1 {
@@ -362,9 +366,9 @@ onBeforeUnmount(() => {
         font-size: 46px;
     }
     .line {
-    display: flex;
-    width: calc(50% - 6px); 
-    margin: 3px; 
+        display: flex;
+        width: calc(50% - 6px);
+        margin: 3px;
     }
 }
 

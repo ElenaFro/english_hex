@@ -7,47 +7,83 @@
             <div class="form-group">
                 <label for="name">Имя</label>
                 <div class="input-with-icon">
-                    <input id="name" v-model="form.name" type="text" maxlength="17" placeholder="Введите ваше имя"
-                        class="form-input" :class="{ 'error': errors.name }" @input="clearError('name')" />
+                    <input
+                        id="name"
+                        v-model="form.name"
+                        type="text"
+                        maxlength="17"
+                        placeholder="Введите ваше имя"
+                        class="form-input"
+                        :class="{ error: errors.name }"
+                        @input="clearError('name')"
+                    />
                     <span class="edit-icon" @click="focusInput('name')">
                         <img v-if="edit" src="@/assets/icons/editPencil.svg" />
                     </span>
                 </div>
                 <span v-if="errors.name" class="error-message">{{ errors.name }}</span>
             </div>
-				<div class="form-group">
-					<label>Пол</label>
-					<div class="gender-options">
-						<label class="gender-label">
-							<input type="radio" name="gender" value="male" v-model="form.gender" @change="updateAvatar" />
-							<span class="custom-radio"></span>
-							Мужской
-						</label>
-						<label class="gender-label">
-							<input type="radio" name="gender" value="female" v-model="form.gender" @change="updateAvatar" />
-							<span class="custom-radio"></span>
-							Женский
-						</label>
-					</div>
-					<span v-if="errors.gender" class="error-message">{{ errors.gender }}</span>
-				</div>
+            <div class="form-group">
+                <label>Пол</label>
+                <div class="gender-options">
+                    <label class="gender-label">
+                        <input
+                            type="radio"
+                            name="gender"
+                            value="male"
+                            v-model="form.gender"
+                            @change="updateAvatar"
+                        />
+                        <span class="custom-radio"></span>
+                        Мужской
+                    </label>
+                    <label class="gender-label">
+                        <input
+                            type="radio"
+                            name="gender"
+                            value="female"
+                            v-model="form.gender"
+                            @change="updateAvatar"
+                        />
+                        <span class="custom-radio"></span>
+                        Женский
+                    </label>
+                </div>
+                <span v-if="errors.gender" class="error-message">{{ errors.gender }}</span>
+            </div>
 
-				<div class="form-group">
-					<label for="email">Email</label>
-					<div class="input-with-icon">
-						<input id="email" v-model="form.email" type="email" maxlength="30" placeholder="Ваш email"
-							class="form-input" :class="{ 'error': errors.email }" @input="clearError('email')" />
-						<span class="edit-icon" @click="focusInput('email')">
-							<img v-if="edit" src="@/assets/icons/editPencil.svg" />
-						</span>
-					</div>
-					<span v-if="errors.email" class="error-message">{{ errors.email }}</span>
-				</div>
+            <div class="form-group">
+                <label for="email">Email</label>
+                <div class="input-with-icon">
+                    <input
+                        id="email"
+                        v-model="form.email"
+                        type="email"
+                        maxlength="30"
+                        placeholder="Ваш email"
+                        class="form-input"
+                        :class="{ error: errors.email }"
+                        @input="clearError('email')"
+                    />
+                    <span class="edit-icon" @click="focusInput('email')">
+                        <img v-if="edit" src="@/assets/icons/editPencil.svg" />
+                    </span>
+                </div>
+                <span v-if="errors.email" class="error-message">{{ errors.email }}</span>
+            </div>
             <div class="form-group">
                 <label for="password">Пароль</label>
                 <div class="input-with-icon">
-                    <input id="password" v-model="form.password" type="password" maxlength="30" placeholder="Ваш пароль"
-                        class="form-input" :class="{ 'error': errors.password }" @input="clearError('password')" />
+                    <input
+                        id="password"
+                        v-model="form.password"
+                        type="password"
+                        maxlength="30"
+                        placeholder="Ваш пароль"
+                        class="form-input"
+                        :class="{ error: errors.password }"
+                        @input="clearError('password')"
+                    />
                     <span class="edit-icon" @click="focusInput('password')">
                         <img v-if="edit" src="@/assets/icons/editPencil.svg" />
                     </span>
@@ -61,8 +97,12 @@
             </button>
         </div>
 
-        <defaultPopup :isVisible="showPopup" title="Сохранить изменения?" @confirm="confirmSave"
-            @update:isVisible="showPopup = $event" />
+        <defaultPopup
+            :isVisible="showPopup"
+            title="Сохранить изменения?"
+            @confirm="confirmSave"
+            @update:isVisible="showPopup = $event"
+        />
     </div>
 </template>
 
@@ -76,32 +116,32 @@ import { compareObjects } from '@/shared/compareObject';
 import defaultPopup from '@/components/popups/defaultPopup.vue';
 
 const form = ref({});
-const initialForm = ref({})
+const initialForm = ref({});
 
 const errors = ref({
-    gender: "",
-    name: "",
-    email: "",
-    password: "",
+    gender: '',
+    name: '',
+    email: '',
+    password: '',
 });
 
 onMounted(async () => {
     form.value = useUserStore().getCurrentUser();
     initialForm.value = JSON.parse(JSON.stringify(form.value));
-})
+});
 
 const isSaving = ref(false);
 const showPopup = ref(false);
 const edit = ref(true);
 
-const avatarIcon = computed(() => form.value?.gender === "male" ? BoyIcon : GirlIcon);
+const avatarIcon = computed(() => (form.value?.gender === 'male' ? BoyIcon : GirlIcon));
 
 const toggleGender = () => {
-    form.value.gender = form.value.gender === "male" ? "female" : "male";
+    form.value.gender = form.value.gender === 'male' ? 'female' : 'male';
 };
 
 const updateAvatar = () => {
-    clearError("gender");
+    clearError('gender');
 };
 
 const focusInput = (field) => {
@@ -109,24 +149,24 @@ const focusInput = (field) => {
 };
 
 const clearError = (field) => {
-    errors.value[field] = "";
+    errors.value[field] = '';
 };
 
 const validateForm = () => {
     let isValid = true;
-    errors.value = { gender: "", name: "", email: "", password: "" };
+    errors.value = { gender: '', name: '', email: '', password: '' };
 
     if (!form.value.name.trim()) {
-        errors.value.name = "Поле заполнено некорректно";
+        errors.value.name = 'Поле заполнено некорректно';
         isValid = false;
     }
 
     const emailRegex = /^(?=.*[A-Za-z0-9])[^<>{}()[\],;:\\/"* ]{8,30}$/;
     if (!form.value.email) {
-        errors.value.email = "Поле заполнено некорректно";
+        errors.value.email = 'Поле заполнено некорректно';
         isValid = false;
-    } else if (!emailRegex.test(form.value.email) || !form.value.email.includes("@")) {
-        errors.value.email = "Поле заполнено некорректно";
+    } else if (!emailRegex.test(form.value.email) || !form.value.email.includes('@')) {
+        errors.value.email = 'Поле заполнено некорректно';
         isValid = false;
     }
 
@@ -155,13 +195,17 @@ const confirmSave = async () => {
     isSaving.value = true;
     try {
         const payload = compareObjects(initialForm.value, form.value);
-        await apiClient.patch('/profile/update', payload)
+        await apiClient
+            .patch('/profile/update', payload)
             .then(async () => {
                 await useUserStore().fetchUser();
                 closePopup();
-            }).catch((error) => { throw error })
+            })
+            .catch((error) => {
+                throw error;
+            });
     } catch (error) {
-        console.error("Ошибка сохранения:", error);
+        console.error('Ошибка сохранения:', error);
     } finally {
         isSaving.value = false;
         form.value = useUserStore().getCurrentUser();
@@ -175,7 +219,7 @@ const confirmSave = async () => {
     height: 100vh;
     min-height: 100%;
     padding: 40px 30px;
-    background-color: #F6F6FE;
+    background-color: #f6f6fe;
     border-radius: 40px;
 }
 
@@ -192,11 +236,11 @@ const confirmSave = async () => {
     border-top-left-radius: 40px;
     border-top-right-radius: 40px;
 
-    @media (min-width:375px) {
+    @media (min-width: 375px) {
         width: 375px;
     }
 
-    @media (max-width:375px) {
+    @media (max-width: 375px) {
         width: 100%;
     }
 }
@@ -305,7 +349,7 @@ const confirmSave = async () => {
     cursor: pointer;
 }
 
-.gender-label input[type="radio"] {
+.gender-label input[type='radio'] {
     display: none;
 }
 
@@ -319,8 +363,8 @@ const confirmSave = async () => {
     transition: background-color 0.2s;
 }
 
-.gender-label input[type="radio"]:checked+.custom-radio::after {
-    content: "";
+.gender-label input[type='radio']:checked + .custom-radio::after {
+    content: '';
     position: absolute;
     top: 50%;
     left: 50%;

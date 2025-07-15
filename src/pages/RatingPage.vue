@@ -2,9 +2,17 @@
     <div class="raiting-page">
         <section class="podium-container">
             <div class="podium-section">
-                <div v-for="(user, index) in topUsers" :key="user.id" class="podium-item"
-                    :class="`rank-${index + 1} ${user.id === currentUser?.id ? 'active-user' : ''}`">
-                    <img src="@/assets/img/DefaultUserAvatar/male.svg" class="user-avatar" :alt="user.name" />
+                <div
+                    v-for="(user, index) in topUsers"
+                    :key="user.id"
+                    class="podium-item"
+                    :class="`rank-${index + 1} ${user.id === currentUser?.id ? 'active-user' : ''}`"
+                >
+                    <img
+                        src="@/assets/img/DefaultUserAvatar/male.svg"
+                        class="user-avatar"
+                        :alt="user.name"
+                    />
                     <div>
                         <span class="name_top">{{ user.name }}</span>
                     </div>
@@ -13,11 +21,19 @@
         </section>
 
         <section class="user-list">
-            <section v-for="user in otherUsers" :key="user.id" class="user-item"
-                :class="{ 'active-user': user.id === currentUser?.id }">
+            <section
+                v-for="user in otherUsers"
+                :key="user.id"
+                class="user-item"
+                :class="{ 'active-user': user.id === currentUser?.id }"
+            >
                 <div class="user-rank">{{ user.rank }}</div>
                 <section class="user-item-section">
-                    <img src="@/assets/img/DefaultUserAvatar/male.svg" class="user-avatar-small" :alt="user.name" />
+                    <img
+                        src="@/assets/img/DefaultUserAvatar/male.svg"
+                        class="user-avatar-small"
+                        :alt="user.name"
+                    />
                     <span class="user-name">{{ user.name }}</span>
                     <div class="user-info">
                         <span class="user-stars">{{ user.rating }}</span>
@@ -67,7 +83,7 @@ const otherUsers = computed(() => {
 .raiting-page {
     height: 100vh;
     // width: 100%;
-    width: 100vw; 
+    width: 100vw;
     max-width: 414px;
     display: flex;
     flex-direction: column;
@@ -146,7 +162,7 @@ const otherUsers = computed(() => {
     height: 80px;
     border-radius: 50%;
     object-fit: cover;
-    border: 1px solid #FF7E56;
+    border: 1px solid #ff7e56;
     padding: 4px;
 }
 
@@ -169,7 +185,7 @@ const otherUsers = computed(() => {
     font-size: 16px;
     font-weight: 600;
     align-items: start;
-    color: #4700B580;
+    color: #4700b580;
 }
 
 .user-rating {
@@ -182,7 +198,7 @@ const otherUsers = computed(() => {
     width: 100%;
     height: 100%;
     max-width: 400px;
-    background: #FFF8F5;
+    background: #fff8f5;
     border-top-left-radius: 40px;
     border-top-right-radius: 40px;
     padding: 30px;
@@ -200,8 +216,8 @@ const otherUsers = computed(() => {
     align-items: center;
     justify-content: space-between;
     padding: 10px;
-    border: 2px solid #4700B580;
-    background: #FFF;
+    border: 2px solid #4700b580;
+    background: #fff;
     border-radius: 20px;
     gap: 17px;
     width: 100%;
@@ -238,7 +254,7 @@ const otherUsers = computed(() => {
     display: flex;
     align-items: center;
     font-size: 14px;
-    color: #4700B580;
+    color: #4700b580;
 }
 
 .star_class img {
@@ -249,14 +265,14 @@ const otherUsers = computed(() => {
 }
 
 .active-user .user-item-section {
-    background: #C6C9FE;
+    background: #c6c9fe;
 
     :deep(.user-name) {
-        color: #2E0C77;
+        color: #2e0c77;
     }
 
     :deep(.user-stars) {
-        color: #2E0C77;
+        color: #2e0c77;
     }
 }
 

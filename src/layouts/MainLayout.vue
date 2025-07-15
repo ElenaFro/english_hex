@@ -10,17 +10,16 @@
 import Navigation from '../components/Navigation.vue';
 import Header from '../components/Header.vue';
 import { ref } from 'vue';
-const lives = ref(5); 
+const lives = ref(5);
 
-const earnedStars = ref(parseInt(localStorage.getItem('earnedStars')) || 0); 
+const earnedStars = ref(parseInt(localStorage.getItem('earnedStars')) || 0);
 
 const updateLives = (newLives) => {
     lives.value = newLives; // Обновляем количество жизней
 };
 const updateEarnedStars = (newStars) => {
-       earnedStars.value = newStars;
-} 
-
+    earnedStars.value = newStars;
+};
 </script>
 
 import { ref } from 'vue';
@@ -41,7 +40,7 @@ body {
 }
 @media (min-width: 415px) {
     .layout {
-       overflow: visible; 
+        overflow: visible;
     }
 }
 </style>

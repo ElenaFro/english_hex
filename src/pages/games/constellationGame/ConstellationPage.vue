@@ -1,6 +1,11 @@
 <template>
-    <StartGamePopup v-if="openStartInfo" title="Созвездие слов" subtitle="Готовы?" :message="popupMessage"
-        @start="openStartInfo = !openStartInfo" />
+    <StartGamePopup
+        v-if="openStartInfo"
+        title="Созвездие слов"
+        subtitle="Готовы?"
+        :message="popupMessage"
+        @start="openStartInfo = !openStartInfo"
+    />
     <ConstellationGame v-else />
 </template>
 <script setup>

@@ -50,6 +50,7 @@ import Loader from '../Loader.vue';
 const router = useRouter();
 const route = useRoute();
 const timer = ref(0);
+const loading = ref(true);
 const errorCount = ref(0);
 const selectedCards = ref([]);
 const matchedPairs = ref([]);
@@ -74,7 +75,7 @@ const shuffleArray = (array) => {
 };
 
 const isCorrect = computed(() => (card) => {
-    return correctCards.value.includes(card.id);
+    return correctCards.value.includes(card.pairId);
 });
 
 const nonBg = computed(() => (allMatched.value ? 'pageNoBg' : ''));
@@ -106,12 +107,12 @@ const selectCard = (card) => {
 
 const checkMatch = () => {
     const [card1, card2] = selectedCards.value;
-    if (card1.isEnglish !== card2.isEnglish && card1.english === card2.english) {
-        matchedPairs.value.push(card1.id);
-        correctCards.value.push(card1.id, card2.id);
+    if (card1.pairId === card2.pairId && card1.isTranslation !== card2.isTranslation) {
+        matchedPairs.value.push(card1.pairId);
+        correctCards.value.push(card1.pairId);
         setTimeout(() => {
             card1.visible = card2.visible = false;
-            correctCards.value = correctCards.value.filter(id => id !== card1.id && id !== card2.id);
+            correctCards.value = correctCards.value.filter((id) => id !== card1.pairId);
             selectedCards.value = [];
             if (isChunkComplete.value) {
                 if ((currentChunk.value + 1) * 8 < cards.value.length) {
@@ -138,8 +139,8 @@ const checkMatch = () => {
 };
 
 const goToPlanet = () => {
-    router.push({ name: 'planetPage' })
-}
+    router.push({ name: 'planetPage' });
+};
 
 onMounted(async () => {
     loading.value = true;
@@ -164,12 +165,12 @@ onMounted(async () => {
     intervalId = setInterval(() => {
         timer.value++;
     }, 1000);
+    loading.value = false;
 });
 
 onUnmounted(() => {
     clearInterval(intervalId);
 });
-
 </script>
 
 <style scoped>
@@ -240,11 +241,11 @@ onUnmounted(() => {
 }
 
 .correct {
-    border-color: #3E9D47;
+    border-color: #3e9d47;
 }
 
 .incorrect {
-    border-color: #A90000;
+    border-color: #a90000;
 }
 
 .hidden {

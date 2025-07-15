@@ -16,9 +16,9 @@
     &--white {
         border: 2px solid rgba(49, 29, 93, 1);
         background-color: rgb(255, 255, 255);
-		color: rgba(38, 32, 96, 1);
+        color: rgba(38, 32, 96, 1);
     }
-    
+
     &--purple {
         background-color: rgba(38, 32, 96, 1);
     }
@@ -32,9 +32,9 @@
         letter-spacing: 0.04em;
     }
 
-	&:active {
-		box-shadow: 0 0 6px 3px  rgba(53, 92, 213, 0.3);
-	}
+    &:active {
+        box-shadow: 0 0 6px 3px rgba(53, 92, 213, 0.3);
+    }
 }
 
 .authorization-toggle {
@@ -45,10 +45,10 @@
     display: flex;
     justify-content: space-between;
     margin-bottom: 24px;
-	padding: 2px; 
+    padding: 2px;
 
     &__select-button {
-		display: inline;
+        display: inline;
         background: none;
         border: 0;
         border-radius: 20px;
@@ -60,35 +60,35 @@
         line-height: 100%;
         letter-spacing: 0em;
 
-		&.active {
-			padding-inline: 17.5px;
-			background-color: white;
-			color: rgba(38, 32, 96, 1);
-		}
+        &.active {
+            padding-inline: 17.5px;
+            background-color: white;
+            color: rgba(38, 32, 96, 1);
+        }
     }
 }
 
 .show-password-button {
-	position: absolute;
-	width: 40px;
-	height: 40px;
-	right: 15px;
-	background: none;
-	border: 0;
+    position: absolute;
+    width: 40px;
+    height: 40px;
+    right: 15px;
+    background: none;
+    border: 0;
 }
 
 .button-container {
-	display: flex;
+    display: flex;
 
-	&--column {
-		flex-direction: column;
-		align-items: center;
-		gap: 16px;
-	}
+    &--column {
+        flex-direction: column;
+        align-items: center;
+        gap: 16px;
+    }
 
-	&--row {
-		gap: 11px;
-	}
+    &--row {
+        gap: 11px;
+    }
 }
 
 .action-button {

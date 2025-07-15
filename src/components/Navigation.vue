@@ -1,36 +1,41 @@
 <template>
     <nav class="navigation-bar">
-        <RouterLink v-for="item in navItems" :key="item.name" :to="item.path" class="nav-item"
-            :class="{ active: isActive(item) }">
+        <RouterLink
+            v-for="item in navItems"
+            :key="item.name"
+            :to="item.path"
+            class="nav-item"
+            :class="{ active: isActive(item) }"
+        >
             <img :src="item.icon" class="nav-icon" alt="item.label" />
         </RouterLink>
     </nav>
 </template>
 
 <script setup>
-import { RouterLink, useRoute } from "vue-router";
+import { RouterLink, useRoute } from 'vue-router';
 
 const route = useRoute();
 
 const navItems = [
     {
-        name: "mainPage",
-        path: "/",
+        name: 'mainPage',
+        path: '/',
         icon: 'src/assets/icons/navBarIcon/Home.svg',
     },
     {
-        name: "addCategories",
-        path: "/addCategories",
+        name: 'addCategories',
+        path: '/addCategories',
         icon: 'src/assets/icons/navBarIcon/Plus.svg',
     },
     {
-        name: "rating",
-        path: "/rating",
+        name: 'rating',
+        path: '/rating',
         icon: 'src/assets/icons/navBarIcon/Raiting.png',
     },
     {
-        name: "profile",
-        path: "/profile",
+        name: 'profile',
+        path: '/profile',
         icon: 'src/assets/icons/navBarIcon/Profile.svg',
     },
 ];

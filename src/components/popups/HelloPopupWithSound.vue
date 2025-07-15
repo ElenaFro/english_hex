@@ -15,7 +15,11 @@
                     </button>
                 </div>
                 <div class="relative">
-                    <img src="@/assets/Di_avatar/girl_with_flag.svg" alt="girl with flag" class="girl_with_flag">
+                    <img
+                        src="@/assets/Di_avatar/girl_with_flag.svg"
+                        alt="girl with flag"
+                        class="girl_with_flag"
+                    />
                     <img src="@/assets/icons/sound.svg" class="sound_icon" @click="playSound" />
                 </div>
             </div>
@@ -29,8 +33,8 @@ import { ref } from 'vue';
 const props = defineProps({
     title: { type: String, default: '' },
     message: { type: String, default: '' },
-    soundMp3: { type: String, default: '' }
-})
+    soundMp3: { type: String, default: '' },
+});
 
 const emit = defineEmits(['close']);
 
@@ -41,7 +45,7 @@ const currentAudio = ref(null);
 
 const playSound = () => {
     const currentTime = Date.now();
-    if (currentTime - lastPlayed.value < COOLDOWN_MS) return
+    if (currentTime - lastPlayed.value < COOLDOWN_MS) return;
 
     if (currentAudio.value) {
         currentAudio.value.pause();
@@ -50,11 +54,14 @@ const playSound = () => {
 
     const audio = new Audio(props.soundMp3);
     currentAudio.value = audio;
-    audio.play().then(() => {
-        lastPlayed.value = currentTime;
-    }).catch((error) => {
-        console.error('Ошибка воспроизведения звука:', error);
-    });
+    audio
+        .play()
+        .then(() => {
+            lastPlayed.value = currentTime;
+        })
+        .catch((error) => {
+            console.error('Ошибка воспроизведения звука:', error);
+        });
 
     audio.onended = () => {
         currentAudio.value = null;
