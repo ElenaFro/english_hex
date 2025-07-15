@@ -108,7 +108,7 @@ import { computed, ref } from 'vue';
 import visibilityIcon from '@/assets/img/visibility_icon.svg';
 import visibilityOffIcon from '@/assets/img/visibility_off_icon.svg';
 import { useUserStore } from '../../stores/user';
-import loader from '@/components/loader.vue';
+import loader from '@/components/Loader.vue';
 
 const nick = ref('');
 const email = ref('');
