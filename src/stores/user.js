@@ -88,6 +88,18 @@ export const useUserStore = defineStore('user', () => {
         }
     }
 
+    async function updateUserStars(count) {
+        if (!token.value) return;
+        try {
+            await apiClient.patch('/rating/add', {
+                ratingIncrease: count,
+            });
+            await fetchUser();
+        } catch (error) {
+            console.error(error);
+        }
+    }
+
     return {
         user,
         token,
@@ -100,5 +112,6 @@ export const useUserStore = defineStore('user', () => {
         fetchUser,
         getRaiting,
         markFirstGame,
+        updateUserStars,
     };
 });

@@ -1,6 +1,5 @@
 <template>
     <watchStarsPopup v-if="!popupShowed" @close="handlePopup" />
-    <!-- <watchStarsPopup /> -->
     <div class="username-container">
         <div class="username-container__img-container">
             <div class="username-container__img-container-inner">
@@ -9,8 +8,8 @@
         </div>
         <p class="username-container__name">{{ userName }}</p>
     </div>
-    <div class="page-content">
-        <div class="scroll-container">
+    <div class="page-content" :class="{ background_blur: !popupShowed }">
+        <div class="scroll-container" :class="{ content_blur: !popupShowed }">
             <CategoryChoice
                 v-for="section in sections"
                 :key="section.id"
@@ -48,7 +47,7 @@ import watchStarsPopup from '@/components/popups/watchStarsPopup.vue';
 
 const loading = ref(true);
 const openHelloPopup = ref(false);
-const popupShowed = ref(true);
+const popupShowed = ref(false);
 
 onMounted(async () => {
     await useCategoriesStore().getCategories();
@@ -96,17 +95,13 @@ const messagePopup =
     'Привет! Меня зовут Di, и я рада приветствовать тебя в мире изучения английских слов! Ты сделал важный шаг к своей мечте - свободному владению иностранным языком.';
 
 onMounted(() => {
-    if (!localStorage.getItem('checkFirstGame')) return;
-    try {
-        popupShowed.value = useUserStore().getCurrentUser().ever_played_game;
-        localStorage.removeItem('checkFirstGame');
-    } catch (error) {
-        console.error(error);
+    if (localStorage.getItem('markFirstGame')) {
+        popupShowed.value = false;
+        localStorage.removeItem('markFirstGame');
     }
 });
 
 const handlePopup = async () => {
-    await useUserStore().markFirstGame();
     popupShowed.value = true;
 };
 </script>
@@ -120,6 +115,7 @@ const handlePopup = async () => {
     display: flex;
     align-items: center;
     align-self: flex-start;
+    z-index: 101;
 }
 
 .username-container__img-container-inner {
@@ -168,5 +164,14 @@ const handlePopup = async () => {
     grid-auto-rows: 220px;
     justify-content: space-between;
     gap: 20px;
+}
+
+.background_blur {
+    backdrop-filter: blur(4px);
+    background: #f6f6fe;
+}
+
+.content_blur {
+    filter: blur(4px);
 }
 </style>

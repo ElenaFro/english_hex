@@ -18,7 +18,7 @@
                     </div>
                 </div>
                 <div class="buttons">
-                    <button class="button button--purple d-mt-12" @click="goToMainPage">
+                    <button class="button button--purple d-mt-12" @click="goToPlanet">
                         Дальше
                         <img src="@/assets/img/arrow_icon.svg" alt="arrow" />
                     </button>
@@ -32,9 +32,8 @@
 import { useRouter } from 'vue-router';
 
 const router = useRouter();
-const goToMainPage = () => {
-    router.push('/');
-    // router.go(-3); // Возвращаемся на 2 страницы назад
+const goToPlanet = () => {
+    router.push({ name: 'myPlanet', query: { earnedStars: 50 } });
 };
 </script>
 <style scoped lang="scss">

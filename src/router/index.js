@@ -2,7 +2,7 @@ import { createRouter, createWebHistory } from 'vue-router';
 import routes from './routes';
 
 const isAuthenticated = () => {
-    return !!localStorage.getItem('token');
+    return !!localStorage.getItem('access_token');
 };
 
 const router = createRouter({

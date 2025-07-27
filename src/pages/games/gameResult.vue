@@ -19,7 +19,7 @@
             <p class="result-popup__text">{{ resultText }}</p>
             <p class="result-popup__const-text">Награда:</p>
             <div class="stars-container">
-                <p class="stars-container__prize">{{ totalStars }}</p>
+                <p class="stars-container__prize">+{{ totalStars }}</p>
                 <img
                     height="41px"
                     width="41px"
@@ -29,7 +29,7 @@
                 />
             </div>
             <div class="button-container">
-                <button @click="repeatGame" v-show="showButton" class="button button--purple">
+                <button @click="repeatGame" v-if="showButton" class="button button--purple">
                     {{ buttonText }}
                     <img src="@/assets/img/arrow_icon.svg" />
                 </button>
@@ -43,12 +43,16 @@
 </template>
 
 <script setup>
+//vue
 import { ref, computed } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
+//stores
+import { useUserStore } from '@/stores/user';
 
 const route = useRoute();
 const router = useRouter();
 const wrong = Number(route.query.wrong);
+const currentUser = useUserStore().user;
 const headerPerfect = 'Превосходный результат!';
 const textPerfect =
     'Все ответы верны. Внимание и визуальная память на отличном уровне. Так держать!';
@@ -100,25 +104,24 @@ const showButton = computed(() => {
 
 const totalStars = computed(() => {
     if (wrong <= 2 && wrong !== 0) {
-        return '+35';
+        return '35';
     }
     if (wrong > 2) {
-        return '+0';
+        return '0';
     } else {
-        return '+50';
+        return '50';
     }
 });
 
-const fromGame = route.query.from
+const fromGame = route.query.from;
 
 const repeatGame = () => {
-	router.push({ name: fromGame, query: { startGame: true }}); 
-}
+    router.push({ name: fromGame, query: { startGame: true } });
+};
 
 const goToMainPage = () => {
-	// router.push({ name: 'mainPage', query: { stars: totalStars.value } })
-	router.push({ name: 'mainPage' })
-}
+    router.push({ name: 'myPlanet', query: { earnedStars: totalStars.value } });
+};
 </script>
 
 <style scoped lang="scss">

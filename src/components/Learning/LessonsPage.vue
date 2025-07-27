@@ -1,7 +1,7 @@
 <template>
     <div class="scroll-container">
         <div class="flip-card" :class="{ flipped: activeComponent === 'WordPage' }">
-            <div class="flip-card__inner">
+            <div class="flip-card__inner" @transitionend="handleTransitionEnd">
                 <div class="flip-card__side flip-card__front">
                     <VideoPage :videoUrl="getVideoUrl(currentCard)" ref="videoRef" />
                 </div>
@@ -20,14 +20,22 @@
                 {{ isLastCard ? 'Закончить' : 'Продолжить' }}
             </button>
         </div>
+        <defaultPopup
+            :isVisible="isNotEndedLearn"
+            :message="beforLeaveMessage"
+            title="Уже уходите?"
+            @confirm="handleConfirmLeave"
+            @close="handleClosePopup"
+        />
     </div>
 </template>
 
 <script setup>
 import { ref, onMounted, computed } from 'vue';
-import { useRouter } from 'vue-router';
+import { useRouter, onBeforeRouteLeave } from 'vue-router';
 import WordPage from './WordPage.vue';
 import VideoPage from './VideoPage.vue';
+import defaultPopup from '../popups/defaultPopup.vue';
 import { useCategoriesStore } from '@/stores/categories';
 
 const cards = ref([]);
@@ -35,7 +43,11 @@ const currentCardIndex = ref(0);
 const chosedCategory = ref({});
 const videoRef = ref(null);
 const activeComponent = ref('VideoPage');
+const isTransitioning = ref(false);
+const isNotEndedLearn = ref(false);
+const navigationNext = ref(null);
 const router = useRouter();
+const beforLeaveMessage = 'Чтобы не потерять текущий прогресс завершите изучение колоды';
 
 const currentCard = computed(() => cards.value[currentCardIndex.value] || {});
 const isLastCard = computed(
@@ -57,6 +69,7 @@ const replayAgain = () => {
 };
 
 const handleNextOrFinish = async () => {
+    if (isTransitioning.value) return;
     if (isLastCard.value) {
         await useCategoriesStore().updateComplateCategory(chosedCategory.value.id);
         router.push({ name: 'games', query: { id: chosedCategory.value.id } });
@@ -68,8 +81,38 @@ const handleNextOrFinish = async () => {
         }
         activeComponent.value = 'WordPage';
     } else {
-        currentCardIndex.value = (currentCardIndex.value + 1) % cards.value.length;
+        isTransitioning.value = true;
         activeComponent.value = 'VideoPage';
+    }
+};
+
+onBeforeRouteLeave((to, from, next) => {
+    if (cards.value.length > 0 && currentCardIndex.value < cards.value.length - 1) {
+        isNotEndedLearn.value = true;
+        navigationNext.value = next;
+    } else {
+        next();
+    }
+});
+
+const handleConfirmLeave = () => {
+    isNotEndedLearn.value = false;
+    if (navigationNext.value) {
+        navigationNext.value();
+    }
+};
+
+const handleClosePopup = () => {
+    isNotEndedLearn.value = false;
+    if (navigationNext.value) {
+        navigationNext.value(false);
+    }
+};
+
+const handleTransitionEnd = () => {
+    if (isTransitioning.value && activeComponent.value === 'VideoPage') {
+        currentCardIndex.value = (currentCardIndex.value + 1) % cards.value.length;
+        isTransitioning.value = false;
     }
 };
 

@@ -10,7 +10,7 @@
                 <div class="container-result">
                     <p class="result-title_left">Награда:</p>
                     <div class="result-stars">
-                        <p class="result-add-star">{{ 50 - 5 * (5 - lives) }}</p>
+                        <p class="result-add-star">{{ earnedStars }}</p>
                         <img
                             src="@/assets/icons/navBarIcon/star.svg"
                             class="result-star"
@@ -23,7 +23,7 @@
                         Пройти еще раз
                         <img src="@/assets/img/arrow_icon.svg" alt="arrow" />
                     </button>
-                    <button class="button button--purple d-mt-12" @click="goToMainPage">
+                    <button class="button button--purple d-mt-12" @click="goToPlanet">
                         Дальше
                         <img src="@/assets/img/arrow_icon.svg" alt="arrow" />
                     </button>
@@ -34,13 +34,16 @@
     </div>
 </template>
 <script setup>
+import { computed } from 'vue';
 import { useRouter } from 'vue-router';
 
 const router = useRouter();
 const props = defineProps(['lives']);
 
-const goToMainPage = () => {
-    router.push('/');
+const earnedStars = computed(() => 50 - 5 * (5 - props.lives));
+
+const goToPlanet = () => {
+    router.push({ name: 'myPlanet', query: { earnedStars: earnedStars.value } });
 };
 const goToGamePage = () => {
     window.location.reload();

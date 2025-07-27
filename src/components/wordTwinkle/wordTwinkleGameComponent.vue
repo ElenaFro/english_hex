@@ -31,22 +31,27 @@
 </template>
 
 <script setup>
+//vue
 import { onMounted, ref, computed } from 'vue';
-import ImgPage from './ImgPage.vue';
 import { useRouter, useRoute } from 'vue-router';
+//components
+import ImgPage from './ImgPage.vue';
 import AnswersPage from '@/components/wordTwinkle/AnswersPage.vue';
+//stores
 import { useGamesStore } from '@/stores/games';
 import { useCategoriesStore } from '@/stores/categories';
+import { useUserStore } from '@/stores/user';
 
 const router = useRouter();
 const route = useRoute();
+const currentUser = useUserStore().user;
 const activeComponent = ref('ImgPage');
 const showAnswer = ref(false);
 const answerList = ref([]);
 const currentIndex = ref(0);
 const selectedOptions = ref([]);
 const wrongCount = ref(0);
-const everPlayedGame = ref(null);
+const everPlayedGame = ref(currentUser.ever_played_game);
 const chosedCategoryId = computed(() => useCategoriesStore().chosedCategory?.id || route.query.id);
 
 const emit = defineEmits(['wrong-answer', 'game-finished']);
@@ -101,30 +106,12 @@ const checkAnswer = (option) => {
 };
 
 const goToNext = async () => {
-    if (currentIndex.value < answerList.value.length - 1) {
-        currentIndex.value += 1;
-        selectedOptions.value = [];
-        showAnswer.value = false;
-        activeComponent.value = 'ImgPage';
-
-        setTimeout(goToAnswers, 4000);
-    } else {
-        await checkFirstGame();
-        if (everPlayedGame.value === true) {
-            goToResult();
-        } else {
-            router.push({ name: 'myPlanet' });
-        }
-    }
-};
-
-const checkFirstGame = async () => {
-    try {
-        await useUserStore().fetchUser();
-        everPlayedGame.value = useUserStore().getCurrentUser().ever_played_game;
-    } catch (error) {
-        console.error('Error checking first game:', error);
-    }
+    if (currentIndex.value >= answerList.value.length - 1) return goToResult();
+    currentIndex.value += 1;
+    selectedOptions.value = [];
+    showAnswer.value = false;
+    activeComponent.value = 'ImgPage';
+    setTimeout(goToAnswers, 4000);
 };
 
 const goToResult = () => {
@@ -165,6 +152,9 @@ const goToResult = () => {
 
 .flip-card__front {
     z-index: 2;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .flip-card__back {

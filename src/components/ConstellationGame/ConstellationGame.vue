@@ -41,11 +41,15 @@
 </template>
 
 <script setup>
+//vue
 import { ref, onMounted, onUnmounted, computed } from 'vue';
-import CongratulationPopup from '../myPlanetPopup/CongratulationPopup.vue';
 import { useRoute, useRouter } from 'vue-router';
-import { useGamesStore } from '@/stores/games';
+//component
+import CongratulationPopup from '../myPlanetPopup/CongratulationPopup.vue';
 import Loader from '../Loader.vue';
+//stores
+import { useGamesStore } from '@/stores/games';
+import { useCategoriesStore } from '@/stores/categories';
 
 const router = useRouter();
 const route = useRoute();
@@ -144,12 +148,14 @@ const goToPlanet = () => {
 
 onMounted(async () => {
     loading.value = true;
-    data.value = await useGamesStore().getWordForConstellatonGame(route.query.id);
+    data.value = await useGamesStore().getWordForConstellatonGame(
+        route.query.id || useCategoriesStore().chosedCategory.id
+    );
     cards.value = shuffleArray(
         data.value.flatMap((item) => [
             {
                 pairId: item.id,
-                // imageUrl: item.image_url,
+                imageUrl: `http://62.109.0.225:8000/storage/categories/${route.query.id || useCategoriesStore().chosedCategory.id}/cards/${item.id}/word_image/${item.card_photo}`,
                 displayWord: item.translation_word,
                 isTranslation: false,
                 visible: true,
@@ -234,6 +240,7 @@ onUnmounted(() => {
     width: 100%;
     height: 100%;
     object-fit: cover;
+    border-radius: 20px;
 }
 
 .selected {

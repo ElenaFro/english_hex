@@ -2,7 +2,7 @@
     <div class="header-bar">
         <template v-if="isHomePage">
             <span @click="goToMyPlanet" class="header-star">
-                {{ earnedStars }}
+                {{ totalStars }}
                 <img
                     src="@/assets/icons/navBarIcon/star.svg"
                     class="header-star-left"
@@ -24,7 +24,7 @@
         </template>
         <template v-else-if="isGameWordTwinkle || myPlanet">
             <span @click="goToMyPlanet" class="header-star">
-                {{ earnedStars }}
+                {{ totalStars }}
                 <img
                     src="@/assets/icons/navBarIcon/star.svg"
                     class="header-star-left"
@@ -61,7 +61,7 @@
         </RouterLink>
         <template v-if="isGamePlanetPage">
             <span class="header-star">
-                {{ earnedStars }}
+                {{ totalStars }}
                 <img
                     src="@/assets/icons/navBarIcon/star.svg"
                     class="header-star-left"
@@ -83,7 +83,7 @@ import { useUserStore } from '@/stores/user';
 const router = useRouter();
 
 const currentUser = computed(() => useUserStore().getCurrentUser());
-const earnedStars = computed(() => currentUser.value.rating);
+const totalStars = computed(() => currentUser.value.rating);
 const props = defineProps(['lives']);
 
 const isGamePlanetPage = computed(() => route.path === '/planetAttackPage');
@@ -108,7 +108,7 @@ function goBack() {
 }
 
 const goToMyPlanet = () => {
-    router.push({ path: '/myPlanet', query: { earnedStars: earnedStars.value } });
+    router.push({ path: '/myPlanet' });
 };
 const isHomePage = computed(() => route.fullPath === '/');
 
