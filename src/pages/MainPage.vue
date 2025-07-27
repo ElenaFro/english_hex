@@ -47,10 +47,22 @@ import watchStarsPopup from '@/components/popups/watchStarsPopup.vue';
 
 const loading = ref(true);
 const openHelloPopup = ref(false);
-const popupShowed = ref(false);
+const popupShowed = ref(true);
 
 onMounted(async () => {
     await useCategoriesStore().getCategories();
+
+    if (localStorage.getItem('markFirstGame')) {
+        popupShowed.value = false;
+        localStorage.removeItem('markFirstGame');
+    }
+
+    loading.value = false;
+    if (!hasVisited.value) {
+        openHelloPopup.value = true;
+        hasVisited.value = true;
+        sessionStorage.setItem('hasVisited', 'true');
+    }
 });
 
 const colorPalette = ['#BD8BCF', '#F6B390', '#79BBFB', '#FF98A5'];
@@ -71,15 +83,6 @@ const randomColor = (id) => {
 
 const hasVisited = ref(sessionStorage.getItem('hasVisited') === 'true');
 
-onMounted(() => {
-    loading.value = false;
-    if (!hasVisited.value) {
-        openHelloPopup.value = true;
-        hasVisited.value = true;
-        sessionStorage.setItem('hasVisited', 'true');
-    }
-});
-
 const currentUser = computed(() => useUserStore().getCurrentUser());
 const userName = computed(() => currentUser.value.name);
 const avatarIcon = computed(() => (currentUser.value.gender === 'male' ? BoyIcon : GirlIcon));
@@ -93,13 +96,6 @@ const closePopup = () => {
 const titlePopup = 'Добро пожаловать!';
 const messagePopup =
     'Привет! Меня зовут Di, и я рада приветствовать тебя в мире изучения английских слов! Ты сделал важный шаг к своей мечте - свободному владению иностранным языком.';
-
-onMounted(() => {
-    if (localStorage.getItem('markFirstGame')) {
-        popupShowed.value = false;
-        localStorage.removeItem('markFirstGame');
-    }
-});
 
 const handlePopup = async () => {
     popupShowed.value = true;
