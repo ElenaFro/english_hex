@@ -3,8 +3,6 @@ import vue from "@vitejs/plugin-vue";
 import path from "path";
 import { VitePWA } from "vite-plugin-pwa";
 
-throw new Error('error'); 
-
 export default defineConfig({
     plugins: [
         vue(),
