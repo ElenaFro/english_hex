@@ -6,7 +6,7 @@
         </button>
         <audio ref="soundRef" class="sound-container__lerning-sound" :src="soundUrl"></audio>
         <p class="sound-container__word">{{ rusWord }}</p>
-        <img src="@/assets/img/girl-img.png" alt="" class="sound-container__girl-img" />
+        <img src="@/assets/img/girl-img.svg" alt="" class="sound-container__girl-img" />
     </div>
 </template>
 
