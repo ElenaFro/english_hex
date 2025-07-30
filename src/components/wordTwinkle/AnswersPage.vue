@@ -2,7 +2,7 @@
     <div class="answers-card">
         <p class="answers-card__question-mark">?</p>
         <div class="img-container">
-            <img class="girl-img" src="@/assets/img/girl-img.png" alt="" />
+            <img class="girl-img" src="@/assets/img/girl-img.svg" alt="" />
         </div>
     </div>
 </template>

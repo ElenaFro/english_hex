@@ -9,6 +9,7 @@
         <p class="username-container__name">{{ userName }}</p>
     </div>
     <div class="page-content" :class="{ background_blur: !popupShowed }">
+        <loader v-if="loading" />
         <div class="scroll-container" :class="{ content_blur: !popupShowed }">
             <CategoryChoice
                 v-for="section in sections"
@@ -22,7 +23,6 @@
             />
         </div>
     </div>
-    <loader v-if="loading" />
     <HelloPopupWithSound
         v-if="openHelloPopup"
         :title="titlePopup"
