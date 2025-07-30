@@ -1,5 +1,5 @@
 <template>
-    <div class="container" :style="{ backgroundColor: backgroundColor }">
+    <div class="container" :style="{ backgroundImage: backgroundImage }">
         <button type="button" class="nav-arrow" @click="goToLearningPage">
             <img class="nav-arrow__img" src="@/assets/img/nav-arrow_icon.svg" alt="" />
         </button>
@@ -29,22 +29,37 @@ import { useRouter } from 'vue-router';
 import StatusCircle from './StatusCircle.vue';
 import closedLockIcon from '@/assets/img/closed-lock_icon.svg';
 import openLockIcon from '@/assets/img/open-lock_icon.svg';
-import { computed } from 'vue';
+import { computed, ref, onMounted } from 'vue';
 
 const props = defineProps({
     id: Number,
     sectionName: String,
     imgUrl: String,
-    backgroundColor: String,
     progress: Boolean,
     locked: Boolean,
 });
 
 const router = useRouter();
+const substractImages = [
+    'src/assets/categori/Subtract_1.svg',
+    'src/assets/categori/Subtract_2.svg',
+    'src/assets/categori/Subtract_3.svg',
+    'src/assets/categori/Subtract_4.svg',
+];
+
+const selectedImage = ref('');
+
+onMounted(() => {
+    const randomIndex = Math.floor(Math.random() * substractImages.length);
+    selectedImage.value = substractImages[randomIndex];
+});
+
+const backgroundImage = computed(() => (selectedImage.value ? `url(${selectedImage.value})` : ''));
 
 const goToLearningPage = () => {
     router.push({ name: 'learning', params: { id: props.id }, query: { name: props.sectionName } });
 };
+
 const img_url = computed(
     () => `http://62.109.0.225:8000/storage/categories/${props.id}/images/${props.imgUrl}`
 );
@@ -63,9 +78,9 @@ const checkedProgress = computed(() => (props.progress ? 100 : 0));
     position: relative;
     border-radius: 15px;
     padding: 19px 14px 13px;
-    background-size: 100% auto !important;
     background-position: center !important;
-    /* background-color: rgba(189, 139, 207, 1); */
+    background-repeat: no-repeat;
+    background-size: cover;
 }
 
 .category-img {
@@ -89,7 +104,6 @@ const checkedProgress = computed(() => (props.progress ? 100 : 0));
     background-color: transparent;
     padding: 0;
     border: 0;
-    background-color: rgb(246, 246, 254);
     border-radius: 400px;
     transform: translate(0%, -50%);
     top: 50%;

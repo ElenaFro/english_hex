@@ -297,7 +297,10 @@
                         Интернет по адресу https://dicardz.com/privacy .<br />
                     </p>
                 </div>
-                <button class="button button--purple" @click="$emit('change-component', 'regist')">
+                <button
+                    class="button button--purple"
+                    @click="$emit('change-component', 'RegistForm')"
+                >
                     Перейти к регистрации
                     <img src="@/assets/img/arrow_icon.svg" alt="" />
                 </button>
@@ -305,8 +308,6 @@
         </div>
     </div>
 </template>
-
-<script setup></script>
 
 <style scoped>
 .button img {

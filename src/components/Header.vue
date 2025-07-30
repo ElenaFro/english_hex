@@ -79,6 +79,7 @@ import { useRoute } from 'vue-router';
 import { useRouter } from 'vue-router';
 import { defineProps } from 'vue';
 import { useUserStore } from '@/stores/user';
+import Bell from '@/assets/icons/navBarIcon/Bell.svg';
 
 const router = useRouter();
 
@@ -96,7 +97,7 @@ const headerItemsRight = [
     {
         name: 'notifications',
         path: '/notifications',
-        icon: 'src/assets/icons/navBarIcon/Bell.svg',
+        icon: Bell,
     },
 ];
 
@@ -108,6 +109,7 @@ function goBack() {
 }
 
 const goToMyPlanet = () => {
+    if (!currentUser.value.ever_played_game) return;
     router.push({ path: '/myPlanet' });
 };
 const isHomePage = computed(() => route.fullPath === '/');

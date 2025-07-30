@@ -84,7 +84,10 @@
                         Администрация не оповещает пользователей об изменении в Соглашении.<br />
                     </p>
                 </div>
-                <button class="button button--purple" @click="$emit('change-component', 'regist')">
+                <button
+                    class="button button--purple"
+                    @click="$emit('change-component', 'RegistForm')"
+                >
                     Перейти к регистрации
                     <img src="@/assets/img/arrow_icon.svg" alt="" />
                 </button>
