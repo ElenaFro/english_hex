@@ -29,6 +29,10 @@ import { useRouter } from 'vue-router';
 import StatusCircle from './StatusCircle.vue';
 import closedLockIcon from '@/assets/img/closed-lock_icon.svg';
 import openLockIcon from '@/assets/img/open-lock_icon.svg';
+import subtract1 from '@/assets/categori/Subtract_1.svg';
+import subtract2 from '@/assets/categori/Subtract_2.svg';
+import subtract3 from '@/assets/categori/Subtract_3.svg';
+import subtract4 from '@/assets/categori/Subtract_4.svg';
 import { computed, ref, onMounted } from 'vue';
 
 const props = defineProps({
@@ -40,13 +44,7 @@ const props = defineProps({
 });
 
 const router = useRouter();
-const substractImages = [
-    'src/assets/categori/Subtract_1.svg',
-    'src/assets/categori/Subtract_2.svg',
-    'src/assets/categori/Subtract_3.svg',
-    'src/assets/categori/Subtract_4.svg',
-];
-
+const substractImages = [subtract1, subtract2, subtract3, subtract4];
 const selectedImage = ref('');
 
 onMounted(() => {
