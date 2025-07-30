@@ -1,5 +1,5 @@
 <template>
-    <div class="container" :style="{ backgroundImage: backgroundImage }">
+    <div class="container" :class="randomClass">
         <button type="button" class="nav-arrow" @click="goToLearningPage">
             <img class="nav-arrow__img" src="@/assets/img/nav-arrow_icon.svg" alt="" />
         </button>
@@ -44,15 +44,13 @@ const props = defineProps({
 });
 
 const router = useRouter();
-const substractImages = [subtract1, subtract2, subtract3, subtract4];
-const selectedImage = ref('');
+const classList = ['image_1', 'image_2', 'image_3', 'image_4'];
+const randomClass = ref('');
 
 onMounted(() => {
-    const randomIndex = Math.floor(Math.random() * substractImages.length);
-    selectedImage.value = substractImages[randomIndex];
+    const index = Math.floor(Math.random() * classList.length);
+    randomClass.value = classList[index];
 });
-
-const backgroundImage = computed(() => (selectedImage.value ? `url(${selectedImage.value})` : ''));
 
 const goToLearningPage = () => {
     router.push({ name: 'learning', params: { id: props.id }, query: { name: props.sectionName } });
@@ -65,7 +63,7 @@ const img_url = computed(
 const checkedProgress = computed(() => (props.progress ? 100 : 0));
 </script>
 
-<style scoped>
+<style la scoped>
 .container {
     display: flex;
     flex-direction: column;
@@ -138,5 +136,21 @@ const checkedProgress = computed(() => (props.progress ? 100 : 0));
     display: flex;
     justify-content: center;
     align-items: center;
+}
+
+.image_1 {
+    background-image: url('@/assets/categori/Subtract_1.svg');
+}
+
+.image_2 {
+    background-image: url('@/assets/categori/Subtract_2.svg');
+}
+
+.image_3 {
+    background-image: url('@/assets/categori/Subtract_3.svg');
+}
+
+.image_4 {
+    background-image: url('@/assets/categori/Subtract_4.svg');
 }
 </style>

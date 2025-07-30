@@ -7,12 +7,7 @@
                 src="@/assets/img/girl-img2.png"
                 alt=""
             />
-            <img
-                v-else
-                class="img-container__loss-img"
-                src="@/assets/img/sad-girl-img.png"
-                alt=""
-            />
+            <img v-else class="img-container__loss-img" src="@/assets/img/girl-img.svg" alt="" />
         </div>
         <div class="result-popup">
             <h1 class="result-popup__header">{{ resultHeader }}</h1>
