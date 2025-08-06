@@ -65,6 +65,7 @@ const cards = ref([]);
 const message = ref('');
 const wrongCount = ref(0);
 const currentChunk = ref(0);
+const cardChunks = ref([]);
 
 let intervalId;
 
@@ -84,10 +85,7 @@ const isCorrect = computed(() => (card) => {
 
 const nonBg = computed(() => (allMatched.value ? 'pageNoBg' : ''));
 
-const displayedCards = computed(() => {
-    const start = currentChunk.value * 8;
-    return cards.value.slice(start, start + 8);
-});
+const displayedCards = computed(() => cardChunks.value[currentChunk.value] || []);
 
 const isChunkComplete = computed(() => {
     const currentPairIds = displayedCards.value
@@ -119,7 +117,7 @@ const checkMatch = () => {
             correctCards.value = correctCards.value.filter((id) => id !== card1.pairId);
             selectedCards.value = [];
             if (isChunkComplete.value) {
-                if ((currentChunk.value + 1) * 8 < cards.value.length) {
+                if (currentChunk.value + 1 < cardChunks.value.length) {
                     currentChunk.value++;
                 } else {
                     router.push({
@@ -148,30 +146,44 @@ const goToPlanet = () => {
 
 onMounted(async () => {
     loading.value = true;
-    data.value = await useGamesStore().getWordForConstellatonGame(
-        route.query.id || useCategoriesStore().chosedCategory.id
-    );
-    cards.value = shuffleArray(
-        data.value.flatMap((item) => [
-            {
-                pairId: item.id,
-                imageUrl: `http://62.109.0.225:8000/storage/categories/${route.query.id || useCategoriesStore().chosedCategory.id}/cards/${item.id}/word_image/${item.card_photo}`,
-                displayWord: item.translation_word,
-                isTranslation: false,
-                visible: true,
-            },
-            {
-                pairId: item.id,
-                displayWord: item.word,
-                isTranslation: true,
-                visible: true,
-            },
-        ])
-    );
+
+    const categoryId = route.query.id || useCategoriesStore().chosedCategory.id;
+
+    data.value = await useGamesStore().getWordForConstellatonGame(categoryId);
+
+    const pairedCards = data.value.map((item) => {
+        const pairId = item.id;
+        const imageCard = {
+            pairId,
+            imageUrl: `http://62.109.0.225:8000/storage/categories/${categoryId}/cards/${pairId}/word_image/${item.card_photo}`,
+            displayWord: item.translation_word,
+            isTranslation: false,
+            visible: true,
+        };
+        const wordCard = {
+            pairId,
+            displayWord: item.word,
+            isTranslation: true,
+            visible: true,
+        };
+        return [imageCard, wordCard];
+    });
+
+    const shuffledPairs = shuffleArray(pairedCards);
+
+    cardChunks.value = [];
+
+    for (let i = 0; i < shuffledPairs.length; i += 4) {
+        const chunkPairs = shuffledPairs.slice(i, i + 4);
+        const flattenedChunk = shuffleArray(chunkPairs.flat());
+        cardChunks.value.push(flattenedChunk);
+    }
+
+    loading.value = false;
+
     intervalId = setInterval(() => {
         timer.value++;
     }, 1000);
-    loading.value = false;
 });
 
 onUnmounted(() => {
