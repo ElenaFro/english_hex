@@ -126,7 +126,7 @@ const errors = ref({
 });
 
 onMounted(async () => {
-    form.value = useUserStore().getCurrentUser();
+    form.value = { ...useUserStore().getCurrentUser() };
     initialForm.value = JSON.parse(JSON.stringify(form.value));
 });
 
