@@ -10,18 +10,38 @@
             <button @click="$emit('switch-component', 'LessonsPage')" class="button button--blue">
                 Перейти к изучению
             </button>
+            <button
+                v-if="categoryComplite"
+                @click="showPopup = !showPopup"
+                class="button button--blue d-mt-24"
+            >
+                Перейти к играм
+            </button>
         </section>
     </div>
+    <defaultPopup
+        :is-visible="showPopup"
+        title="Новая игра"
+        :message="popupMessage"
+        @confirm="goToGames"
+        @close="showPopup = !showPopup"
+    />
 </template>
 
 <script setup>
 import { useCategoriesStore } from '@/stores/categories';
 import { computed, onMounted, ref } from 'vue';
-import { useRoute } from 'vue-router';
+import { useRoute, useRouter } from 'vue-router';
 import Loader from '../Loader.vue';
+import defaultPopup from '../popups/defaultPopup.vue';
 
 const route = useRoute();
+const router = useRouter();
 const currentCategory = ref({});
+const showPopup = ref(false);
+const popupMessage =
+    'Если вы хотите получить больше звёзд пройдите остальные три игры, за прохождение пройденных игр звёзды не начисляются';
+
 onMounted(async () => {
     await useCategoriesStore().getChosedCategory(route.params.id);
     currentCategory.value = useCategoriesStore().chosedCategory;
@@ -29,8 +49,13 @@ onMounted(async () => {
 
 const title = computed(() => `Заголовок для ${currentCategory.value.name}`);
 const description = computed(() => useCategoriesStore().chosedCategory.description);
+const categoryComplite = computed(() => currentCategory.value.completed_category);
+
+const goToGames = () => {
+    router.push({ name: 'games', query: { id: currentCategory.value.id } });
+};
 </script>
-<style scoped>
+<style scoped lang="scss">
 .img-container {
     display: block;
     position: relative;

@@ -1,18 +1,35 @@
-.d-mb-12 {
-    margin-bottom: 12px;
+.d-m {
+    &t-{
+        &12 {
+            margin-top: 12px;
+            }
+        &16 {
+            margin-top: 16px;
+            }
+        &24 {
+            margin-top: 24px
+        }
+        &30{
+            margin-top: 30px;
+        }
+    }
+
+    &b-{
+        &12 {
+            margin-bottom: 12px;
+            }
+        &16 {
+            margin-bottom: 16px;
+            }
+        &24 {
+            margin-bottom: 24px
+        }
+        &30{
+            margin-bottom: 30px;
+        }
+    }
 }
 
-.d-mb-16 {
-    margin-bottom: 16px;
-}
-
-.d-mt-16 {
-    margin-top: 16px;
-}
-
-.d-mt-12 {
-    margin-top: 12px;
-}
 
 .d-mr-16 {
     margin-right: 16px;
@@ -34,10 +51,6 @@
 .d-my-16 {
     margin-top: 16px;
     margin-bottom: 16px;
-}
-
-.d-mb-30 {
-    margin-bottom: 30px;
 }
 
 .d-pa-30 {
