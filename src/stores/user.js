@@ -31,6 +31,9 @@ export const useUserStore = defineStore('user', () => {
             token.value = newToken;
             isAuthenticated.value = true;
             localStorage.setItem('access_token', newToken);
+            await apiClient.patch('/push/subscribe', {
+                push_subscription_id: localStorage.getItem('subscribe_id'),
+            });
             return response.data;
         } catch (error) {
             throw error;

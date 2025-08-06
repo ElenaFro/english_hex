@@ -1,13 +1,61 @@
 <!doctype html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no, user-scalable=no" />
-    <title>Vite + Vue</title>
-  </head>
-  <body>
-    <div id="app"></div>
-    <script type="module" src="/src/main.js"></script>
-  </body>
+    <head>
+        <meta charset="UTF-8" />
+        <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+        <meta
+            name="viewport"
+            content="width=device-width, initial-scale=1.0, shrink-to-fit=no, user-scalable=no"
+        />
+        <title>Vite + Vue</title>
+    </head>
+    <body>
+        <div id="app"></div>
+        <script type="module" src="/src/main.js"></script>
+    </body>
+    <script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
+    <script>
+        if (
+            !localStorage.getItem('subscribe_id') ||
+            localStorage.getItem('subscribe_id') === 'undefined'
+        ) {
+            window.OneSignalDeferred = window.OneSignalDeferred || [];
+            OneSignalDeferred.push(async function (OneSignal) {
+                try {
+                    await OneSignal.init({
+                        appId: '6fd53463-4d96-4693-a661-95c101487a28',
+                    });
+                    
+                    const waitForSubscription = async (timeout = 20000) => {
+                        const startTime = Date.now();
+                        while (Date.now() - startTime < timeout) {
+                            const subscription = OneSignal.User?.PushSubscription;
+                            if (subscription?.id) {
+                                return subscription.id;
+                            }
+
+                            await new Promise((resolve) => setTimeout(resolve, 500));
+                        }
+                        throw new Error('Тайм-аут ожидания ID подписки');
+                    };
+
+                    const subscriptionId = await waitForSubscription();
+
+                    if (subscriptionId) {
+                        localStorage.setItem('subscribe_id', subscriptionId);
+                    } else {
+                        console.warn('ID подписки не найден.');
+                    }
+                } catch (error) {
+                    console.error(
+                        'Ошибка при инициализации OneSignal или получении ID подписки:',
+                        error
+                    );
+                    localStorage.setItem('subscribe_id', 'undefined');
+                }
+            });
+        } else {
+            console.log('Subscription ID уже существует:', localStorage.getItem('subscribe_id'));
+        }
+    </script>
 </html>

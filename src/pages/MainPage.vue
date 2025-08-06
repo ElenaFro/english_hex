@@ -10,7 +10,7 @@
     </div>
     <div class="page-content" :class="{ background_blur: !popupShowed }">
         <loader v-if="loading" />
-        <div class="scroll-container" :class="{ content_blur: !popupShowed }">
+        <div v-else class="scroll-container" :class="{ content_blur: !popupShowed }">
             <CategoryChoice
                 v-for="section in sections"
                 :key="section.id"

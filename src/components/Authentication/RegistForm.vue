@@ -110,6 +110,13 @@
         </section>
         <loader v-if="loading" />
     </div>
+
+    <default-popup
+        :is-visible="showPopup"
+        title="Ошибка"
+        :message="errorMessage"
+        @confirm="showPopup = !showPopup"
+    />
 </template>
 
 <script setup>
@@ -118,6 +125,7 @@ import visibilityIcon from '@/assets/img/visibility_icon.svg';
 import visibilityOffIcon from '@/assets/img/visibility_off_icon.svg';
 import { useUserStore } from '../../stores/user';
 import loader from '@/components/Loader.vue';
+import defaultPopup from '../popups/defaultPopup.vue';
 
 const nick = ref('');
 const email = ref('');
@@ -135,6 +143,8 @@ const agreementCheckbox = ref(false);
 const checkVisited = ref(false);
 const confirmEmailSend = ref(false);
 const loading = ref(false);
+const showPopup = ref(false);
+const errorMessage = ref(null);
 
 const mode = ref('register');
 const emit = defineEmits(['change-component']);
@@ -295,13 +305,15 @@ async function login() {
             password.value,
             agreementCheckbox.value
         );
-        if (response?.message?.includes('send to email')) {
+        if (response?.message?.includes('Success registration')) {
             confirmEmailSend.value = true;
         } else {
-            alert('Что-то пошло не так, попробуйте еще раз');
+            errorMessage.value = 'Что-то пошло не так, попробуйте еще раз';
+            showPopup.value = true;
         }
     } catch (error) {
-        alert(error.message || 'Ошибка при регистрации');
+        errorMessage.value = error.message || 'Ошибка при регистрации';
+        showPopup.value = true;
     } finally {
         loading.value = false;
     }
@@ -368,6 +380,12 @@ async function login() {
 
 .agreement-container__agreement-checkbox input:checked ~ .checkbox::after {
     display: block;
+    top: 55%;
+    left: 58%;
+    -webkit-transform: translate(-50%, -50%);
+    transform: translate(-50%, -50%);
+    width: 15px;
+    height: 15px;
 }
 
 .agreement-container__link {

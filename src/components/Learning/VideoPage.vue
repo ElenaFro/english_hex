@@ -37,23 +37,19 @@ defineExpose({ replayVideo, pauseVideo });
 
 <style scoped>
 .video-container {
-    overflow: hidden;
-    position: relative;
-    width: 315px;
-    height: 463px;
-    border-radius: 20px;
-    flex-shrink: 0;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 10px;
+  width: 100%;
+  height: 100%;
+  border-radius: 20px;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .video-container__lerning-video {
-    height: 100%;
-    width: auto;
-    position: absolute;
-    object-fit: cover;
-    border-radius: 20px;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 20px;
 }
 </style>

@@ -30,24 +30,21 @@ const playSound = () => {
 
 <style scoped>
 .sound-container {
-    overflow: hidden;
-    position: relative;
-    width: 315px;
-    height: 463px;
-    border-radius: 20px;
-    flex-shrink: 0;
+    width: 100%;
+    height: 100%;
+    padding: 4dvh 2dvw 0 2dvw;
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 10px;
-    padding-top: 62px;
+    justify-content: space-between;
     border: 3px solid rgba(38, 32, 96, 1);
+    border-radius: 20px;
+    box-sizing: border-box;
 }
 
 .sound-container__word {
-    font-size: 40px;
+    font-size: clamp(2.4rem, 4vw, 2rem);
     font-weight: 800;
-    line-height: 100%;
     text-align: center;
     color: rgba(38, 32, 96, 1);
 }
@@ -58,8 +55,8 @@ const playSound = () => {
 }
 
 .sound-container__girl-img {
-    position: relative;
-    margin-top: auto;
-    align-self: end;
+    width: auto;
+    height: 55%;
+    align-self: flex-end;
 }
 </style>

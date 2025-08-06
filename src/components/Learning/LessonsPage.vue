@@ -47,7 +47,7 @@ const isTransitioning = ref(false);
 const isNotEndedLearn = ref(false);
 const navigationNext = ref(null);
 const router = useRouter();
-const beforLeaveMessage = 'Чтобы не потерять текущий прогресс завершите изучение колоды';
+const beforLeaveMessage = 'Чтобы не потерять текущий прогресс завершите изучение раздела';
 
 const currentCard = computed(() => cards.value[currentCardIndex.value] || {});
 const isLastCard = computed(
@@ -128,21 +128,31 @@ const getAudioUrl = (card) => {
 </script>
 
 <style scoped>
+.scroll-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    height: 100dvh;
+    box-sizing: border-box;
+    overflow: hidden;
+    padding: 2dvh 4dvw;
+}
+
 .flip-card {
     perspective: 1000px;
-    height: 463px;
+    width: 100%;
+    max-width: 356px;
+    aspect-ratio: 3 / 4;
     position: relative;
-    margin: auto;
-    margin-block: 52px 25px;
+    flex-shrink: 0;
 }
 
 .flip-card__inner {
     position: relative;
     width: 100%;
-    min-height: 100%;
+    height: 100%;
     transform-style: preserve-3d;
     transition: transform 0.8s ease-in-out;
-    display: flex;
 }
 
 .flip-card.flipped .flip-card__inner {
@@ -150,30 +160,48 @@ const getAudioUrl = (card) => {
 }
 
 .flip-card__side {
+    position: absolute;
+    top: 0;
+    left: 0;
     width: 100%;
+    height: 100%;
     backface-visibility: hidden;
-    flex-shrink: 0;
-    flex-grow: 1;
-}
-
-.flip-card__front {
-    z-index: 2;
 }
 
 .flip-card__back {
     transform: rotateY(180deg);
-    position: absolute;
-    top: 0;
-    left: 0;
 }
 
 .button-container {
+    width: 100%;
+    max-width: 356px;
+    margin-top: 2.5dvh;
     display: flex;
     justify-content: space-between;
+    gap: 8px;
+}
+
+.button {
+    flex: 1;
+    padding: 0.6rem 1rem;
+    font-size: 1rem;
+    border-radius: 16px;
 }
 
 .button--blue {
     background-color: #007bff;
     color: white;
+}
+
+.button--white {
+    background-color: white;
+    color: #222;
+    border: 2px solid #311d5d;
+}
+
+@media (max-width: 480px) {
+    .scroll-container {
+        padding: 0;
+    }
 }
 </style>

@@ -46,7 +46,7 @@ const closePopup = async () => {
     background: #fff;
     padding: 20px;
     border-radius: 10px;
-    text-align: center;
+    text-align: start;
 
     &__header {
         color: #311d5d;

@@ -70,6 +70,12 @@
             </div>
         </div>
     </div>
+    <default-popup
+        :is-visible="showPopup"
+        title="Ошибка"
+        :message="errorMessage"
+        @confirm="showPopup = !showPopup"
+    />
 </template>
 
 <script setup>
@@ -79,6 +85,7 @@ import { useUserStore } from '../../stores/user';
 import visibilityIcon from '@/assets/img/visibility_icon.svg';
 import visibilityOffIcon from '@/assets/img/visibility_off_icon.svg';
 import loader from '../Loader.vue';
+import defaultPopup from '../popups/defaultPopup.vue';
 
 const router = useRouter();
 
@@ -89,6 +96,8 @@ const mode = ref('login');
 const inputError = ref(false);
 const showPassword = ref(false);
 const loading = ref(false);
+const showPopup = ref(false);
+const errorMessage = ref(null);
 
 const togglePassword = () => {
     showPassword.value = !showPassword.value;
@@ -111,7 +120,11 @@ const login = async () => {
         await useUserStore().fetchUser();
         await router.push({ name: 'mainPage' });
     } catch (error) {
-        alert(error.message || 'Ошибка входа');
+        errorMessage.value =
+            error.message === 'Access closed, email not confirm'
+                ? 'Доступ запрещен, подтвердите свой email'
+                : 'Ошибка входа';
+        showPopup.value = true;
     } finally {
         loading.value = false;
     }

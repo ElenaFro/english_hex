@@ -126,7 +126,7 @@ const errors = ref({
 });
 
 onMounted(async () => {
-    form.value = useUserStore().getCurrentUser();
+    form.value = { ...useUserStore().getCurrentUser() };
     initialForm.value = JSON.parse(JSON.stringify(form.value));
 });
 
@@ -386,7 +386,7 @@ const confirmSave = async () => {
     width: 100%;
     justify-content: start;
     align-items: start;
-    padding-bottom: 200px;
+    padding-bottom: 36dvh;
 }
 
 .action-button {
