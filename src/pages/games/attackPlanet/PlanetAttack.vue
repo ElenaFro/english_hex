@@ -8,8 +8,8 @@
         </section>
         <section class="image-section">
             <div class="image-container">
-                <img src="@/assets/img/Games/метеор.png" alt="meteor" class="meteor" />
-                <img src="@/assets/img/Games/Планета.png" alt="planet" class="planet" />
+                <img src="@/assets/img/Games/метеор.svg" alt="meteor" class="meteor" />
+                <img src="@/assets/img/Games/Планета.svg" alt="planet" class="planet" />
             </div>
         </section>
     </section>
@@ -33,6 +33,11 @@ const goToGamePage = () => {
     display: flex;
     flex-direction: column;
     justify-content: space-between;
+
+    &__header {
+        z-index: 20;
+    }
+
     &__header_game {
         display: flex;
         flex-direction: column;
@@ -114,12 +119,13 @@ const goToGamePage = () => {
     display: flex;
     justify-content: center;
     align-items: center;
+    max-height: 50dvh;
 }
 
 .meteor {
     position: absolute;
-    right: -104px;
-    top: 50%;
+    left: 150px;
+    bottom: -10dvh;
     transform: translateY(-140%);
 }
 
@@ -129,8 +135,8 @@ const goToGamePage = () => {
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    height: 100%;
-    padding-bottom: 120px;
+    max-height: 50%;
+    padding-bottom: 10dvh;
     flex: 1;
 }
 
