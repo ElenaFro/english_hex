@@ -386,7 +386,7 @@ const confirmSave = async () => {
     width: 100%;
     justify-content: start;
     align-items: start;
-    padding-bottom: 200px;
+    padding-bottom: 36dvh;
 }
 
 .action-button {
