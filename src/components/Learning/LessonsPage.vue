@@ -47,7 +47,7 @@ const isTransitioning = ref(false);
 const isNotEndedLearn = ref(false);
 const navigationNext = ref(null);
 const router = useRouter();
-const beforLeaveMessage = 'Чтобы не потерять текущий прогресс завершите изучение колоды';
+const beforLeaveMessage = 'Чтобы не потерять текущий прогресс завершите изучение раздела';
 
 const currentCard = computed(() => cards.value[currentCardIndex.value] || {});
 const isLastCard = computed(
