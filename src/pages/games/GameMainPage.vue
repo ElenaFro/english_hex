@@ -135,12 +135,13 @@ const redirectToMain = () => {
     &__game-card-btn {
         background-color: #fff;
         border-radius: 16px;
+        border: none;
         padding: 4px 22px;
         height: 35px;
         font-size: 18px;
         font-weight: 600;
         line-height: 120%;
-        color: black;
+        color: #262060;
     }
 }
 
