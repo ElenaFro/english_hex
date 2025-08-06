@@ -135,7 +135,6 @@ const nextQuestion = () => {
         currentQuestionIndex.value++;
     } else if (lives.value === 5 && currentQuestionIndex.value >= questions.value.length - 1) {
         earnedStars.value += 50;
-        localStorage.setItem('earnedStars', earnedStars.value);
         emit('update:earnedStars', earnedStars.value);
         emit('switch-component', 'AttackPlanetWin');
     } else if (
@@ -144,7 +143,6 @@ const nextQuestion = () => {
         currentQuestionIndex.value >= questions.value.length - 1
     ) {
         earnedStars.value += 50 - 5 * (5 - lives.value);
-        localStorage.setItem('earnedStars', earnedStars.value);
         emit('switch-component', 'AttackPlanetResult');
     } else if (lives.value <= 0) {
         emit('switch-component', 'AttackPlanetLoss');

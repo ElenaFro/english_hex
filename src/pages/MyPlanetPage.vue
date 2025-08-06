@@ -1,4 +1,3 @@
-```vue
 <template>
     <CongratulationPopup v-if="dataLoaded && !popupShowed && !everPlayedGame" @next="handlePopup" />
     <myNewPlanetPopup v-if="showNewPlanet" @goToMain="handlePopup" />
@@ -37,7 +36,7 @@ import { useUserStore } from '@/stores/user';
 const router = useRouter();
 const route = useRoute();
 const popupShowed = ref(false);
-const myPlanet = ref(true);
+const myPlanet = ref(false);
 const showNewPlanet = ref(false);
 const showGoToMain = ref(false);
 const everPlayedGame = ref(null);
@@ -51,6 +50,7 @@ const totalStars = ref(currentUser.rating);
 onMounted(async () => {
     try {
         everPlayedGame.value = currentUser.ever_played_game;
+        myPlanet.value = everPlayedGame.value;
     } catch (error) {
         console.error(error);
     } finally {
@@ -65,26 +65,28 @@ const handlePopup = (action) => {
     if (action === 'toPlanet') {
         popupShowed.value = true;
         showNewPlanet.value = true;
+    } else if (action === 'goToMain') {
+        showNewPlanet.value = false;
         myPlanet.value = true;
         setTimeout(() => {
             animateStars.value = true;
         }, 500);
-    } else if (action === 'goToMain') {
-        showNewPlanet.value = false;
-        setTimeout(() => {
-            showGoToMain.value = true;
-        }, 5000);
-        myPlanet.value = true;
     }
 };
 
 const handleAnimationEnd = async () => {
     try {
+        const afterFirstGame = everPlayedGame.value;
         await userStore.updateUserStars(earnedStars.value);
+        console.log('currentUser', currentUser);
         if (!currentUser.ever_played_game) {
             userStore.markFirstGame();
-            localStorage.setItem('markFirstGame');
+            localStorage.setItem('markFirstGame', true);
         }
+        if (!afterFirstGame)
+            setTimeout(() => {
+                showGoToMain.value = true;
+            }, 500);
     } catch (error) {
         console.error('Failed to update user stars:', error);
     }
@@ -133,7 +135,7 @@ const planetImg = computed(() => {
             }
 
             &.animate-fly {
-                animation: flyUp 5s ease-out forwards;
+                animation: flyUp 6s ease-out forwards;
             }
         }
     }
