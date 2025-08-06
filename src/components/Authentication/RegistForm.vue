@@ -368,6 +368,12 @@ async function login() {
 
 .agreement-container__agreement-checkbox input:checked ~ .checkbox::after {
     display: block;
+    top: 55%;
+    left: 58%;
+    -webkit-transform: translate(-50%, -50%);
+    transform: translate(-50%, -50%);
+    width: 15px;
+    height: 15px;
 }
 
 .agreement-container__link {
