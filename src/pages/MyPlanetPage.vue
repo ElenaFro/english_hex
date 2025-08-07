@@ -77,16 +77,16 @@ const handlePopup = (action) => {
 const handleAnimationEnd = async () => {
     try {
         const afterFirstGame = everPlayedGame.value;
+        if (!afterFirstGame)
+            setTimeout(() => {
+                showGoToMain.value = true;
+            }, 500);
         await userStore.updateUserStars(earnedStars.value);
         console.log('currentUser', currentUser);
         if (!currentUser.ever_played_game) {
             userStore.markFirstGame();
             localStorage.setItem('markFirstGame', true);
         }
-        if (!afterFirstGame)
-            setTimeout(() => {
-                showGoToMain.value = true;
-            }, 500);
     } catch (error) {
         console.error('Failed to update user stars:', error);
     }
