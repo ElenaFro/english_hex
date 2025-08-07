@@ -8,11 +8,7 @@
                     class="podium-item"
                     :class="`rank-${index + 1} ${user.id === currentUser?.id ? 'active-user' : ''}`"
                 >
-                    <img
-                        src="@/assets/img/DefaultUserAvatar/male.svg"
-                        class="user-avatar"
-                        :alt="user.name"
-                    />
+                    <img :src="userImg(user.gender)" class="user-avatar" :alt="user.name" />
                     <div>
                         <span class="name_top">{{ user.name }}</span>
                     </div>
@@ -27,13 +23,9 @@
                 class="user-item"
                 :class="{ 'active-user': user.id === currentUser?.id }"
             >
-                <div class="user-rank">{{ user.rank }}</div>
+                <div class="user-rank">{{ user.place }}</div>
                 <section class="user-item-section">
-                    <img
-                        src="@/assets/img/DefaultUserAvatar/male.svg"
-                        class="user-avatar-small"
-                        :alt="user.name"
-                    />
+                    <img :src="userImg(user.gender)" class="user-avatar-small" :alt="user.name" />
                     <span class="user-name">{{ user.name }}</span>
                     <div class="user-info">
                         <span class="user-stars">{{ user.rating }}</span>
@@ -48,6 +40,8 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue';
 import { useUserStore } from '@/stores/user';
+import maleAvatar from '@/assets/img/DefaultUserAvatar/male.svg';
+import femaleAvatar from '@/assets/img/DefaultUserAvatar/female.svg';
 
 const raitingData = ref([]);
 const currentUser = ref(null);
@@ -59,12 +53,7 @@ onMounted(async () => {
 });
 
 const sortedUsers = computed(() => {
-    return [...raitingData.value]
-        .sort((a, b) => b.rating - a.rating)
-        .map((user, index) => ({
-            ...user,
-            rank: index + 1,
-        }));
+    return [...raitingData.value].sort((a, b) => b.rating - a.rating);
 });
 
 const topUsers = computed(() => {
@@ -73,16 +62,19 @@ const topUsers = computed(() => {
 
 const otherUsers = computed(() => {
     const topUserIds = topUsers.value.map((user) => user.id);
-    return sortedUsers.value
-        .filter((user) => !topUserIds.includes(user.id))
-        .sort((a, b) => a.rank - b.rank);
+    return sortedUsers.value.filter((user) => !topUserIds.includes(user.id));
 });
+
+const userImg = (gender) => {
+    const normalizedGender = gender ? gender.toLowerCase() : '';
+    if (normalizedGender === 'male') return maleAvatar;
+    else return femaleAvatar;
+};
 </script>
 
 <style scoped lang="scss">
 .raiting-page {
     height: 100vh;
-    // width: 100%;
     width: 100vw;
     max-width: 414px;
     display: flex;
@@ -163,6 +155,7 @@ const otherUsers = computed(() => {
     border-radius: 50%;
     object-fit: cover;
     border: 1px solid #ff7e56;
+    background-color: #fff;
     padding: 4px;
 }
 
