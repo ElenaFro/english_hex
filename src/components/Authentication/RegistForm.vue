@@ -201,7 +201,7 @@ watch(email, (newVal) => {
 });
 
 watch(password, (newVal) => {
-    const passwordRegex = /^(?=.*[A-Z])(?=.*[0-9])[A-Za-z0-9]{8,30}$/;
+    const passwordRegex = /^(?=.*[A-Z])(?=.*[0-9])[A-Za-z0-9.!]{8,30}$/;
     if (!newVal.trim()) {
         passwordError.value = true;
         passwordErrorText.value = 'Поле пароль не может быть пустым';
@@ -211,7 +211,7 @@ watch(password, (newVal) => {
     } else if (!passwordRegex.test(newVal) || newVal.includes(' ')) {
         passwordError.value = true;
         passwordErrorText.value =
-            'Пароль должен содержать хотя бы одну заглавную букву и одну цифру, без пробелов';
+            'Пароль должен содержать хотя бы одну заглавную латинскую букву и одну цифру, без пробелов';
     } else {
         passwordError.value = false;
         passwordErrorText.value = '';
@@ -263,7 +263,7 @@ const formValidator = () => {
         emailErrorText.value = '';
     }
 
-    const passwordRegex = /^(?=.*[A-Z])(?=.*[0-9])[A-Za-z0-9]{8,30}$/;
+    const passwordRegex = /^(?=.*[A-Z])(?=.*[0-9])[A-Za-z0-9.!]{8,30}$/;
     if (!password.value.trim()) {
         passwordError.value = true;
         passwordErrorText.value = 'Поле пароль не может быть пустым';
