@@ -1,6 +1,6 @@
 <template>
-    <div class="container" :class="randomClass">
-        <button type="button" class="nav-arrow" @click="goToLearningPage">
+    <div class="container" :class="randomClass" @click="goToLearningPage">
+        <button type="button" class="nav-arrow">
             <img class="nav-arrow__img" src="@/assets/img/nav-arrow_icon.svg" alt="" />
         </button>
         <div class="category-img">
@@ -77,6 +77,7 @@ const checkedProgress = computed(() => (props.progress ? 100 : 0));
     background-position: center !important;
     background-repeat: no-repeat;
     background-size: cover;
+    cursor: pointer;
 }
 
 .category-img {
