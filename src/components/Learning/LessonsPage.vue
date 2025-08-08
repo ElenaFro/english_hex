@@ -71,6 +71,7 @@ const replayAgain = () => {
 const handleNextOrFinish = async () => {
     if (isTransitioning.value) return;
     if (isLastCard.value) {
+        if (!chosedCategory.value.completed_category) localStorage.setItem('earnedStars', 20);
         await useCategoriesStore().updateComplateCategory(chosedCategory.value.id);
         router.push({ name: 'games', query: { id: chosedCategory.value.id } });
         return;

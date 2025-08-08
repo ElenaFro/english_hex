@@ -16,7 +16,7 @@
             </div>
         </section>
         <section class="mainPageResirect-section">
-            <button class="action-button" @click="openPopup = true">Вернуться на главную</button>
+            <button class="action-button" @click="goMainButton">Вернуться на главную</button>
         </section>
     </section>
 
@@ -24,7 +24,7 @@
         :isVisible="openPopup"
         :title="popupTitle"
         :message="popupMessage"
-        @confirm="redirectToMain"
+        @confirm="goToPlanet"
         @close="openPopup = false"
     />
 </template>
@@ -36,6 +36,7 @@ import { useCategoriesStore } from '@/stores/categories';
 
 const router = useRouter();
 const route = useRoute();
+const hasEarnedStars = localStorage.getItem('earnedStars');
 const category = ref({});
 onMounted(async () => {
     await useCategoriesStore().getChosedCategory(route.query.id);
@@ -74,7 +75,12 @@ const goToGame = (item) => {
     router.push({ name: item.path, query: { id: category.value.id } });
 };
 
-const redirectToMain = () => {
+const goToPlanet = () => {
+    router.push({ name: 'myPlanet', query: { earnedStars: Number(hasEarnedStars) } });
+};
+
+const goMainButton = () => {
+    if (hasEarnedStars) return (openPopup.value = true);
     router.push({ name: 'mainPage' });
 };
 </script>

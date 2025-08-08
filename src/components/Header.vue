@@ -188,6 +188,7 @@ watch(
     padding-left: 13px;
     padding-bottom: 0px;
     align-items: center;
+    cursor: pointer;
 }
 
 .header-live {
