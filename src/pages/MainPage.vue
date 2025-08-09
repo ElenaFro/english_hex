@@ -170,4 +170,10 @@ const handlePopup = async () => {
 .content_blur {
     filter: blur(4px);
 }
+
+.user-img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
 </style>

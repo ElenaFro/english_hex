@@ -1,13 +1,13 @@
 <template>
     <div class="page-content">
-        <div :class="wrong <= 2 ? 'img-container' : 'img-container-loss'">
+        <div :class="wrong <= 5 ? 'img-container' : 'img-container-loss'">
             <img
-                v-if="wrong <= 2"
+                v-if="wrong <= 5"
                 class="img-container__passed-img"
                 src="@/assets/img/girl-img2.png"
                 alt=""
             />
-            <img v-else class="img-container__loss-img" src="@/assets/img/girl-img.svg" alt="" />
+            <img v-else class="img-container__loss-img" src="@/assets/img/girl-lost.svg" alt="" />
         </div>
         <div class="result-popup">
             <h1 class="result-popup__header">{{ resultHeader }}</h1>
@@ -43,6 +43,7 @@ import { ref, computed } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 //stores
 import { useUserStore } from '@/stores/user';
+import { useCategoriesStore } from '@/stores/categories';
 
 const route = useRoute();
 const router = useRouter();
@@ -63,10 +64,10 @@ const buttonLoss = 'Попробовать еще раз';
 const stars = ref(0);
 
 const resultHeader = computed(() => {
-    if (wrong === 0) {
+    if (wrong <= 2) {
         return headerPerfect;
     }
-    if (wrong <= 2) {
+    if (wrong <= 5) {
         return headerPassed;
     } else {
         return headerLoss;
@@ -74,10 +75,10 @@ const resultHeader = computed(() => {
 });
 
 const resultText = computed(() => {
-    if (wrong === 0) {
+    if (wrong <= 2) {
         return textPerfect;
     }
-    if (wrong <= 2) {
+    if (wrong <= 5) {
         return textPassed;
     } else {
         return textLoss;
@@ -98,14 +99,8 @@ const showButton = computed(() => {
 });
 
 const totalStars = computed(() => {
-    if (wrong <= 2 && wrong !== 0) {
-        return '35';
-    }
-    if (wrong > 2) {
-        return '0';
-    } else {
-        return '50';
-    }
+    const stars = 50 - 5 * wrong;
+    return stars > 0 ? stars : 0;
 });
 
 const fromGame = route.query.from;
@@ -115,6 +110,11 @@ const repeatGame = () => {
 };
 
 const goToMainPage = () => {
+    if (totalStars.value <= 0)
+        return router.push({
+            name: 'games',
+            query: { id: useCategoriesStore().chosedCategory?.id },
+        });
     router.push({ name: 'myPlanet', query: { earnedStars: totalStars.value } });
 };
 </script>
@@ -144,6 +144,7 @@ const goToMainPage = () => {
             top: 0px;
             left: 50%;
             transform: translate(-50%);
+            z-index: 2000;
         }
     }
 

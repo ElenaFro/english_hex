@@ -6,6 +6,7 @@ export const useUserStore = defineStore('user', () => {
     const user = ref(JSON.parse(localStorage.getItem('user')) || null);
     const token = ref(localStorage.getItem('access_token') || null);
     const isAuthenticated = ref(!!localStorage.getItem('access_token'));
+    const notifications = ref([]);
 
     const getCurrentUser = () => {
         return user.value;
@@ -103,10 +104,33 @@ export const useUserStore = defineStore('user', () => {
         }
     }
 
+    async function getUserNotifications() {
+        if (!token.value) return;
+        try {
+            const response = await apiClient.get('/notification/get');
+            notifications.value = response.data;
+        } catch (error) {
+            console.error('Fetch notifications error:', error);
+        }
+    }
+
+    async function markReadNotifications(ids) {
+        if (!token.value) return;
+        try {
+            await apiClient.patch('/notification/mark-as-read', {
+                notification_ids: ids,
+            });
+            await getUserNotifications();
+        } catch (error) {
+            console.error(error);
+        }
+    }
+
     return {
         user,
         token,
         isAuthenticated,
+        notifications,
         register,
         login,
         logout,
@@ -116,5 +140,7 @@ export const useUserStore = defineStore('user', () => {
         getRaiting,
         markFirstGame,
         updateUserStars,
+        getUserNotifications,
+        markReadNotifications,
     };
 });

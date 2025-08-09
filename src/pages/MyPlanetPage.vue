@@ -44,11 +44,16 @@ const dataLoaded = ref(false);
 const animateStars = ref(false);
 const currentUser = useUserStore().user;
 const userStore = useUserStore();
+const localStorageStars = localStorage.getItem('earnedStars');
 const earnedStars = ref(Number(route.query.earnedStars) ?? null);
 const totalStars = ref(currentUser.rating);
 
 onMounted(async () => {
     try {
+        if (localStorageStars) {
+            earnedStars.value += Number(localStorageStars);
+            localStorage.removeItem('earnedStars');
+        }
         everPlayedGame.value = currentUser.ever_played_game;
         myPlanet.value = everPlayedGame.value;
     } catch (error) {
@@ -77,12 +82,11 @@ const handlePopup = (action) => {
 const handleAnimationEnd = async () => {
     try {
         const afterFirstGame = everPlayedGame.value;
-        if (!afterFirstGame)
-            setTimeout(() => {
-                showGoToMain.value = true;
-            }, 500);
+        if (!afterFirstGame) showGoToMain.value = true;
         await userStore.updateUserStars(earnedStars.value);
-        console.log('currentUser', currentUser);
+        const query = { ...route.query };
+        delete query.earnedStars;
+        router.push({ query });
         if (!currentUser.ever_played_game) {
             userStore.markFirstGame();
             localStorage.setItem('markFirstGame', true);
@@ -135,7 +139,7 @@ const planetImg = computed(() => {
             }
 
             &.animate-fly {
-                animation: flyUp 6s ease-out forwards;
+                animation: flyUp 4s ease-out forwards;
             }
         }
     }

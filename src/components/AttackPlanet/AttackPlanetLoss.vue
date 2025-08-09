@@ -23,7 +23,7 @@
                         Пройти еще раз
                         <img src="@/assets/img/arrow_icon.svg" alt="arrow" />
                     </button>
-                    <button class="button button--purple d-mt-12" @click="goToMainPage">
+                    <button class="button button--purple d-mt-12" @click="goToGamesPage">
                         Дальше
                         <img src="@/assets/img/arrow_icon.svg" alt="arrow" />
                     </button>
@@ -35,10 +35,11 @@
 </template>
 <script setup>
 import { useRouter } from 'vue-router';
+import { useCategoriesStore } from '@/stores/categories';
 
 const router = useRouter();
-const goToMainPage = () => {
-    router.push('/');
+const goToGamesPage = () => {
+    router.push({ name: 'games', query: { id: useCategoriesStore().chosedCategory?.id } });
 };
 const goToGamePage = () => {
     window.location.reload();

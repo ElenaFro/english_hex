@@ -14,13 +14,13 @@
             v-for="(option, index) in currentQuestion.options"
             :key="index"
             @click="checkAnswer(option)"
-            :disabled="selectedOptions.includes(option)"
+            :disabled="selectedOption === option && option === currentQuestion.correctAnswer"
             :class="[
                 'button button--white',
-                selectedOptions.includes(option) && option !== currentQuestion.correctAnswer
+                selectedOption === option && option !== currentQuestion.correctAnswer
                     ? 'button--wrong'
                     : '',
-                selectedOptions.includes(option) && option === currentQuestion.correctAnswer
+                selectedOption === option && option === currentQuestion.correctAnswer
                     ? 'button--correct'
                     : '',
             ]"
@@ -49,7 +49,7 @@ const activeComponent = ref('ImgPage');
 const showAnswer = ref(false);
 const answerList = ref([]);
 const currentIndex = ref(0);
-const selectedOptions = ref([]);
+const selectedOption = ref(null);
 const wrongCount = ref(0);
 const everPlayedGame = ref(currentUser.ever_played_game);
 const chosedCategoryId = computed(() => useCategoriesStore().chosedCategory?.id || route.query.id);
@@ -89,9 +89,7 @@ const showAnswers = () => {
 };
 
 const checkAnswer = (option) => {
-    if (!selectedOptions.value.includes(option)) {
-        selectedOptions.value.push(option);
-    }
+    selectedOption.value = option;
 
     if (option !== currentQuestion.value.correctAnswer) {
         wrongCount.value++;
@@ -108,7 +106,7 @@ const checkAnswer = (option) => {
 const goToNext = async () => {
     if (currentIndex.value >= answerList.value.length - 1) return goToResult();
     currentIndex.value += 1;
-    selectedOptions.value = [];
+    selectedOption.value = null;
     showAnswer.value = false;
     activeComponent.value = 'ImgPage';
     setTimeout(goToAnswers, 4000);
@@ -123,20 +121,20 @@ const goToResult = () => {
 <style scoped>
 .flip-card {
     perspective: 1000px;
-    height: 463px;
-    position: relative;
-    margin: auto;
-    margin-bottom: 20px;
     width: 100%;
+    max-width: 356px;
+    aspect-ratio: 3 / 4;
+    position: relative;
+    flex-shrink: 0;
+    max-height: 50dvh;
 }
 
 .flip-card__inner {
     position: relative;
     width: 100%;
-    min-height: 100%;
+    height: 100%;
     transform-style: preserve-3d;
     transition: transform 0.8s ease-in-out;
-    display: flex;
 }
 
 .flip-card.flipped .flip-card__inner {
@@ -144,24 +142,16 @@ const goToResult = () => {
 }
 
 .flip-card__side {
+    position: absolute;
+    top: 0;
+    left: 0;
     width: 100%;
+    height: 100%;
     backface-visibility: hidden;
-    flex-shrink: 0;
-    flex-grow: 1;
-}
-
-.flip-card__front {
-    z-index: 2;
-    display: flex;
-    align-items: center;
-    justify-content: center;
 }
 
 .flip-card__back {
     transform: rotateY(180deg);
-    position: absolute;
-    top: 0;
-    left: 0;
 }
 
 .answer-container {
@@ -173,6 +163,7 @@ const goToResult = () => {
     grid-template-columns: repeat(2, 140px);
     row-gap: 10px;
     justify-content: space-between;
+    margin-top: 2dvh;
 }
 
 .button {
