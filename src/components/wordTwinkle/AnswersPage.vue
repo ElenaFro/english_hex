@@ -16,7 +16,7 @@
     flex-direction: column;
     align-items: center;
     width: 100%;
-    height: 463px;
+    height: 100%;
     background-image: url('@/assets/img/card-background.png');
     background-size: cover;
     background-position: center;
@@ -24,20 +24,20 @@
     border-radius: 20px;
 
     &__question-mark {
-        font-size: 180px;
+        font-size: 10rem;
         font-weight: 800;
         line-height: 100%;
         color: #262060;
-        padding-top: 41px;
+        padding-top: 1dvh;
     }
 
     .img-container {
         position: fixed;
         bottom: 3px;
-        left: 55px;
+        left: 16dvw;
 
         .girl-img {
-            height: 263px;
+            height: 25dvh;
             width: auto;
         }
     }

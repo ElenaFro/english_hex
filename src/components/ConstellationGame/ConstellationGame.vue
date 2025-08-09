@@ -156,13 +156,13 @@ onMounted(async () => {
         const imageCard = {
             pairId,
             imageUrl: `http://62.109.0.225:8000/storage/categories/${categoryId}/cards/${pairId}/word_image/${item.card_photo}`,
-            displayWord: item.translation_word,
+            displayWord: item.word,
             isTranslation: false,
             visible: true,
         };
         const wordCard = {
             pairId,
-            displayWord: item.word,
+            displayWord: item.translation_word,
             isTranslation: true,
             visible: true,
         };

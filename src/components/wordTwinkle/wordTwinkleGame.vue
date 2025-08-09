@@ -40,16 +40,26 @@ onMounted(() => {
 });
 
 const onGameFinished = () => {
-	const total = timeCalcul()
-}
+    const total = timeCalcul();
+};
 
 const timeCalcul = () => {
-	const totalTime = time.value + timeWrong.value
-	return totalTime
-}
+    const totalTime = time.value + timeWrong.value;
+    return totalTime;
+};
 </script>
 
 <style scoped lang="scss">
+.scroll-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    height: 100dvh;
+    box-sizing: border-box;
+    overflow: hidden !important;
+    padding: 2dvh 4dvw;
+}
+
 .page-content {
     padding-top: 20px;
     align-items: center;
