@@ -44,13 +44,16 @@ const dataLoaded = ref(false);
 const animateStars = ref(false);
 const currentUser = useUserStore().user;
 const userStore = useUserStore();
-const localStorageStars = localStorage?.getItem('earnedStars');
+const localStorageStars = localStorage.getItem('earnedStars');
 const earnedStars = ref(Number(route.query.earnedStars) ?? null);
 const totalStars = ref(currentUser.rating);
 
 onMounted(async () => {
     try {
-        if (localStorageStars) localStorage.removeItem('earnedStars');
+        if (localStorageStars) {
+            earnedStars.value += Number(localStorageStars);
+            localStorage.removeItem('earnedStars');
+        }
         everPlayedGame.value = currentUser.ever_played_game;
         myPlanet.value = everPlayedGame.value;
     } catch (error) {

@@ -1,5 +1,5 @@
 <template>
-    <div class="">
+    <div>
         <component
             :is="activeComponent"
             @switch-component="switchComponent"
