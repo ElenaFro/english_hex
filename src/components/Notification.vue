@@ -1,58 +1,63 @@
 <template>
     <div class="notifications-container">
         <div class="content-container note-container">
-            <div class="message-block-notification">
-                <p class="message-block__title18">Заголовок уведомления</p>
-                <p class="message-block__text14">
-                    Какое-то очень важное событие в приложении, не пропусти
-                </p>
-            </div>
-            <div>
-                <p class="message-block__day">29 марта</p>
-            </div>
-        </div>
-        <div class="content-container note-container">
-            <div class="message-block-notification">
-                <p class="message-block__title18">Заголовок уведомления</p>
-                <p class="message-block__text14">
-                    Какое-то очень важное событие в приложении, не пропусти
-                </p>
-            </div>
-            <div>
-                <p class="message-block__day">29 марта</p>
-                <div class="day-container">
-                    <img
-                        src="@/assets/icons/navBarIcon/Ellipse red.svg"
-                        class="note-icon"
-                        alt="New"
-                    />
-                </div>
-            </div>
-        </div>
-        <div class="content-container note-container">
-            <div class="message-block-notification">
-                <p class="message-block__title18">Заголовок уведомления</p>
-                <p class="message-block__text14">
-                    Текст — зафиксированная на каком-либо материальном носителе человеческая мысль;
-                    в общем плане связная и полная последовательность символов. Существуют две
-                    основные трактовки понятия «текст»:
-                </p>
-            </div>
-            <div>
-                <p class="message-block__day">29 сентября</p>
-                <div class="day-container">
-                    <img
-                        src="@/assets/icons/navBarIcon/Ellipse red.svg"
-                        class="note-icon"
-                        alt="New"
-                    />
-                </div>
+            <div v-for="item in notifications" :key="item.id" ref="notificationItems">
+                <notification-item
+                    :notification-text="item.text"
+                    :notification-title="item.title"
+                    :send-data="item.created_at"
+                    :readed="item.readed"
+                />
             </div>
         </div>
     </div>
 </template>
 
-<script setup></script>
+<script setup>
+import { ref, onMounted, onUnmounted } from 'vue';
+import NotificationItem from './NotificationItem.vue';
+import { useUserStore } from '@/stores/user';
+
+const userStore = useUserStore();
+const notifications = userStore.notifications;
+const notificationItems = ref([]);
+
+let observer = null;
+
+onMounted(() => {
+    observer = new IntersectionObserver(
+        (entries) => {
+            const unreadIds = [];
+            entries.forEach((entry) => {
+                if (entry.isIntersecting) {
+                    const index = entry.target.dataset.index;
+                    const notification = notifications[index];
+                    if (notification && !notification.readed) {
+                        unreadIds.push(notification.id);
+                    }
+                }
+            });
+            if (unreadIds.length > 0) {
+                userStore.markReadNotifications(unreadIds);
+            }
+        },
+        { threshold: 0.1 }
+    );
+
+    notificationItems.value.forEach((item, index) => {
+        if (item) {
+            item.dataset.index = index;
+            observer.observe(item);
+        }
+    });
+});
+
+onUnmounted(() => {
+    if (observer) {
+        observer.disconnect();
+    }
+});
+</script>
 
 <style scoped>
 .notifications-container {
@@ -74,26 +79,6 @@
     gap: 16px;
 }
 
-.message-block__title18 {
-    align-self: flex-start;
-    font-size: 18px;
-    font-weight: 600;
-    color: #311d5d;
-}
-
-.message-block__text14 {
-    font-size: 14px;
-    font-weight: 400;
-    color: #262060;
-}
-.message-block__day {
-    font-size: 14px;
-    font-weight: 600;
-    line-height: 27px;
-    color: #747474;
-    width: 84px;
-    text-align: right;
-}
 .note-container {
     display: flex;
     flex-direction: row;
@@ -102,13 +87,5 @@
     padding-left: 20px;
     padding-right: 20px;
     gap: 4px;
-}
-.note-icon {
-    padding-top: 16px;
-}
-.day-container {
-    display: flex;
-    width: 100%;
-    justify-content: end;
 }
 </style>
