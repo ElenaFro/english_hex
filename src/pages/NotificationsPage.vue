@@ -14,7 +14,7 @@ import Notification from '@/components/Notification.vue';
     display: flex;
     flex-direction: column;
     align-items: center;
-    background: linear-gradient(135deg, #e0e7ff, #a3bffa);
+    background: #f6f6fe;
     border-top-left-radius: 40px;
     border-top-right-radius: 40px;
 }

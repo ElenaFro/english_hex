@@ -51,6 +51,7 @@ const popupShowed = ref(true);
 
 onMounted(async () => {
     await useCategoriesStore().getCategories();
+    useUserStore().getUserNotifications();
 
     if (localStorage.getItem('markFirstGame')) {
         popupShowed.value = false;

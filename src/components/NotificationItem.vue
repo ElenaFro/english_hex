@@ -1,5 +1,5 @@
 <template>
-    <section>
+    <div class="flex">
         <div class="message-block-notification">
             <p class="message-block__title18">{{ notificationTitle }}</p>
             <p class="message-block__text14">
@@ -8,11 +8,11 @@
         </div>
         <div>
             <p class="message-block__day">{{ formatedData }}</p>
-            <div class="day-container">
+            <div v-if="!readed" class="day-container">
                 <img src="@/assets/icons/navBarIcon/Ellipse red.svg" class="note-icon" alt="New" />
             </div>
         </div>
-    </section>
+    </div>
 </template>
 <script setup>
 import { computed } from 'vue';

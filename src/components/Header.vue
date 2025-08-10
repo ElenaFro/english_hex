@@ -80,8 +80,10 @@ import { useRouter } from 'vue-router';
 import { defineProps } from 'vue';
 import { useUserStore } from '@/stores/user';
 import Bell from '@/assets/icons/navBarIcon/Bell.svg';
+import BellUnread from '@/assets/icons/navBarIcon/Bell_unread.svg';
 
 const router = useRouter();
+const currentNotifications = computed(() => useUserStore().notifications);
 
 const currentUser = computed(() => useUserStore().getCurrentUser());
 const totalStars = computed(() => currentUser.value.rating);
@@ -93,13 +95,17 @@ const isGameWordTwinkle = computed(() => route.path === '/wordTwinkleResult');
 
 const myPlanet = computed(() => route.path === '/myPlanet');
 
-const headerItemsRight = [
+const hasUnreadNotify = computed(() =>
+    currentNotifications.value?.find((notify) => notify.was_read === false)
+);
+
+const headerItemsRight = computed(() => [
     {
         name: 'notifications',
         path: '/notifications',
-        icon: Bell,
+        icon: hasUnreadNotify.value ? BellUnread : Bell,
     },
-];
+]);
 
 const currentTitle = ref(' ');
 const route = useRoute();
