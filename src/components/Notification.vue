@@ -3,10 +3,10 @@
         <div class="content-container note-container">
             <div v-for="item in notifications" :key="item.id" ref="notificationItems">
                 <notification-item
-                    :notification-text="item.text"
-                    :notification-title="item.title"
+                    :notification-text="item.message"
+                    notification-title="Напоминание"
                     :send-data="item.created_at"
-                    :readed="item.readed"
+                    :readed="item.was_read"
                 />
             </div>
         </div>
@@ -14,29 +14,31 @@
 </template>
 
 <script setup>
-import { ref, onMounted, onUnmounted } from 'vue';
+import { ref, onMounted, onUnmounted, computed } from 'vue';
 import NotificationItem from './NotificationItem.vue';
 import { useUserStore } from '@/stores/user';
 
 const userStore = useUserStore();
-const notifications = userStore.notifications;
+const notifications = computed(() => userStore.notifications);
 const notificationItems = ref([]);
 
 let observer = null;
 
-onMounted(() => {
+onMounted(async () => {
+    if (notifications.value.length === 0) await userStore.getUserNotifications();
     observer = new IntersectionObserver(
         (entries) => {
             const unreadIds = [];
             entries.forEach((entry) => {
                 if (entry.isIntersecting) {
                     const index = entry.target.dataset.index;
-                    const notification = notifications[index];
-                    if (notification && !notification.readed) {
+                    const notification = notifications.value[index];
+                    if (notification && !notification.was_read) {
                         unreadIds.push(notification.id);
                     }
                 }
             });
+
             if (unreadIds.length > 0) {
                 userStore.markReadNotifications(unreadIds);
             }
@@ -63,7 +65,7 @@ onUnmounted(() => {
 .notifications-container {
     width: 100vw;
     max-width: 414px;
-    height: 100vh;
+    height: calc(90dvh - 70px);
     overflow-y: auto;
     display: flex;
     flex-direction: column;
@@ -73,7 +75,6 @@ onUnmounted(() => {
     box-sizing: border-box;
     margin-top: 0px;
     padding-top: 30px;
-    background-color: #ffffff;
     border-top-left-radius: 40px;
     border-top-right-radius: 40px;
     gap: 16px;
@@ -81,7 +82,7 @@ onUnmounted(() => {
 
 .note-container {
     display: flex;
-    flex-direction: row;
+    flex-direction: column;
     align-items: start;
     width: 100%;
     padding-left: 20px;

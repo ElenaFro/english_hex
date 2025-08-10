@@ -108,7 +108,7 @@ export const useUserStore = defineStore('user', () => {
         if (!token.value) return;
         try {
             const response = await apiClient.get('/notification/get');
-            notifications.value = response.data;
+            notifications.value = response.data.notifications;
         } catch (error) {
             console.error('Fetch notifications error:', error);
         }
