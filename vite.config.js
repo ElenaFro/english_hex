@@ -22,7 +22,7 @@ export default defineConfig({
                 ],
             },
             devOptions: {
-                enabled: true, // чтобы работало во время разработки
+                enabled: true,
             },
             manifest: {
                 name: 'dicardz',

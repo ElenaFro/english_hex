@@ -101,8 +101,8 @@ const planetImg = computed(() => {
         return planet0;
     } else {
         if (totalStars.value < 100) return planet1;
-        if (totalStars.value >= 100 && totalStars.value < 200) return planet2;
-        if (totalStars.value >= 200 && totalStars.value < 300) return planet3;
+        if (totalStars.value >= 100 && totalStars.value < 300) return planet2;
+        if (totalStars.value >= 300 && totalStars.value < 500) return planet3;
         return planet4;
     }
 });

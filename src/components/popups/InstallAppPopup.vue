@@ -49,7 +49,6 @@
             </div>
         </div>
     </div>
-    yyy
 </template>
 
 <script setup>
@@ -66,7 +65,6 @@ onMounted(() => {
     isInStandalone.value =
         window.matchMedia('(display-mode: standalone)').matches || navigator.standalone;
 
-
     const hasSeenPopup = localStorage.getItem('hasSeenInstallPopup');
     if (hasSeenPopup) return;
 
@@ -80,7 +78,7 @@ onMounted(() => {
     if (isIos.value && !isInStandalone.value) {
         setTimeout(() => {
             showPopup.value = true;
-        }, 5000); 
+        }, 5000);
     }
 
     window.addEventListener('appinstalled', () => {
