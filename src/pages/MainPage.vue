@@ -23,6 +23,9 @@
             />
         </div>
     </div>
+
+    <InstallAppPopup />
+
     <HelloPopupWithSound
         v-if="openHelloPopup"
         :title="titlePopup"
@@ -44,6 +47,7 @@ import SoundForPopup from '@/assets/audio/helloFromDi.mp3';
 import { useUserStore } from '@/stores/user';
 import { useCategoriesStore } from '@/stores/categories';
 import watchStarsPopup from '@/components/popups/watchStarsPopup.vue';
+import InstallAppPopup from '@/components/popups/InstallAppPopup.vue';
 
 const loading = ref(true);
 const openHelloPopup = ref(false);

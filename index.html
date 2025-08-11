@@ -25,7 +25,7 @@
                     await OneSignal.init({
                         appId: '6fd53463-4d96-4693-a661-95c101487a28',
                     });
-                    
+
                     const waitForSubscription = async (timeout = 20000) => {
                         const startTime = Date.now();
                         while (Date.now() - startTime < timeout) {

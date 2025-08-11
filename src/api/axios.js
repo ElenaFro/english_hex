@@ -1,9 +1,8 @@
 import axios from 'axios';
 import { useUserStore } from '../stores/user';
-import { useRouter } from 'vue-router';
 
 const apiClient = axios.create({
-    baseURL: 'http://62.109.0.225:8000/api',
+    baseURL: 'https://dicardz.com/api/api',
     headers: { 'Content-Type': 'application/json' },
     timeout: 10000,
 });
