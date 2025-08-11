@@ -60,7 +60,7 @@ const currentQuestion = computed(() => {
     const question = answerList.value[currentIndex.value] || {};
     return {
         id: question.id || null,
-        image: `http://62.109.0.225:8000/storage/categories/${chosedCategoryId.value}/cards/${question.id}/word_image/${question.card_photo}`,
+        image: `${import.meta.env.VITE_STORAGE_URI}/${chosedCategoryId.value}/cards/${question.id}/word_image/${question.card_photo}`,
         correctAnswer: question.correctAnswer || '',
         options: question.options || [],
     };

@@ -155,7 +155,7 @@ onMounted(async () => {
         const pairId = item.id;
         const imageCard = {
             pairId,
-            imageUrl: `http://62.109.0.225:8000/storage/categories/${categoryId}/cards/${pairId}/word_image/${item.card_photo}`,
+            imageUrl: `${import.meta.env.VITE_STORAGE_URI}/${categoryId}/cards/${pairId}/word_image/${item.card_photo}`,
             displayWord: item.word,
             isTranslation: false,
             visible: true,

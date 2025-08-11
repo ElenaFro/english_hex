@@ -57,7 +57,7 @@ const goToLearningPage = () => {
 };
 
 const img_url = computed(
-    () => `http://62.109.0.225:8000/storage/categories/${props.id}/images/${props.imgUrl}`
+    () => `${import.meta.env.VITE_STORAGE_URI}/${props.id}/images/${props.imgUrl}`
 );
 
 const checkedProgress = computed(() => (props.progress ? 100 : 0));

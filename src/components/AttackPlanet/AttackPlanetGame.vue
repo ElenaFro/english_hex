@@ -62,7 +62,7 @@ const isQuestionPlayed = ref(false);
 
 const playSound = () => {
     if (soundRef.value) {
-        const audioUrl = `http://62.109.0.225:8000/storage/categories/${categoryId.value}/cards/${currentQuestion.value.id}/audio/${currentQuestion.value.audio}`;
+        const audioUrl = `${import.meta.env.VITE_STORAGE_URI}/${categoryId.value}/cards/${currentQuestion.value.id}/audio/${currentQuestion.value.audio}`;
         soundRef.value.src = audioUrl;
         soundRef.value.currentTime = 0;
         soundRef.value.play();
