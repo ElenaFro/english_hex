@@ -25,8 +25,8 @@ export default defineConfig({
                 enabled: true, // чтобы работало во время разработки
             },
             manifest: {
-                name: 'My Vue App',
-                short_name: 'VueApp',
+                name: 'dicardz',
+                short_name: 'dicardz',
                 start_url: '/',
                 display: 'standalone',
                 background_color: '#ffffff',
