@@ -66,7 +66,7 @@ onMounted(async () => {
     if (!hasVisited.value) {
         openHelloPopup.value = true;
         hasVisited.value = true;
-        sessionStorage.setItem('hasVisited', 'true');
+        localStorage.setItem('hasVisited', 'true');
     }
 });
 
@@ -86,7 +86,7 @@ const randomColor = (id) => {
     return colorCache.value[id];
 };
 
-const hasVisited = ref(sessionStorage.getItem('hasVisited') === 'true');
+const hasVisited = ref(localStorage.getItem('hasVisited') === 'true');
 
 const currentUser = computed(() => useUserStore().getCurrentUser());
 const userName = computed(() => currentUser.value.name);

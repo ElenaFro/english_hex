@@ -116,6 +116,7 @@
         title="Ошибка"
         :message="errorMessage"
         @confirm="showPopup = !showPopup"
+        @close="showPopup = !showPopup"
     />
 </template>
 
