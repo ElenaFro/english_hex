@@ -43,7 +43,7 @@ const props = defineProps(['lives']);
 const earnedStars = computed(() => 50 - 5 * (5 - props.lives));
 
 const goToPlanet = () => {
-    router.push({ name: 'myPlanet', query: { earnedStars: earnedStars.value } });
+    router.push({ name: 'myPlanet', query: { earnedStars: {planet_attack: earnedStars.value}  } });
 };
 const goToGamePage = () => {
     window.location.reload();

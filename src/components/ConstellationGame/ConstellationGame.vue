@@ -122,7 +122,7 @@ const checkMatch = () => {
                 } else {
                     router.push({
                         name: 'gameResult',
-                        query: { wrong: wrongCount.value, from: 'constellationGame' },
+                        query: { wrong: wrongCount.value, from: 'constellationGame', game:'constellation_word' },
                     });
                 }
             }

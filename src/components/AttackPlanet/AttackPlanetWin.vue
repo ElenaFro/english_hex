@@ -33,7 +33,7 @@ import { useRouter } from 'vue-router';
 
 const router = useRouter();
 const goToPlanet = () => {
-    router.push({ name: 'myPlanet', query: { earnedStars: 50 } });
+    router.push({ name: 'myPlanet', query: { earnedStars: {planet_attack: 50} } });
 };
 </script>
 <style scoped lang="scss">

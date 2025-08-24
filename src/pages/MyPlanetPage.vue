@@ -32,6 +32,7 @@ import planet2 from '@/assets/img/planets/planet-img 2.png';
 import planet3 from '@/assets/img/planets/planet-img 3.png';
 import planet4 from '@/assets/img/planets/planet-img 4.png';
 import { useUserStore } from '@/stores/user';
+import { useCategoriesStore } from '@/stores/categories';
 
 const router = useRouter();
 const route = useRoute();
@@ -44,23 +45,53 @@ const dataLoaded = ref(false);
 const animateStars = ref(false);
 const currentUser = useUserStore().user;
 const userStore = useUserStore();
-const localStorageStars = localStorage.getItem('earnedStars');
-const earnedStars = ref(Number(route.query.earnedStars) ?? null);
+const chosedCategory = useCategoriesStore().chosedCategory;
+const localStorageStars = Number(localStorage.getItem('earnedStars'));
+const gameSource = ref(null);
+const earnedStars = ref(0);
 const totalStars = ref(currentUser.rating);
 
 onMounted(async () => {
     try {
         if (localStorageStars) {
-            earnedStars.value += Number(localStorageStars);
             localStorage.removeItem('earnedStars');
         }
+        let queryStars = 0;
+        if (route.query.earnedStars) {
+            try {
+                const parsedStars = JSON.parse(route.query.earnedStars);
+                console.log(route.query.earnedStars);
+                if (typeof parsedStars === 'object') {
+                    if (parsedStars?.planet_attack) {
+                        queryStars = Number(parsedStars.planet_attack);
+                        gameSource.value = 'planet_attack';
+                    } else if (parsedStars?.flickering_words) {
+                        queryStars = Number(parsedStars.flickering_words);
+                        gameSource.value = 'flickering_words';
+                    } else if (parsedStars?.constellation_word) {
+                        queryStars = Number(parsedStars.constellation_word);
+                        gameSource.value = 'constellation_word';
+                    }
+                } else {
+                    queryStars = Number(parsedStars);
+                    gameSource.value = 'unknown';
+                }
+            } catch (e) {
+                queryStars = Number(route.query.earnedStars) || 0;
+                gameSource.value = 'unknown';
+            }
+        }
+
+        earnedStars.value = queryStars + localStorageStars;
+
         everPlayedGame.value = currentUser.ever_played_game;
         myPlanet.value = everPlayedGame.value;
     } catch (error) {
-        console.error(error);
+        console.error('Error in onMounted:', error);
     } finally {
         dataLoaded.value = true;
     }
+
     if (earnedStars.value) {
         animateStars.value = true;
     }
@@ -83,7 +114,13 @@ const handleAnimationEnd = async () => {
     try {
         const afterFirstGame = everPlayedGame.value;
         if (!afterFirstGame) showGoToMain.value = true;
-        await userStore.updateUserStars(earnedStars.value);
+        await userStore.addRatingToGame(
+            chosedCategory.id,
+            gameSource,
+            localStorageStars ? earnedStars.value - localStorageStars : earnedStars.value
+        );
+        if (localStorageStars) await userStore.addRatingToCategory(chosedCategory.id);
+        userStore.fetchUser;
         const query = { ...route.query };
         delete query.earnedStars;
         router.push({ query });

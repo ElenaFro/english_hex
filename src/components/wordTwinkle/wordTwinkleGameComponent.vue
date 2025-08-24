@@ -114,7 +114,10 @@ const goToNext = async () => {
 
 const goToResult = () => {
     emit('game-finished');
-    router.push({ name: 'gameResult', query: { wrong: wrongCount.value, from: 'wordTwinkle' } });
+    router.push({
+        name: 'gameResult',
+        query: { wrong: wrongCount.value, from: 'flickering_words', game: 'flickering_words' },
+    });
 };
 </script>
 

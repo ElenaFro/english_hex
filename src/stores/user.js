@@ -92,13 +92,25 @@ export const useUserStore = defineStore('user', () => {
         }
     }
 
-    async function updateUserStars(count) {
+    async function addRatingToGame(categoryId, gameName, count) {
         if (!token.value) return;
         try {
-            await apiClient.patch('/rating/add', {
-                ratingIncrease: count,
+            await apiClient.patch('/rating/add-rating-to-game', {
+                categoryId: categoryId,
+                game: gameName,
+                rating: count,
             });
-            await fetchUser();
+        } catch (error) {
+            console.error(error);
+        }
+    }
+
+    async function addRatingToCategoty(categoryId) {
+        if (!token.value) return;
+        try {
+            await apiClient.patch('/rating/add-rating-to-category', {
+                categoryId: categoryId,
+            });
         } catch (error) {
             console.error(error);
         }
@@ -139,7 +151,8 @@ export const useUserStore = defineStore('user', () => {
         fetchUser,
         getRaiting,
         markFirstGame,
-        updateUserStars,
+        addRatingToGame,
+        addRatingToCategoty,
         getUserNotifications,
         markReadNotifications,
     };

@@ -104,6 +104,7 @@ const totalStars = computed(() => {
 });
 
 const fromGame = route.query.from;
+const gameSource = route.query.game;
 
 const repeatGame = () => {
     router.push({ name: fromGame, query: { startGame: true } });
@@ -115,7 +116,7 @@ const goToMainPage = () => {
             name: 'games',
             query: { id: useCategoriesStore().chosedCategory?.id },
         });
-    router.push({ name: 'myPlanet', query: { earnedStars: totalStars.value } });
+    router.push({ name: 'myPlanet', query: { earnedStars: { [gameSource]: totalStars.value } } });
 };
 </script>
 
