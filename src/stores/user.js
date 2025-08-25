@@ -105,7 +105,7 @@ export const useUserStore = defineStore('user', () => {
         }
     }
 
-    async function addRatingToCategoty(categoryId) {
+    async function addRatingToCategory(categoryId) {
         if (!token.value) return;
         try {
             await apiClient.patch('/rating/add-rating-to-category', {
@@ -152,7 +152,7 @@ export const useUserStore = defineStore('user', () => {
         getRaiting,
         markFirstGame,
         addRatingToGame,
-        addRatingToCategoty,
+        addRatingToCategory,
         getUserNotifications,
         markReadNotifications,
     };

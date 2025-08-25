@@ -76,7 +76,7 @@ const goToGame = (item) => {
 };
 
 const goToPlanet = () => {
-    router.push({ name: 'myPlanet', query: { earnedStars: Number(hasEarnedStars) } });
+    router.push({ name: 'myPlanet' });
 };
 
 const goMainButton = () => {

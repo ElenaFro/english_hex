@@ -2,10 +2,9 @@
     <div class="relative all">
         <section class="page-container">
             <section class="page-container__result">
-                <p class="result-title">Планета спасена, но&nbsp;с&nbsp;трудностями.</p>
+                <p class="result-title">{{ title }}</p>
                 <p class="text-result">
-                    Были допущены ошибки, но&nbsp;атака остановлена. Хороший результат&nbsp;&mdash;
-                    есть к&nbsp;чему стремиться.
+                  {{ text }}
                 </p>
                 <div class="container-result">
                     <p class="result-title_left">Награда:</p>
@@ -38,12 +37,14 @@ import { computed } from 'vue';
 import { useRouter } from 'vue-router';
 
 const router = useRouter();
-const props = defineProps(['lives']);
-
-const earnedStars = computed(() => 50 - 5 * (5 - props.lives));
+const props = defineProps({
+    earnedStars:{type: Number, default: 0},
+    title: {type: String, default: 'Планета спасена, но&nbsp;с&nbsp;трудностями.'},
+    text: {type: String, default: '  Были допущены ошибки, но&nbsp;атака остановлена. Хороший результат&nbsp;&mdash; есть к&nbsp;чему стремиться.'}
+});
 
 const goToPlanet = () => {
-    router.push({ name: 'myPlanet', query: { earnedStars: {planet_attack: earnedStars.value}  } });
+   props.earnedStars > 0 ? router.push({ name: 'myPlanet', query: { earnedStars: props.earnedStars, gameSource: "planet_attack"  } }): router.push({name:'mainPage'})
 };
 const goToGamePage = () => {
     window.location.reload();

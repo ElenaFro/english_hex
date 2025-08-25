@@ -46,43 +46,16 @@ const animateStars = ref(false);
 const currentUser = useUserStore().user;
 const userStore = useUserStore();
 const chosedCategory = useCategoriesStore().chosedCategory;
-const localStorageStars = Number(localStorage.getItem('earnedStars'));
-const gameSource = ref(null);
+const localStorageStars = Number(localStorage.getItem('earnedStars') ?? 0);
+const gameSource = ref(route.query.gameSource);
 const earnedStars = ref(0);
 const totalStars = ref(currentUser.rating);
+const queryStars = ref(0)
 
 onMounted(async () => {
     try {
-        if (localStorageStars) {
-            localStorage.removeItem('earnedStars');
-        }
-        let queryStars = 0;
-        if (route.query.earnedStars) {
-            try {
-                const parsedStars = JSON.parse(route.query.earnedStars);
-                console.log(route.query.earnedStars);
-                if (typeof parsedStars === 'object') {
-                    if (parsedStars?.planet_attack) {
-                        queryStars = Number(parsedStars.planet_attack);
-                        gameSource.value = 'planet_attack';
-                    } else if (parsedStars?.flickering_words) {
-                        queryStars = Number(parsedStars.flickering_words);
-                        gameSource.value = 'flickering_words';
-                    } else if (parsedStars?.constellation_word) {
-                        queryStars = Number(parsedStars.constellation_word);
-                        gameSource.value = 'constellation_word';
-                    }
-                } else {
-                    queryStars = Number(parsedStars);
-                    gameSource.value = 'unknown';
-                }
-            } catch (e) {
-                queryStars = Number(route.query.earnedStars) || 0;
-                gameSource.value = 'unknown';
-            }
-        }
-
-        earnedStars.value = queryStars + localStorageStars;
+        queryStars.value = route.query.earnedStars || 0;
+        earnedStars.value = queryStars.value + localStorageStars;
 
         everPlayedGame.value = currentUser.ever_played_game;
         myPlanet.value = everPlayedGame.value;
@@ -114,12 +87,17 @@ const handleAnimationEnd = async () => {
     try {
         const afterFirstGame = everPlayedGame.value;
         if (!afterFirstGame) showGoToMain.value = true;
-        await userStore.addRatingToGame(
+        if(gameSource.value){
+            await userStore.addRatingToGame(
             chosedCategory.id,
-            gameSource,
+            gameSource.value,
             localStorageStars ? earnedStars.value - localStorageStars : earnedStars.value
-        );
-        if (localStorageStars) await userStore.addRatingToCategory(chosedCategory.id);
+            );
+        } 
+        if (localStorageStars){
+            await userStore.addRatingToCategory(chosedCategory.id);
+            if (localStorageStars) localStorage.removeItem('earnedStars');
+        } 
         userStore.fetchUser;
         const query = { ...route.query };
         delete query.earnedStars;

@@ -116,7 +116,7 @@ const goToMainPage = () => {
             name: 'games',
             query: { id: useCategoriesStore().chosedCategory?.id },
         });
-    router.push({ name: 'myPlanet', query: { earnedStars: { [gameSource]: totalStars.value } } });
+    router.push({ name: 'myPlanet', query: { earnedStars: totalStars.value , gameSource: [gameSource] } });
 };
 </script>
 

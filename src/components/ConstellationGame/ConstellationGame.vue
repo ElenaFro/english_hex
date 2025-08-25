@@ -42,7 +42,7 @@
 
 <script setup>
 //vue
-import { ref, onMounted, onUnmounted, computed } from 'vue';
+import { ref, onMounted, onUnmounted, computed, watch } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 //component
 import CongratulationPopup from '../myPlanetPopup/CongratulationPopup.vue';
@@ -66,6 +66,7 @@ const message = ref('');
 const wrongCount = ref(0);
 const currentChunk = ref(0);
 const cardChunks = ref([]);
+const maxStarsForGame = ref(50)
 
 let intervalId;
 
@@ -144,6 +145,12 @@ const goToPlanet = () => {
     router.push({ name: 'planetPage' });
 };
 
+const currentStarsForCategory = ref(0)
+
+watch( currentStarsForCategory, (newVal)=>{
+    maxStarsForGame.value = maxStarsForGame.value - newVal
+})
+
 onMounted(async () => {
     loading.value = true;
 
@@ -184,6 +191,8 @@ onMounted(async () => {
     intervalId = setInterval(() => {
         timer.value++;
     }, 1000);
+    currentStarsForCategory.value = getCategoryStars('constellation_word', categoryId)
+
 });
 
 onUnmounted(() => {

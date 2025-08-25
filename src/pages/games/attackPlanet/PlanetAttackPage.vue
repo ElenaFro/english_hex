@@ -3,8 +3,7 @@
         <component
             :is="activeComponent"
             @switch-component="switchComponent"
-            :lives="lives"
-            :earnedStars="earnedStars"
+            v-bind="componentProps"
             @update:lives="updateLives"
             @update:earnedStars="updateEarnedStars"
         />
@@ -18,11 +17,18 @@ import AttackPlanetResult from '@/components/AttackPlanet/AttackPlanetResult.vue
 import AttackPlanetLoss from '@/components/AttackPlanet/AttackPlanetLoss.vue';
 import AttackPlanetWin from '@/components/AttackPlanet/AttackPlanetWin.vue';
 
-const emit = defineEmits(['update:lives', 'update:earnedStars', 'switch-component']);
+const emit = defineEmits(['update:lives', 'switch-component']);
 
 const activeComponent = ref(markRaw(AttackPlanetGame));
 const lives = ref(5);
-const earnedStars = ref(parseInt(localStorage.getItem('earnedStars')) || 0);
+const earnedStars = ref(0);
+
+const componentProps = ref({
+  lives: lives.value,
+  earnedStars: earnedStars.value
+})
+const textForAllStarsGiven = 'Продолжайте изучение новых слов и&nbsp; не&nbsp; забывайте возвращаться для закрепления изученных слов!!'
+const titleForAllStarsGiven = 'Вы заработали максимальное количество звезд по&nbsp; данной игре в&nbsp; выбранной категории'
 
 function switchComponent(componentName) {
     switch (componentName) {
@@ -34,6 +40,11 @@ function switchComponent(componentName) {
             break;
         case 'AttackPlanetWin':
             activeComponent.value = markRaw(AttackPlanetWin);
+            break;
+        case 'AttackPlanetAllStarsGiven':
+            activeComponent.value = markRaw(AttackPlanetResult);
+            componentProps.value.title = titleForAllStarsGiven;
+            componentProps.value.text = textForAllStarsGiven;
             break;
         default:
             activeComponent.value = markRaw(AttackPlanetGame);
@@ -47,7 +58,6 @@ const updateLives = (newLives) => {
 };
 const updateEarnedStars = (newEarnedStars) => {
     earnedStars.value = newEarnedStars;
-    emit('update:earnedStars', newEarnedStars);
 };
 </script>
 

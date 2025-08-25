@@ -55,6 +55,7 @@ const emit = defineEmits(['update:lives', 'update:earnedStars', 'switch-componen
 const lives = ref(5);
 const earnedStars = ref(currentUser.rating);
 const chosedCategory = ref(useCategoriesStore().chosedCategory);
+const maxStarsForGame = ref(50)
 
 const categoryId = computed(() => chosedCategory.value.is || route.query.id);
 
@@ -119,7 +120,6 @@ const sendAnswer = (answer) => {
         meteorWidth.value = `${parseInt(meteorWidth.value) + 6}px`;
 
         emit('update:lives', lives.value);
-        emit('update:earnedStars', earnedStars.value);
         if (lives.value <= 0) {
             emit('switch-component', 'AttackPlanetLoss');
         }
@@ -133,16 +133,22 @@ const nextQuestion = () => {
 
     if (lives.value > 0 && currentQuestionIndex.value < questions.value.length - 1) {
         currentQuestionIndex.value++;
-    } else if (lives.value === 5 && currentQuestionIndex.value >= questions.value.length - 1) {
-        earnedStars.value += 50;
+    } else if (currentQuestionIndex.value >= questions.value.length - 1 && maxStarsForGame.value === 0) {
+        earnedStars.value = 0;
+        emit('update:earnedStars', earnedStars.value);
+        emit('switch-component', 'AttackPlanetAllStarsGiven');
+    } else if (lives.value === 5 && currentQuestionIndex.value >= questions.value.length - 1 && maxStarsForGame.value === 50) {
+        earnedStars.value = 50;
         emit('update:earnedStars', earnedStars.value);
         emit('switch-component', 'AttackPlanetWin');
     } else if (
         lives.value > 0 &&
         lives.value < 5 &&
-        currentQuestionIndex.value >= questions.value.length - 1
+        currentQuestionIndex.value >= questions.value.length - 1 && maxStarsForGame.value > 0
     ) {
-        earnedStars.value += 50 - 5 * (5 - lives.value);
+        const starsForLives = 50 - 5 * (5 - lives.value);
+        earnedStars.value = starsForLives > maxStarsForGame.value ? maxStarsForGame.value : starsForLives;
+        emit('update:earnedStars', earnedStars.value);
         emit('switch-component', 'AttackPlanetResult');
     } else if (lives.value <= 0) {
         emit('switch-component', 'AttackPlanetLoss');
@@ -166,6 +172,9 @@ onMounted(async () => {
         correctAnswer: question.correctAnswer,
         options: question.options,
     }));
+
+    const currentStarsForCategory = await getCategoryStars('planet_attack')
+    maxStarsForGame.value = maxStarsForGame.value - currentStarsForCategory
 });
 
 onBeforeUnmount(() => {
