@@ -116,7 +116,7 @@ const goToResult = () => {
     emit('game-finished');
     router.push({
         name: 'gameResult',
-        query: { wrong: wrongCount.value, from: 'flickering_words', game: 'flickering_words' },
+        query: { wrong: wrongCount.value, from: 'flickering_words', gameSource: 'flickering_words' },
     });
 };
 </script>

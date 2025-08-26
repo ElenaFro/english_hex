@@ -1,5 +1,6 @@
 <template>
-    <div class="page-content">
+    <loader v-if="loading" />
+    <div v-else class="page-content">
         <div :class="wrong <= 5 ? 'img-container' : 'img-container-loss'">
             <img
                 v-if="wrong <= 5"
@@ -39,14 +40,16 @@
 
 <script setup>
 //vue
-import { ref, computed } from 'vue';
+import { ref, computed, onMounted } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
+import Loader from '@/components/Loader.vue';
 //stores
 import { useUserStore } from '@/stores/user';
 import { useCategoriesStore } from '@/stores/categories';
 
 const route = useRoute();
 const router = useRouter();
+const loading = ref(false);
 const wrong = Number(route.query.wrong);
 const currentUser = useUserStore().user;
 const headerPerfect = 'Превосходный результат!';
@@ -58,10 +61,26 @@ const textPassed =
 const headerLoss = 'Задание не завершено';
 const textLoss =
     'Не стоит расстраиваться - каждая ошибка приближает к успеху. Рекомендуется повторить попытку.';
+const textAllStarsGiven = 'Вы заработали максимальное количество звезд по данной категории в этой игре'
 const buttonText = ref('');
 const buttonPassed = 'Пройти еще раз';
 const buttonLoss = 'Попробовать еще раз';
 const stars = ref(0);
+const maxStarsForGame = ref(50)
+const fromGame = route.query.from;
+const gameSource = route.query.gameSource;
+
+const categoryId = computed(()=> route.query.id || useCategoriesStore().chosedCategory.id)
+
+onMounted(async()=>{
+    loading.value = true
+        if(categoryId.value){
+        const currentStarsForCategory = await useCategoriesStore().getCategoryStars(categoryId.value);
+        const currentStars = maxStarsForGame.value - currentStarsForCategory?.[gameSource]
+        maxStarsForGame.value = currentStars < 0 ? 0 : currentStars;
+    }
+    loading.value = false;
+})
 
 const resultHeader = computed(() => {
     if (wrong <= 2) {
@@ -75,6 +94,7 @@ const resultHeader = computed(() => {
 });
 
 const resultText = computed(() => {
+    if(maxStarsForGame.value === 0) return textAllStarsGiven;
     if (wrong <= 2) {
         return textPerfect;
     }
@@ -86,6 +106,7 @@ const resultText = computed(() => {
 });
 
 const showButton = computed(() => {
+    if(maxStarsForGame.value === 0) return false
     if (wrong <= 2 && wrong !== 0) {
         buttonText.value = buttonPassed;
         return true;
@@ -100,11 +121,8 @@ const showButton = computed(() => {
 
 const totalStars = computed(() => {
     const stars = 50 - 5 * wrong;
-    return stars > 0 ? stars : 0;
+    return stars <= maxStarsForGame.value ? stars : maxStarsForGame.value;
 });
-
-const fromGame = route.query.from;
-const gameSource = route.query.game;
 
 const repeatGame = () => {
     router.push({ name: fromGame, query: { startGame: true } });
@@ -116,7 +134,7 @@ const goToMainPage = () => {
             name: 'games',
             query: { id: useCategoriesStore().chosedCategory?.id },
         });
-    router.push({ name: 'myPlanet', query: { earnedStars: totalStars.value , gameSource: [gameSource] } });
+    router.push({ name: 'myPlanet', query: { earnedStars: totalStars.value, gameSource: gameSource } });
 };
 </script>
 
