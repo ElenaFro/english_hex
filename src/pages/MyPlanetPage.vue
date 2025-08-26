@@ -55,7 +55,7 @@ const queryStars = ref(0)
 onMounted(async () => {
     try {
         queryStars.value = route.query.earnedStars || 0;
-        earnedStars.value = queryStars.value + localStorageStars;
+        earnedStars.value = Number(queryStars.value) + localStorageStars;
 
         everPlayedGame.value = currentUser.ever_played_game;
         myPlanet.value = everPlayedGame.value;
@@ -98,7 +98,7 @@ const handleAnimationEnd = async () => {
             await userStore.addRatingToCategory(chosedCategory.id);
             if (localStorageStars) localStorage.removeItem('earnedStars');
         } 
-        userStore.fetchUser;
+        userStore.fetchUser();
         const query = { ...route.query };
         delete query.earnedStars;
         router.push({ query });

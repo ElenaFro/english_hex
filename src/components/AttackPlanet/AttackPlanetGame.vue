@@ -54,10 +54,10 @@ const currentUser = useUserStore().getCurrentUser();
 const emit = defineEmits(['update:lives', 'update:earnedStars', 'switch-component']);
 const lives = ref(5);
 const earnedStars = ref(currentUser.rating);
-const chosedCategory = ref(useCategoriesStore().chosedCategory);
+const chosedCategory = computed(()=> useCategoriesStore().chosedCategory);
 const maxStarsForGame = ref(50)
 
-const categoryId = computed(() => chosedCategory.value.is || route.query.id);
+const categoryId = computed(() => chosedCategory.value.id || route.query.id);
 
 const isQuestionPlayed = ref(false);
 
@@ -143,7 +143,7 @@ const nextQuestion = () => {
         emit('switch-component', 'AttackPlanetWin');
     } else if (
         lives.value > 0 &&
-        lives.value < 5 &&
+        lives.value <= 5 &&
         currentQuestionIndex.value >= questions.value.length - 1 && maxStarsForGame.value > 0
     ) {
         const starsForLives = 50 - 5 * (5 - lives.value);
@@ -160,6 +160,9 @@ const meteorRight = ref('-4px');
 const meteorWidth = ref('74px');
 
 onMounted(async () => {
+if(!chosedCategory.value.id) useCategoriesStore().getChosedCategory(route.query.id)
+    try
+    {
     if (soundRef.value) {
         soundRef.value.addEventListener('ended', onAudioEnded);
     }
@@ -172,9 +175,13 @@ onMounted(async () => {
         correctAnswer: question.correctAnswer,
         options: question.options,
     }));
-
-    const currentStarsForCategory = await getCategoryStars('planet_attack')
-    maxStarsForGame.value = maxStarsForGame.value - currentStarsForCategory
+    if(categoryId.value){
+        const currentStarsForCategory = await useCategoriesStore().getCategoryStars(categoryId.value);
+        maxStarsForGame.value = maxStarsForGame.value - currentStarsForCategory?.planet_attack
+    }
+    } catch (error) {
+    console.error('Ошибка при загрузке данных:', error);
+  }
 });
 
 onBeforeUnmount(() => {

@@ -39,8 +39,8 @@ import { useRouter } from 'vue-router';
 const router = useRouter();
 const props = defineProps({
     earnedStars:{type: Number, default: 0},
-    title: {type: String, default: 'Планета спасена, но&nbsp;с&nbsp;трудностями.'},
-    text: {type: String, default: '  Были допущены ошибки, но&nbsp;атака остановлена. Хороший результат&nbsp;&mdash; есть к&nbsp;чему стремиться.'}
+    title: {type: String, default: 'Планета спасена, но\u00A0с\u00A0трудностями.'},
+    text: {type: String, default: '  Были допущены ошибки, но\u00A0атака остановлена. Хороший результат\u00A0 есть к\u00A0чему стремиться.'}
 });
 
 const goToPlanet = () => {

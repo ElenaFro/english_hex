@@ -11,7 +11,7 @@
 </template>
 
 <script setup>
-import { ref, markRaw, defineEmits } from 'vue';
+import { ref, markRaw, defineEmits, computed } from 'vue';
 import AttackPlanetGame from '@/components/AttackPlanet/AttackPlanetGame.vue';
 import AttackPlanetResult from '@/components/AttackPlanet/AttackPlanetResult.vue';
 import AttackPlanetLoss from '@/components/AttackPlanet/AttackPlanetLoss.vue';
@@ -23,12 +23,12 @@ const activeComponent = ref(markRaw(AttackPlanetGame));
 const lives = ref(5);
 const earnedStars = ref(0);
 
-const componentProps = ref({
+const componentProps = computed(()=>  ({
   lives: lives.value,
   earnedStars: earnedStars.value
-})
-const textForAllStarsGiven = 'Продолжайте изучение новых слов и&nbsp; не&nbsp; забывайте возвращаться для закрепления изученных слов!!'
-const titleForAllStarsGiven = 'Вы заработали максимальное количество звезд по&nbsp; данной игре в&nbsp; выбранной категории'
+}))
+const textForAllStarsGiven = `Продолжайте изучение новых слов и\u00A0не\u00A0забывайте возвращаться для закрепления изученных слов!!`;
+const titleForAllStarsGiven = `Вы заработали максимальное количество звезд по\u00A0данной игре в\u00A0выбранной категории`;
 
 function switchComponent(componentName) {
     switch (componentName) {

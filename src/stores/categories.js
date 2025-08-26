@@ -39,6 +39,18 @@ export const useCategoriesStore = defineStore('categories', () => {
         chosedCategory.value = category;
     }
 
+    async function getCategoryStars(id) {
+        try {
+            const response = await apiClient.get('/rating/get-rating-for-category', {
+                params: { categoryId: id },
+            });
+            return response.data;
+        } catch (error) {
+            console.error(error);
+            throw error;
+        }
+    }
+
     return {
         categories,
         chosedCategory,
@@ -46,5 +58,6 @@ export const useCategoriesStore = defineStore('categories', () => {
         setChosedCategories,
         getChosedCategory,
         updateComplateCategory,
+        getCategoryStars,
     };
 });
