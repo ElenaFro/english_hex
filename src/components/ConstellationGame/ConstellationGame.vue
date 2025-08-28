@@ -66,7 +66,7 @@ const message = ref('');
 const wrongCount = ref(0);
 const currentChunk = ref(0);
 const cardChunks = ref([]);
-const maxStarsForGame = ref(50)
+const maxStarsForGame = ref(50);
 
 let intervalId;
 
@@ -123,7 +123,12 @@ const checkMatch = () => {
                 } else {
                     router.push({
                         name: 'gameResult',
-                        query: { wrong: wrongCount.value, from: 'constellationGame', gameSource:'constellation_word' },
+                        query: {
+                            wrong: wrongCount.value,
+                            from: 'constellationGame',
+                            gameSource: 'constellation_word',
+                            id: route.query.id || useCategoriesStore().chosedCategory.id,
+                        },
                     });
                 }
             }
@@ -145,11 +150,11 @@ const goToPlanet = () => {
     router.push({ name: 'planetPage' });
 };
 
-const currentStarsForCategory = ref(0)
+const currentStarsForCategory = ref(0);
 
-watch( currentStarsForCategory, (newVal)=>{
-    maxStarsForGame.value = maxStarsForGame.value - newVal
-})
+watch(currentStarsForCategory, (newVal) => {
+    maxStarsForGame.value = maxStarsForGame.value - newVal;
+});
 
 onMounted(async () => {
     loading.value = true;
@@ -191,8 +196,7 @@ onMounted(async () => {
     intervalId = setInterval(() => {
         timer.value++;
     }, 1000);
-    currentStarsForCategory.value = getCategoryStars('constellation_word', categoryId)
-
+    currentStarsForCategory.value = getCategoryStars('constellation_word', categoryId);
 });
 
 onUnmounted(() => {

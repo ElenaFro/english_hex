@@ -22,6 +22,7 @@
     background-position: center;
     border: 3px solid #262060;
     border-radius: 20px;
+    z-index: 1000;
 
     &__question-mark {
         font-size: 10rem;

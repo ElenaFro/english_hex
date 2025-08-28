@@ -43,7 +43,7 @@ import BoyIcon from '@/assets/img/DefaultUserAvatar/male.svg';
 import GirlIcon from '@/assets/img/DefaultUserAvatar/female.svg';
 import loader from '@/components/Loader.vue';
 import HelloPopupWithSound from '@/components/popups/HelloPopupWithSound.vue';
-import SoundForPopup from '@/assets/audio/helloFromDi.mp3';
+import SoundForPopup from '@/assets/audio/helloFromDi.wav';
 import { useUserStore } from '@/stores/user';
 import { useCategoriesStore } from '@/stores/categories';
 import watchStarsPopup from '@/components/popups/watchStarsPopup.vue';

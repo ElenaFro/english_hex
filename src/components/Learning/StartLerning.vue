@@ -47,7 +47,7 @@ onMounted(async () => {
     currentCategory.value = useCategoriesStore().chosedCategory;
 });
 
-const title = computed(() => `Заголовок для ${currentCategory.value.name}`);
+const title = computed(() => currentCategory.value.name);
 const description = computed(() => useCategoriesStore().chosedCategory.description);
 const categoryComplite = computed(() => currentCategory.value.completed_category);
 

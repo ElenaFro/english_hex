@@ -26,18 +26,26 @@
 
             <!-- Для iOS Safari -->
             <div v-else-if="isIos && !isInStandalone">
-                <p>Чтобы добавить на главный экран:</p>
                 <ol class="ios-steps">
                     <li>
-                        Нажмите <strong>Поделиться</strong>
-                        <img src="" alt="Share icon" class="inline-icon" />
-                        внизу экрана.
+                        <p>Нажмите "Поделиться"</p>
+                        <div>
+                            <img
+                                src="/public/ios_install/share_btn.svg"
+                                alt="Share icon"
+                                class="inline-icon"
+                            />
+                        </div>
                     </li>
-                    <li>Выберите <strong>«На экран домой»</strong>.</li>
+                    <li class="d-mt-16">
+                        <p>Выберите "На экран домой"</p>
+                        <img
+                            src="/public/ios_install/home_instructions.svg"
+                            alt="Share icon"
+                            class="inline-icon"
+                        />
+                    </li>
                 </ol>
-                <div class="popup-actions">
-                    <button @click="closePopup">Понятно</button>
-                </div>
             </div>
 
             <!-- Для других устройств -->
@@ -126,7 +134,7 @@ function closePopup() {
     background: #fff;
     border-radius: 20px;
     padding: 22px;
-    padding-bottom: 35px;
+    padding-bottom: 0;
     padding-right: 0;
     width: 90%;
     max-width: 315px;
@@ -190,13 +198,26 @@ function closePopup() {
 .ios-steps {
     text-align: left;
     padding-left: 18px;
-    margin: 10px 0;
+    margin: 0;
+}
+
+p {
+    padding-left: 10px;
+    margin-bottom: 0;
+    color: #311d5d;
+    font-family: Mulish;
+    font-weight: 600;
+    font-style: SemiBold;
+    font-size: 16px;
+    line-height: 120%;
+    letter-spacing: 0%;
 }
 
 .inline-icon {
-    width: 20px;
+    width: auto;
     vertical-align: middle;
-    margin: 0 5px;
+    align-items: center;
+    margin: 16px 10px 0 10px;
 }
 
 /* Анимации */
