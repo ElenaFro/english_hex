@@ -109,7 +109,7 @@ const goToNext = async () => {
     selectedOption.value = null;
     showAnswer.value = false;
     activeComponent.value = 'ImgPage';
-    setTimeout(goToAnswers, 4000);
+    setTimeout(goToAnswers, 2000);
 };
 
 const goToResult = () => {

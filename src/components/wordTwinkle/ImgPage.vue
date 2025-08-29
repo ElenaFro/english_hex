@@ -11,7 +11,7 @@ defineProps({
 <style scoped>
 .img_container {
     width: 320px;
-    height: 400px;
+    height: 360px;
     border-radius: 20px;
     overflow: hidden;
     display: flex;

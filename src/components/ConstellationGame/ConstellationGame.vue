@@ -196,7 +196,7 @@ onMounted(async () => {
     intervalId = setInterval(() => {
         timer.value++;
     }, 1000);
-    currentStarsForCategory.value = getCategoryStars('constellation_word', categoryId);
+    currentStarsForCategory.value = useCategoriesStore().getCategoryStars(categoryId);
 });
 
 onUnmounted(() => {
