@@ -72,19 +72,22 @@ onMounted(async () => {
 
 const colorPalette = ['#BD8BCF', '#F6B390', '#79BBFB', '#FF98A5'];
 
-const getRandomColorFromPalette = () => {
-    const randomIndex = Math.floor(Math.random() * colorPalette.length);
-    return colorPalette[randomIndex];
-};
+const generateColors = (count) => {
+    const result = [];
+    const repeats = Math.floor(count / colorPalette.length);
+    const remainder = count % colorPalette.length;
 
-const colorCache = ref({});
-
-const randomColor = (id) => {
-    if (!colorCache.value[id]) {
-        colorCache.value[id] = getRandomColorFromPalette();
+    for (let i = 0; i < repeats; i++) {
+        result.push(...colorPalette);
     }
-    return colorCache.value[id];
+
+    const shuffled = [...colorPalette].sort(() => Math.random() - 0.5);
+    result.push(...shuffled.slice(0, remainder));
+
+    return result.sort(() => Math.random() - 0.5);
 };
+
+const randomColor = (id) => colorsForSections.value[id];
 
 const hasVisited = ref(localStorage.getItem('hasVisited') === 'true');
 
@@ -92,6 +95,16 @@ const currentUser = computed(() => useUserStore().getCurrentUser());
 const userName = computed(() => currentUser.value.name);
 const avatarIcon = computed(() => (currentUser.value.gender === 'male' ? BoyIcon : GirlIcon));
 const sections = computed(() => useCategoriesStore().categories);
+
+const colorsForSections = computed(() => {
+    const total = sections.value.length;
+    const colors = generateColors(total);
+    const mapping = {};
+    sections.value.forEach((section, index) => {
+        mapping[section.id] = colors[index];
+    });
+    return mapping;
+});
 
 const closePopup = () => {
     openHelloPopup.value = !openHelloPopup.value;
