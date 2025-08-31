@@ -5,14 +5,14 @@
             class="video-container__lerning-video"
             :src="videoUrl"
             autoplay
-            muted
+            :muted="isIphone"
             playsinline
         ></video>
     </div>
 </template>
 
 <script setup>
-import { ref } from 'vue';
+import { ref, computed } from 'vue';
 
 defineProps({
     videoUrl: String,
@@ -41,17 +41,7 @@ const enableSound = () => {
     }
 };
 
-const onVideoError = (event) => {
-    alert('Video error:', event);
-};
-
-const onCanPlay = () => {
-    alert('Video can play');
-
-    videoRef.value.play().catch((error) => {
-        console.error('Play error:', error);
-    });
-};
+const isIphone = computed(() => /iPhone/i.test(navigator.userAgent));
 
 defineExpose({ replayVideo, pauseVideo });
 </script>
