@@ -172,6 +172,7 @@ const goToResult = () => {
     row-gap: 10px;
     justify-content: space-between;
     margin-top: 2dvh;
+    z-index: 1000;
 }
 
 .button {

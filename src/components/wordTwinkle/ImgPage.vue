@@ -10,8 +10,8 @@ defineProps({
 </script>
 <style scoped>
 .img_container {
-    width: 320px;
-    height: 360px;
+    max-width: 320px;
+    height: auto;
     border-radius: 20px;
     overflow: hidden;
     display: flex;
@@ -22,8 +22,7 @@ defineProps({
 img {
     width: 100%;
     height: 100%;
-    object-fit: contain;
+    object-fit: fill;
     border-radius: 20px;
-    transform: scale(1.5);
 }
 </style>
