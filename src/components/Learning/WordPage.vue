@@ -57,6 +57,14 @@ watch(() => [props.engWord, props.rusWord], resizeText);
     border: 3px solid rgba(38, 32, 96, 1);
     border-radius: 20px;
     box-sizing: border-box;
+    width: 100%;
+    background-color: #ffffff;
+    background-image: url('@/assets/lesson/word_card_bg.png');
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: center;
+    max-height: 430px;
+    z-index: 100;
 }
 
 .sound-container__word {

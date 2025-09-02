@@ -136,7 +136,6 @@ const getAudioUrl = (card) => {
     height: 100dvh;
     box-sizing: border-box;
     overflow: hidden;
-    padding: 2dvh 4dvw;
 }
 
 .flip-card {
@@ -146,6 +145,9 @@ const getAudioUrl = (card) => {
     aspect-ratio: 3 / 4;
     position: relative;
     flex-shrink: 0;
+    margin: 6dvh 0 0 0;
+    max-height: 60dvh;
+    max-width: 314px;
 }
 
 .flip-card__inner {
