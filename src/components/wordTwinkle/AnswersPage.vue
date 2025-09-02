@@ -17,7 +17,9 @@
     align-items: center;
     width: 100%;
     height: 100%;
-    background-image: url('@/assets/img/card-background.png');
+    background-color: #ffffff;
+    background-image: url('@/assets/lesson/word_card_bg.png');
+    background-repeat: no-repeat;
     background-size: cover;
     background-position: center;
     border: 3px solid #262060;

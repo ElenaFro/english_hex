@@ -76,6 +76,13 @@ const imgSource = computed(() => {
     position: relative;
     padding-bottom: 19px;
     align-self: center;
+    max-height: 34dvh;
+}
+
+.learning-img {
+    width: 100%;
+    height: 100%;
+    max-height: 34dvh;
 }
 
 .page-content__title {
