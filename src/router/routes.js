@@ -9,6 +9,11 @@ const routes = [
                 name: 'AuthPage',
                 component: () => import('@/pages/AuthPage.vue'),
             },
+            {
+                path: 'startGame',
+                name: 'flyAnimation',
+                component: () => import('@/components/games/FlyGirlAnimation.vue'),
+            },
         ],
         meta: { requiresAuth: false },
     },
