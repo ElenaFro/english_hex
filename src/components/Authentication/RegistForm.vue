@@ -343,7 +343,7 @@ async function login() {
 }
 
 .login-form__error-text {
-    color: #d61414;
+    color: #ffffff;
     font-size: 12px;
     margin-top: 5px;
 }
