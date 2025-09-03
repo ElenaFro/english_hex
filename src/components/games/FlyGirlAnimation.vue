@@ -46,7 +46,7 @@ function onImageLoad() {
     if (loadedCount.value >= 2) {
         setTimeout(() => {
             isFlying.value = true;
-        }, 500);
+        }, 0);
     }
 }
 
@@ -126,7 +126,7 @@ body,
             }
 
             &.fly {
-                animation: flyAway 2s forwards ease-in;
+                animation: flyAway 0.8s forwards ease-in;
             }
         }
     }
