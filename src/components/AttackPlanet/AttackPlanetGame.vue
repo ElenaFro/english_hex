@@ -166,7 +166,6 @@ const nextQuestion = () => {
 
 const meteorTop = ref('-25px');
 const meteorRight = ref('-4px');
-const meteorWidth = ref('74px');
 
 onMounted(async () => {
     if (!chosedCategory.value.id) useCategoriesStore().getChosedCategory(route.query.id);
@@ -241,7 +240,7 @@ onBeforeUnmount(() => {
 
 .meteor {
     position: absolute;
-    width: 74px;
+    width: min(18dvw, 74px);
     height: auto;
     right: -4px;
     top: -25px;
@@ -262,7 +261,7 @@ onBeforeUnmount(() => {
     line-height: 22px;
     color: #262060;
     width: 100%;
-    padding: 9px 24px;
+    padding: min(2dvh, 8px) min(10dvw, 24px);
     border-radius: 16px;
     font-weight: 700;
     font-size: 18px;
@@ -276,7 +275,7 @@ onBeforeUnmount(() => {
 }
 .question {
     font-weight: 800;
-    font-size: 71px;
+    font-size: 8dvh;
     line-height: 100%;
     letter-spacing: 0%;
     text-align: center;
@@ -309,9 +308,6 @@ onBeforeUnmount(() => {
         width: 163px;
         height: 173px;
     }
-    .question {
-        font-size: 60px;
-    }
     .page-container {
         gap: 18px;
     }
@@ -320,7 +316,7 @@ onBeforeUnmount(() => {
         height: auto;
     }
     .planet {
-        width: 200px;
+        width: min(46dvw, 200px);
         height: auto;
     }
     .page-container__button {
@@ -333,9 +329,6 @@ onBeforeUnmount(() => {
         width: 143px;
         height: 153px;
     }
-    .question {
-        font-size: 60px;
-    }
     .page-container {
         gap: 18px;
     }
@@ -343,20 +336,11 @@ onBeforeUnmount(() => {
         width: 38px;
         height: auto;
     }
-    .planet {
-        width: 200px;
-        height: auto;
-    }
     .page-container__button {
         margin-bottom: 93px;
     }
 }
 @media (max-height: 668px) {
-    .planet {
-        width: 180px;
-        height: auto;
-    }
-
     .page-container {
         gap: 16px;
     }
@@ -366,10 +350,6 @@ onBeforeUnmount(() => {
     }
 }
 @media (max-height: 600px) {
-    .planet {
-        width: 150px;
-        height: auto;
-    }
     .page-container__game {
         gap: 5px;
         width: 130px;
@@ -381,9 +361,6 @@ onBeforeUnmount(() => {
     .sound1 {
         width: 28px;
         height: auto;
-    }
-    .question {
-        font-size: 46px;
     }
     .line {
         display: flex;
@@ -401,7 +378,7 @@ onBeforeUnmount(() => {
 .page-container__game {
     gap: 7px;
     width: min(80dvw, 315px);
-    height: min(28dvh, 238px);
+    height: min(22dvh, 238px);
     background-color: #ffffff;
     background-image: url('@/assets/lesson/word_card_bg.png');
     background-repeat: no-repeat;
