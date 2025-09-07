@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Document</title>
+    </head>
+    <body>
+        <script>
+            navigator.serviceWorker.register("sw.js");
+
+            function requestPermission() {
+                Notification.requestPermission().then((permission) => {
+                    if (permission === 'granted') {
+
+                        navigator.serviceWorker.ready.then((sw) =>{
+
+                            sw.pushManager.subscribe({
+                                userVisibleOnly: true,
+                                applicationServerKey:"BIx6eDWy8MH4lu7NrstPPURGABtp3hR7_tZZae15_Po_gm75kwmWsBmT8rq1EciHsfiYSHx3q_jwrXjmsV9ivJ8"
+                            }).then((subscription) => {
+
+                                fetch("/api/push/subscribe", {
+                                    method: "PATCH",
+                                    headers: {
+                                        'Content-Type': 'application/json',
+                                        'Accept': 'application/json',
+                                        'Authorization': Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOi8vbG9jYWxob3N0OjgwMDAvYXBpL2xvZ2luIiwiaWF0IjoxNzU3MTQ1MjE0LCJleHAiOjE3NjQ5MjEyMTQsIm5iZiI6MTc1NzE0NTIxNCwianRpIjoiRDM3ZTBYdEh0d1BPMURxWSIsInN1YiI6IjEiLCJwcnYiOiIyM2JkNWM4OTQ5ZjYwMGFkYjM5ZTcwMWM0MDA4NzJkYjdhNTk3NmY3In0.meEf1dLcBSHEFRR78WGz5Pkg-ETH1LVh1pawMmFndSQ,
+                                    },
+                                    body: JSON.stringify(subscription)
+                                }).then( alert("ok") );
+                            });
+                        });
+                    }
+                });
+            }
+        </script>
+        <button onclick="requestPermission()">Enable Notification</button>
+    </body>
+</html>
