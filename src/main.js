@@ -17,8 +17,12 @@ setupInterceptors(pinia);
 
 registerSW({
     immediate: true,
-    onNeedRefresh() {},
-    onOfflineReady() {},
+    onNeedRefresh() {
+        console.log('Новая версия доступна');
+    },
+    onOfflineReady() {
+        console.log('PWA готова к оффлайну');
+    },
 });
 
 app.mount('#app');
