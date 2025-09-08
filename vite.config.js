@@ -7,19 +7,12 @@ export default defineConfig({
     plugins: [
         vue(),
         VitePWA({
-            registerType: 'autoUpdate',
-            workbox: {
+            strategies: 'injectManifest',
+            srcDir: 'src',
+            filename: 'sw.js',
+            injectManifest: {
                 globPatterns: ['**/*.{js,css,html,png,jpg,jpeg,svg,mp3}'],
                 maximumFileSizeToCacheInBytes: 10 * 1024 * 1024,
-                runtimeCaching: [
-                    {
-                        urlPattern: /\/planetAttackPage/,
-                        handler: 'NetworkFirst',
-                        options: {
-                            cacheName: 'pages-cache',
-                        },
-                    },
-                ],
             },
             devOptions: {
                 enabled: true,
@@ -44,7 +37,6 @@ export default defineConfig({
                     },
                 ],
             },
-            outDir: 'dist',
         }),
     ],
     resolve: {
