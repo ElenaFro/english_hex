@@ -1,6 +1,6 @@
-import { precacheAndRoute } from 'api/dev-dist/workbox-706c6701';
-precacheAndRoute(self.__WB_MANIFEST);
+import { precacheAndRoute } from 'workbox-precaching';
 
+precacheAndRoute(self.__WB_MANIFEST);
 self.addEventListener('push', (event) => {
     notification = event.data.json();
 
