@@ -7,21 +7,16 @@ export default defineConfig({
     plugins: [
         vue(),
         VitePWA({
-            strategies: 'generateSW', // Используем generateSW вместо injectManifest
-            workbox: {
+            strategies: 'injectManifest',
+            srcDir: 'src',
+            filename: 'sw.js',
+            injectManifest: {
                 globPatterns: ['**/*.{js,css,html,png,jpg,jpeg,svg,mp3}'],
                 maximumFileSizeToCacheInBytes: 10 * 1024 * 1024,
-                // Настройка Workbox для push-уведомлений (опционально)
-                runtimeCaching: [
-                    {
-                        urlPattern: /.*/i,
-                        handler: 'NetworkFirst',
-                    },
-                ],
             },
             devOptions: {
                 enabled: true,
-                type: 'module', // Убедитесь, что сервис-воркер работает как ES-модуль
+                type: 'module',
             },
             manifest: {
                 name: 'dicardz',
