@@ -44,6 +44,10 @@ export default defineConfig({
                     },
                 ],
             },
+            srcDir: 'src',
+            filename: 'sw.js',
+            strategies: 'injectManifest',
+            outDir: 'dist',
         }),
     ],
     resolve: {
