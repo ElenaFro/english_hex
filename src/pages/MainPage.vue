@@ -34,6 +34,8 @@
         @close="closePopup"
         @arrow-click="closePopup"
     />
+
+    <!-- <subscribe-push-notify :is-visible="subscribePopup" @close-popup="closeSubscribePopup" /> -->
 </template>
 
 <script setup>
@@ -48,14 +50,17 @@ import { useUserStore } from '@/stores/user';
 import { useCategoriesStore } from '@/stores/categories';
 import watchStarsPopup from '@/components/popups/watchStarsPopup.vue';
 import InstallAppPopup from '@/components/popups/InstallAppPopup.vue';
+// import SubscribePushNotify from '@/components/popups/SubscribePushNotify.vue';
 
 const loading = ref(true);
 const openHelloPopup = ref(false);
 const popupShowed = ref(true);
+// const subscribePopup = ref(false);
+const userStore = useUserStore();
 
 onMounted(async () => {
     await useCategoriesStore().getCategories();
-    useUserStore().getUserNotifications();
+    userStore.getUserNotifications();
 
     if (localStorage.getItem('markFirstGame')) {
         popupShowed.value = false;
@@ -68,6 +73,8 @@ onMounted(async () => {
         hasVisited.value = true;
         localStorage.setItem('hasVisited', 'true');
     }
+    // if (userStore.isSubscribed === null) await userStore.checkUserSubscribe();
+    // subscribePopup.value = !userStore.isSubscribed;
 });
 
 const colorPalette = ['#BD8BCF', '#F6B390', '#79BBFB', '#FF98A5'];
@@ -91,7 +98,7 @@ const randomColor = (id) => colorsForSections.value[id];
 
 const hasVisited = ref(localStorage.getItem('hasVisited') === 'true');
 
-const currentUser = computed(() => useUserStore().getCurrentUser());
+const currentUser = computed(() => userStore.getCurrentUser());
 const userName = computed(() => currentUser.value.name);
 const avatarIcon = computed(() => (currentUser.value.gender === 'male' ? BoyIcon : GirlIcon));
 const sections = computed(() => useCategoriesStore().categories);
@@ -118,6 +125,10 @@ const messagePopup =
 const handlePopup = async () => {
     popupShowed.value = true;
 };
+
+// const closeSubscribePopup = () => {
+//     subscribePopup.value = !subscribePopup.value;
+// };
 </script>
 
 <style scoped>

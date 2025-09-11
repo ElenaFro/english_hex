@@ -6,6 +6,7 @@ export const useUserStore = defineStore('user', () => {
     const user = ref(JSON.parse(localStorage.getItem('user')) || null);
     const token = ref(localStorage.getItem('access_token') || null);
     const isAuthenticated = ref(!!localStorage.getItem('access_token'));
+    const isSubscribed = ref(null);
     const notifications = ref([]);
 
     const getCurrentUser = () => {
@@ -32,9 +33,6 @@ export const useUserStore = defineStore('user', () => {
             token.value = newToken;
             isAuthenticated.value = true;
             localStorage.setItem('access_token', newToken);
-            await apiClient.patch('/push/subscribe', {
-                push_subscription_id: localStorage.getItem('subscribe_id'),
-            });
             return response.data;
         } catch (error) {
             throw error;
@@ -66,6 +64,17 @@ export const useUserStore = defineStore('user', () => {
         } catch (error) {
             console.error('Fetch user error:', error);
             logout();
+        }
+    }
+
+    async function checkUserSubscribe() {
+        if (!token.value) return;
+        try {
+            const response = await apiClient.get('/push/is-subscribe');
+            isSubscribed.value = response.data.push_subscription;
+            console.log(response);
+        } catch (error) {
+            console.error('Fetch subscribe error:', error);
         }
     }
 
@@ -142,6 +151,7 @@ export const useUserStore = defineStore('user', () => {
         user,
         token,
         isAuthenticated,
+        isSubscribed,
         notifications,
         register,
         login,
@@ -155,5 +165,6 @@ export const useUserStore = defineStore('user', () => {
         addRatingToCategory,
         getUserNotifications,
         markReadNotifications,
+        checkUserSubscribe,
     };
 });
