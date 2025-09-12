@@ -1,12 +1,15 @@
 <template>
     <default-popup
         :is-visible="isVisible"
-        title="Подпишись на уведомления от Di!"
-        message="Чтобы не пропустить важных уведомлений и получать напоминания для продожения изучения и закрепления новых слов, подпишись на push-уведомления от Di"
+        title="Подпишись на&nbsp;уведомления от Di!"
+        :message="message"
+        :padding-class="paddingClass"
+        titleLeft
+        messageLeft
         @close="emit('closePopup')"
     >
         <template #actions>
-            <button class="button button-cancel" @click="emit('closePopup')">Отменить</button>
+            <button class="button button-cancel" @click="emit('reject')">Позже</button>
             <button class="button button-confirm" @click="subscribeNotification">
                 Подписаться
             </button>
@@ -23,7 +26,13 @@ defineProps({
     isVisible: { type: Boolean, default: false },
 });
 
-const emit = defineEmits(['closePopup']);
+const message = `Чтобы не\u00A0пропускать важных уведомлений, получать напоминания об обучении и\u00A0закрепления новых слов, подпишись на рассылку push\u2011уведомления от Di!`;
+
+const paddingClass = {
+    padding: '22px 22px 28px 22px',
+};
+
+const emit = defineEmits(['closePopup', 'reject']);
 
 navigator.serviceWorker.register('sw.js');
 
@@ -46,10 +55,9 @@ const subscribeNotification = async () => {
 
         await apiClient.patch('/push/subscribe', subscription);
 
-        alert('Ураа, теперь ты на связи с Di');
-
         const userStore = useUserStore();
         userStore.checkUserSubscribe();
+        emit('closePopup');
     } catch (error) {
         console.error('Ошибка при подписке на уведомления:', error);
     }
@@ -58,20 +66,23 @@ const subscribeNotification = async () => {
 
 <style scoped lang="scss">
 .button {
-    padding: 10px 20px;
     border: none;
     border-radius: 20px;
-    color: #ffffff;
-    font-size: 16px;
+    font-size: 18px;
     font-weight: 600;
     cursor: pointer;
     transition: background-color 0.2s;
     &-confirm {
         background: #262060;
+        color: #ffffff;
+        padding: 10px 20px;
     }
     &-cancel {
-        background: #525252;
-        margin-right: 10px;
+        background: #ffffff;
+        margin-right: 5px;
+        color: #000000;
+        border: 2px solid #262060;
+        padding: 8px 20px;
     }
 }
 

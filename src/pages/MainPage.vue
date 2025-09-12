@@ -35,7 +35,11 @@
         @arrow-click="closePopup"
     />
 
-    <!-- <subscribe-push-notify :is-visible="subscribePopup" @close-popup="closeSubscribePopup" /> -->
+    <subscribe-push-notify
+        :is-visible="subscribePopup"
+        @close-popup="closeSubscribePopup"
+        @reject="rejectSubscribe"
+    />
 </template>
 
 <script setup>
@@ -50,12 +54,12 @@ import { useUserStore } from '@/stores/user';
 import { useCategoriesStore } from '@/stores/categories';
 import watchStarsPopup from '@/components/popups/watchStarsPopup.vue';
 import InstallAppPopup from '@/components/popups/InstallAppPopup.vue';
-// import SubscribePushNotify from '@/components/popups/SubscribePushNotify.vue';
+import SubscribePushNotify from '@/components/popups/SubscribePushNotify.vue';
 
 const loading = ref(true);
 const openHelloPopup = ref(false);
 const popupShowed = ref(true);
-// const subscribePopup = ref(false);
+const subscribePopup = ref(false);
 const userStore = useUserStore();
 
 onMounted(async () => {
@@ -73,8 +77,11 @@ onMounted(async () => {
         hasVisited.value = true;
         localStorage.setItem('hasVisited', 'true');
     }
-    // if (userStore.isSubscribed === null) await userStore.checkUserSubscribe();
-    // subscribePopup.value = !userStore.isSubscribed;
+    if (userStore.isSubscribed === null) await userStore.checkUserSubscribe();
+    subscribePopup.value = !userStore.isSubscribed;
+
+    if (userStore.unsubscribed_at && userStore.isSubscribed === 'unsubscribe')
+        checkTimeForLastReject();
 });
 
 const colorPalette = ['#BD8BCF', '#F6B390', '#79BBFB', '#FF98A5'];
@@ -122,13 +129,24 @@ const titlePopup = 'Добро пожаловать!';
 const messagePopup =
     'Привет! Меня зовут Di, и я рада приветствовать тебя в мире изучения английских слов! Ты сделал важный шаг к своей мечте - свободному владению иностранным языком.';
 
+const checkTimeForLastReject = () => {
+    if (!userStore.unsubscribed_at) return false;
+    const unsubscribeDate = new Date(userStore.unsubscribed_at.replace(' ', 'T'));
+    subscribePopup.value = Date.now() - unsubscribeDate >= 24 * 60 * 60 * 1000;
+};
+
 const handlePopup = async () => {
     popupShowed.value = true;
 };
 
-// const closeSubscribePopup = () => {
-//     subscribePopup.value = !subscribePopup.value;
-// };
+const closeSubscribePopup = () => {
+    subscribePopup.value = !subscribePopup.value;
+};
+
+const rejectSubscribe = () => {
+    userStore.unSubscribeUser();
+    closeSubscribePopup();
+};
 </script>
 
 <style scoped>

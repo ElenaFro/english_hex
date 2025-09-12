@@ -87,11 +87,6 @@ const routes = [
                 name: 'myPlanet',
                 component: () => import('@/pages/MyPlanetPage.vue'),
             },
-            {
-                path: 'testPush',
-                name: 'testPush',
-                component: () => import('@/pages/testPush.vue'),
-            },
         ],
         meta: { requiresAuth: true },
     },

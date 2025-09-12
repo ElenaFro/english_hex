@@ -76,6 +76,12 @@
         :message="errorMessage"
         @close="showPopup = !showPopup"
     />
+
+    <subscribe-push-notify
+        :is-visible="subscribePopup"
+        @close-popup="closeSubscribePopup"
+        @reject="rejectSubscribe"
+    />
 </template>
 
 <script setup>
@@ -86,6 +92,7 @@ import visibilityIcon from '@/assets/img/visibility_icon.svg';
 import visibilityOffIcon from '@/assets/img/visibility_off_icon.svg';
 import loader from '../Loader.vue';
 import defaultPopup from '../popups/defaultPopup.vue';
+import SubscribePushNotify from '@/components/popups/SubscribePushNotify.vue';
 
 const router = useRouter();
 
@@ -98,6 +105,8 @@ const showPassword = ref(false);
 const loading = ref(false);
 const showPopup = ref(false);
 const errorMessage = ref(null);
+const subscribePopup = ref(false);
+const userStore = useUserStore();
 
 const togglePassword = () => {
     showPassword.value = !showPassword.value;
@@ -116,8 +125,11 @@ const emailVerif = () => {
 const login = async () => {
     loading.value = true;
     try {
-        await useUserStore().login(email.value, password.value);
-        await useUserStore().fetchUser();
+        await userStore.login(email.value, password.value);
+        await userStore.fetchUser();
+        await userStore.checkUserSubscribe();
+        subscribePopup.value =
+            userStore.isSubscribed === 'unsubscribe' ? true : !userStore.isSubscribed;
         await router.push({ name: 'mainPage' });
     } catch (error) {
         errorMessage.value =
@@ -128,6 +140,14 @@ const login = async () => {
     } finally {
         loading.value = false;
     }
+};
+
+const closeSubscribePopup = () => {
+    subscribePopup.value = !subscribePopup.value;
+};
+
+const rejectSubscribe = () => {
+    userStore.unSubscribeUser();
 };
 </script>
 
