@@ -1,8 +1,6 @@
 import axios from 'axios';
 import { useUserStore } from '../stores/user';
-import { useRouter } from 'vue-router';
-
-const router = useRouter();
+import router from '@/router';
 
 const apiClient = axios.create({
     baseURL: 'https://dicardz.com/api/api',
@@ -20,7 +18,7 @@ export function setupInterceptors(pinia) {
 
     apiClient.interceptors.request.use(
         (config) => {
-            const token = authStore.token;
+            const token = authStore.token || localStorage.getItem('access_token');
             if (token) {
                 config.headers.Authorization = `Bearer ${token}`;
             }

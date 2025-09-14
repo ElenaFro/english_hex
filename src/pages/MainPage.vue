@@ -11,6 +11,7 @@
     <div class="page-content" :class="{ background_blur: !popupShowed }">
         <loader v-if="loading" />
         <div v-else class="scroll-container" :class="{ content_blur: !popupShowed }">
+            <add-categories-card v-if="isAdmin" />
             <CategoryChoice
                 v-for="section in sections"
                 :key="section.id"
@@ -43,24 +44,30 @@
 </template>
 
 <script setup>
+//vue
 import { ref, onMounted, computed } from 'vue';
+//components
 import CategoryChoice from '@/components/MainPage/CategoryChoice.vue';
-import BoyIcon from '@/assets/img/DefaultUserAvatar/male.svg';
-import GirlIcon from '@/assets/img/DefaultUserAvatar/female.svg';
 import loader from '@/components/Loader.vue';
 import HelloPopupWithSound from '@/components/popups/HelloPopupWithSound.vue';
-import SoundForPopup from '@/assets/audio/helloFromDi.wav';
-import { useUserStore } from '@/stores/user';
-import { useCategoriesStore } from '@/stores/categories';
 import watchStarsPopup from '@/components/popups/watchStarsPopup.vue';
 import InstallAppPopup from '@/components/popups/InstallAppPopup.vue';
 import SubscribePushNotify from '@/components/popups/SubscribePushNotify.vue';
+import AddCategoriesCard from '@/components/categories/AddCategoriesCard.vue';
+//source
+import BoyIcon from '@/assets/img/DefaultUserAvatar/male.svg';
+import GirlIcon from '@/assets/img/DefaultUserAvatar/female.svg';
+import SoundForPopup from '@/assets/audio/helloFromDi.wav';
+//store
+import { useUserStore } from '@/stores/user';
+import { useCategoriesStore } from '@/stores/categories';
 
 const loading = ref(true);
 const openHelloPopup = ref(false);
 const popupShowed = ref(true);
 const subscribePopup = ref(false);
 const userStore = useUserStore();
+const isAdmin = computed(() => userStore.isAdmin);
 
 onMounted(async () => {
     await useCategoriesStore().getCategories();

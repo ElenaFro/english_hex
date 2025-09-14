@@ -9,6 +9,7 @@ export const useUserStore = defineStore('user', () => {
     const isSubscribed = ref(null);
     const notifications = ref([]);
     const unsubscribed_at = ref(null);
+    const isAdmin = ref(false);
 
     const getCurrentUser = () => {
         return user.value;
@@ -64,6 +65,17 @@ export const useUserStore = defineStore('user', () => {
             isAuthenticated.value = true;
         } catch (error) {
             console.error('Fetch user error:', error);
+            logout();
+        }
+    }
+
+    async function getUserRole() {
+        if (!token.value) return;
+        try {
+            const response = await apiClient.get('/is-role');
+            isAdmin.value = response.data?.role === 'admin' ? true : false;
+        } catch (error) {
+            console.error('Fetch role error:', error);
             logout();
         }
     }
@@ -166,6 +178,7 @@ export const useUserStore = defineStore('user', () => {
         isSubscribed,
         notifications,
         unsubscribed_at,
+        isAdmin,
         register,
         login,
         logout,
@@ -180,5 +193,6 @@ export const useUserStore = defineStore('user', () => {
         markReadNotifications,
         checkUserSubscribe,
         unSubscribeUser,
+        getUserRole,
     };
 });

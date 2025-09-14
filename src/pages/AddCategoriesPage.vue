@@ -1,14 +1,23 @@
 <template>
-    <div class="add-page">
-        <!-- <AddCategories /> -->
+    <div v-if="isAdmin">
+        <add-categories />
+    </div>
+    <div v-else class="add-page">
         <AddCategoriesPopup v-if="openPopup" :title="titlePopup" :message="messagePopup" />
     </div>
 </template>
 <script setup>
-// import AddCategories from '@/components/AddCategories.vue'
-import { ref, onMounted } from 'vue';
+//vue
+import { ref, onMounted, computed } from 'vue';
+//components
 import AddCategoriesPopup from '@/components/popups/AddCategoriesPopup.vue';
+import AddCategories from '@/components/AddCategories.vue';
+//stores
+import { useUserStore } from '@/stores/user';
+
+const userStore = useUserStore();
 const openPopup = ref(false);
+const isAdmin = computed(() => userStore.isAdmin);
 
 onMounted(() => {
     openPopup.value = true;
