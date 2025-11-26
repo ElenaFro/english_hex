@@ -211,7 +211,6 @@ const rejectSubscribe = () => {
 
 .scroll-container {
     display: grid !important;
-    /* grid-template-columns: repeat(2, 148px); */
     grid-template-columns: repeat(2, 1fr);
     grid-auto-rows: 220px;
     justify-content: space-between;
