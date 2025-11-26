@@ -84,9 +84,11 @@ onMounted(async () => {
         hasVisited.value = true;
         localStorage.setItem('hasVisited', 'true');
     }
-    if (userStore.isSubscribed === null) await userStore.checkUserSubscribe();
-    subscribePopup.value = !userStore.isSubscribed;
 
+    if (userStore.user.ever_played_game) {
+        if (userStore.isSubscribed === null) await userStore.checkUserSubscribe();
+        subscribePopup.value = !userStore.isSubscribed;
+    }
     if (userStore.unsubscribed_at && userStore.isSubscribed === 'unsubscribe')
         checkTimeForLastReject();
 });
