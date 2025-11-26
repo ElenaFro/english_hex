@@ -384,7 +384,7 @@ const confirmSave = async () => {
 .button-section {
     display: flex;
     width: 100%;
-    justify-content: start;
+    justify-content: flex-start;
     align-items: start;
     padding-bottom: 36dvh;
 }

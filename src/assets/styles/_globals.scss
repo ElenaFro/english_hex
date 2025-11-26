@@ -139,15 +139,23 @@ body,
     display: flex;
 }
 
+.w-100{
+    width: 100%;
+}
+
+.text-center{
+    text-align: center;
+}
+
 .justify {
     &-center {
         justify-content: center;
     }
     &-end {
-        justify-content: end;
+         justify-content: flex-end;
     }
     &-start {
-        justify-content: start;
+        justify-content: flex-start;
     }
     &-between {
         justify-content: space-between;

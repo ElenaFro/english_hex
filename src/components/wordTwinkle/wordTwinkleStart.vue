@@ -31,7 +31,7 @@ defineEmits(['start']);
     .content-container {
         position: relative;
         height: 100%;
-        justify-content: start;
+        justify-content: flex-start;
         padding-bottom: 65px;
         min-height: 100dvh;
     }

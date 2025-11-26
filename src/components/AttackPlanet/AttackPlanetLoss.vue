@@ -50,7 +50,7 @@ const goToGamePage = () => {
     overflow: auto;
     display: flex;
     flex-direction: column;
-    justify-content: start;
+    justify-content: flex-start;
     background-color: transparent;
     width: 100vw;
     max-width: 414px;

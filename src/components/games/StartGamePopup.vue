@@ -130,7 +130,7 @@ const start = () => {
     position: relative;
     display: flex;
     flex-direction: column;
-    justify-content: end;
+    justify-content: flex-end;
     align-items: end;
     margin-right: 20px;
     margin-bottom: 64px;

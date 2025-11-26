@@ -38,7 +38,13 @@ import VideoPage from './VideoPage.vue';
 import defaultPopup from '../popups/defaultPopup.vue';
 import { useCategoriesStore } from '@/stores/categories';
 
-const cards = ref([]);
+const props = defineProps({
+    propsCards: { type: Array, default: () => [] },
+});
+
+const emit = defineEmits(['closePreview']);
+
+const cards = ref(props.propsCards);
 const currentCardIndex = ref(0);
 const chosedCategory = ref({});
 const videoRef = ref(null);
@@ -55,6 +61,7 @@ const isLastCard = computed(
 );
 
 onMounted(async () => {
+    if (props.propsCards.length > 0) return;
     chosedCategory.value = useCategoriesStore().chosedCategory;
     cards.value = chosedCategory.value.cards || [];
 });
@@ -71,6 +78,7 @@ const replayAgain = () => {
 const handleNextOrFinish = async () => {
     if (isTransitioning.value) return;
     if (isLastCard.value) {
+        if (props.propsCards.length > 0) return emit('closePreview');
         if (!chosedCategory.value.completed_category) localStorage.setItem('earnedStars', 20);
         await useCategoriesStore().updateComplateCategory(chosedCategory.value.id);
         router.push({ name: 'games', query: { id: chosedCategory.value.id } });
@@ -118,11 +126,13 @@ const handleTransitionEnd = () => {
 };
 
 const getVideoUrl = (card) => {
+    if (props.propsCards.length > 0) return card.video;
     if (!card || !card.id || !card.video) return '';
     return `${import.meta.env.VITE_STORAGE_URI}/${chosedCategory.value.id}/cards/${card.id}/video/${card.video}`;
 };
 
 const getAudioUrl = (card) => {
+    if (props.propsCards.length > 0) return card.audio;
     if (!card || !card.id || !card.audio) return '';
     return `${import.meta.env.VITE_STORAGE_URI}/${chosedCategory.value.id}/cards/${card.id}/audio/${card.audio}`;
 };

@@ -153,7 +153,7 @@ const goMainButton = () => {
 
 .mainPageResirect-section {
     display: flex;
-    justify-content: start;
+    justify-content: flex-start;
     align-self: start;
     padding-bottom: 200px;
 }

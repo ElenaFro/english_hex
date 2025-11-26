@@ -4,7 +4,7 @@
             <section class="page-container__result">
                 <p class="result-title">{{ title }}</p>
                 <p class="text-result">
-                  {{ text }}
+                    {{ text }}
                 </p>
                 <div class="container-result">
                     <p class="result-title_left">Награда:</p>
@@ -38,13 +38,22 @@ import { useRouter } from 'vue-router';
 
 const router = useRouter();
 const props = defineProps({
-    earnedStars:{type: Number, default: 0},
-    title: {type: String, default: 'Планета спасена, но\u00A0с\u00A0трудностями.'},
-    text: {type: String, default: '  Были допущены ошибки, но\u00A0атака остановлена. Хороший результат\u00A0 есть к\u00A0чему стремиться.'}
+    earnedStars: { type: Number, default: 0 },
+    title: { type: String, default: 'Планета спасена, но\u00A0с\u00A0трудностями.' },
+    text: {
+        type: String,
+        default:
+            '  Были допущены ошибки, но\u00A0атака остановлена. Хороший результат\u00A0 есть к\u00A0чему стремиться.',
+    },
 });
 
 const goToPlanet = () => {
-   props.earnedStars > 0 ? router.push({ name: 'myPlanet', query: { earnedStars: props.earnedStars, gameSource: "planet_attack"  } }): router.push({name:'mainPage'})
+    props.earnedStars > 0
+        ? router.push({
+              name: 'myPlanet',
+              query: { earnedStars: props.earnedStars, gameSource: 'planet_attack' },
+          })
+        : router.push({ name: 'mainPage' });
 };
 const goToGamePage = () => {
     window.location.reload();
@@ -55,7 +64,7 @@ const goToGamePage = () => {
     overflow: auto;
     display: flex;
     flex-direction: column;
-    justify-content: start;
+    justify-content: flex-start;
     background-color: transparent;
     width: 100vw;
     max-width: 414px;

@@ -7,6 +7,8 @@ export const useUserStore = defineStore('user', () => {
     const token = ref(localStorage.getItem('access_token') || null);
     const isAuthenticated = ref(!!localStorage.getItem('access_token'));
     const notifications = ref([]);
+    const unsubscribed_at = ref(null);
+    const isAdmin = ref(null);
 
     const getCurrentUser = () => {
         return user.value;

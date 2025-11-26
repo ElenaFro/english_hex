@@ -185,7 +185,6 @@ svg * {
   которые предпочитают их не использовать
  */
 @media (prefers-reduced-motion: reduce) {
-
     *,
     ::before,
     ::after {
@@ -207,22 +206,25 @@ body,
 #app {
     background:
         url('/src/assets/img/background_stars.png'),
-        -webkit-gradient(linear,
-            left bottom,
-            left top,
-            from(rgb(235, 182, 105)),
-            color-stop(rgb(200, 153, 116)),
-            color-stop(rgb(161, 119, 128)),
-            color-stop(rgb(129, 93, 124)),
-            color-stop(rgb(93, 70, 117)),
-            color-stop(rgb(57, 43, 88)),
-            color-stop(rgb(43, 32, 64)),
-            color-stop(rgb(30, 22, 41)),
-            color-stop(rgb(26, 20, 36)),
-            to(rgb(25, 19, 33)));
+        -webkit-gradient(
+                linear,
+                left bottom,
+                left top,
+                from(rgb(235, 182, 105)),
+                color-stop(rgb(200, 153, 116)),
+                color-stop(rgb(161, 119, 128)),
+                color-stop(rgb(129, 93, 124)),
+                color-stop(rgb(93, 70, 117)),
+                color-stop(rgb(57, 43, 88)),
+                color-stop(rgb(43, 32, 64)),
+                color-stop(rgb(30, 22, 41)),
+                color-stop(rgb(26, 20, 36)),
+                to(rgb(25, 19, 33))
+            );
     background:
         url('/src/assets/img/background_stars.png'),
-        linear-gradient(to top,
+        linear-gradient(
+            to top,
             rgb(235, 182, 105),
             rgb(200, 153, 116),
             rgb(161, 119, 128),
@@ -232,7 +234,8 @@ body,
             rgb(43, 32, 64),
             rgb(30, 22, 41),
             rgb(26, 20, 36),
-            rgb(25, 19, 33));
+            rgb(25, 19, 33)
+        );
     background-size: contain;
     background-position: top;
     background-repeat: no-repeat;
@@ -312,7 +315,6 @@ body,
 }
 
 @media (min-width: 415px) {
-
     .layout,
     body {
         overflow: visible;
@@ -395,13 +397,13 @@ body,
 .justify-end {
     -webkit-box-pack: end;
     -ms-flex-pack: end;
-    justify-content: end;
+    justify-content: flex-end;
 }
 
 .justify-start {
     -webkit-box-pack: start;
     -ms-flex-pack: start;
-    justify-content: start;
+    justify-content: flex-start;
 }
 
 .justify-between {
@@ -544,11 +546,13 @@ body,
 }
 
 .button--blue {
-    background: -webkit-gradient(linear,
-            left top,
-            right top,
-            from(rgb(53, 92, 213)),
-            to(rgb(113, 74, 180)));
+    background: -webkit-gradient(
+        linear,
+        left top,
+        right top,
+        from(rgb(53, 92, 213)),
+        to(rgb(113, 74, 180))
+    );
     background: linear-gradient(to right, rgb(53, 92, 213), rgb(113, 74, 180));
 }
 
@@ -866,11 +870,11 @@ body,
     margin: 0;
 }
 
-.agreement-container__agreement-checkbox input:checked+.checkbox {
+.agreement-container__agreement-checkbox input:checked + .checkbox {
     background-color: rgb(38, 32, 96);
 }
 
-.agreement-container__agreement-checkbox input:checked+.checkbox::after {
+.agreement-container__agreement-checkbox input:checked + .checkbox::after {
     content: '';
     position: relative;
     background: url('@/assets/img/check_mark.svg');

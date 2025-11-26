@@ -63,6 +63,6 @@ const formatDateToRussian = (dateString) => {
 .day-container {
     display: flex;
     width: 100%;
-    justify-content: end;
+    justify-content: flex-end;
 }
 </style>

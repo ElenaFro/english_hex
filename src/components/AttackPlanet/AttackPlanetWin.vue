@@ -33,7 +33,7 @@ import { useRouter } from 'vue-router';
 
 const router = useRouter();
 const goToPlanet = () => {
-    router.push({ name: 'myPlanet', query: { earnedStars: 50, gameSource: "planet_attack" } });
+    router.push({ name: 'myPlanet', query: { earnedStars: 50, gameSource: 'planet_attack' } });
 };
 </script>
 <style scoped lang="scss">
@@ -41,7 +41,7 @@ const goToPlanet = () => {
     overflow: auto;
     display: flex;
     flex-direction: column;
-    justify-content: start;
+    justify-content: flex-start;
     background-color: transparent;
     width: 100vw;
     max-width: 414px;
