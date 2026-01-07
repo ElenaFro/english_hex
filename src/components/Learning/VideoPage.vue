@@ -1,16 +1,18 @@
 <template>
-    <div class="video-container">
+    <div class="video-container" @click="enableSound">
         <video
             ref="videoRef"
             class="video-container__lerning-video"
             :src="videoUrl"
             autoplay
+            :muted="isIphone"
+            playsinline
         ></video>
     </div>
 </template>
 
 <script setup>
-import { ref } from 'vue';
+import { ref, computed } from 'vue';
 
 defineProps({
     videoUrl: String,
@@ -32,24 +34,33 @@ const pauseVideo = () => {
     }
 };
 
+const enableSound = () => {
+    if (videoRef.value) {
+        videoRef.value.muted = false;
+        videoRef.value.play().catch((err) => console.warn('Play failed', err));
+    }
+};
+
+const isIphone = computed(() => /iPhone/i.test(navigator.userAgent));
+
 defineExpose({ replayVideo, pauseVideo });
 </script>
 
 <style scoped>
 .video-container {
-  width: 100%;
-  height: 100%;
-  border-radius: 20px;
-  overflow: hidden;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+    width: 100%;
+    height: 100%;
+    border-radius: 20px;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .video-container__lerning-video {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  border-radius: 20px;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 20px;
 }
 </style>

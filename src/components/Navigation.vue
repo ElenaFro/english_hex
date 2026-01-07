@@ -90,8 +90,8 @@ const isActive = (item) => {
 }
 
 .nav-icon {
-    width: 24px;
-    height: 24px;
+    width: auto;
+    height: min(3dvh, 24px);
 }
 
 .nav-label {

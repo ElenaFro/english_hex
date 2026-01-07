@@ -1,9 +1,9 @@
 <template>
     <div v-if="isVisible" class="popup-overlay" @click.self="closePopup">
-        <div class="popup-content">
+        <div class="popup-content" :class="popupPaddings" :style="paddingClass">
             <button class="close-button" @click="closePopup">×</button>
-            <h2 v-if="title" class="popup-title" :class="titleMargin">{{ title }}</h2>
-            <p v-if="message" class="popup-message">{{ message }}</p>
+            <h2 v-if="title" class="popup-title" :class="titleClasses">{{ title }}</h2>
+            <p v-if="message" class="popup-message" :class="messageClass">{{ message }}</p>
             <slot name="content"></slot>
             <div class="popup-actions">
                 <slot name="actions">
@@ -36,13 +36,36 @@ const props = defineProps({
         type: String,
         default: 'Продолжить',
     },
+    paddingClass: {
+        type: String,
+        default: '',
+    },
+    titleLeft: {
+        type: Boolean,
+        default: false,
+    },
+    messageLeft: {
+        type: Boolean,
+        default: false,
+    },
 });
 
 const emit = defineEmits(['update:isVisible', 'confirm', 'close']);
 
 const localVisible = ref(props.isVisible);
 
-const titleMargin = computed(() => (props.message ? 'd-mb-12' : 'd-mb-30'));
+const titleClasses = computed(() => {
+    const classes = {
+        'd-mb-12': props.message,
+        'd-mb-30': !props.message,
+        textLeft: props.titleLeft,
+    };
+    return classes;
+});
+
+const messageClass = computed(() => (props.messageLeft ? 'textLeft' : ''));
+
+const popupPaddings = computed(() => (!props.paddingClass ? 'defaultPaddings' : ''));
 
 watch(
     () => props.isVisible,
@@ -81,14 +104,17 @@ const confirmAction = () => {
 .popup-content {
     background: #fff;
     border-radius: 20px;
-    padding: 20px;
-    padding-top: 46px;
-    padding-bottom: 35px;
     width: 90%;
     max-width: 315px;
     position: relative;
     color: #311d5d;
     text-align: center;
+}
+
+.defaultPaddings {
+    padding: 20px;
+    padding-top: 46px;
+    padding-bottom: 35px;
 }
 
 .popup-title {
@@ -129,5 +155,8 @@ const confirmAction = () => {
 
 .confirm-button:hover {
     background-color: #262567;
+}
+.textLeft {
+    text-align: left;
 }
 </style>

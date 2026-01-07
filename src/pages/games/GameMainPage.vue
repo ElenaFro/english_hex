@@ -1,22 +1,25 @@
 <template>
     <section class="page-container d-pa-30">
-        <section class="page-container__header">
-            <p>Поздравляю!</p>
-            <p>{{ headerTopic }}</p>
-        </section>
-        <section class="page-container__message">
-            <p>{{ message }}</p>
-        </section>
-        <section class="page-container__game-list">
-            <div v-for="item in gameList" :key="item.id" class="page-container__game-card">
-                <p>{{ item.name }}</p>
-                <button class="page-container__game-card-btn" @click="goToGame(item)">
-                    Начать
-                </button>
-            </div>
-        </section>
-        <section class="mainPageResirect-section">
-            <button class="action-button" @click="goMainButton">Вернуться на главную</button>
+        <Loader v-if="loading" />
+        <section v-else>
+            <section class="page-container__header">
+                <p>Поздравляю!</p>
+                <p>{{ headerTopic }}</p>
+            </section>
+            <section class="page-container__message">
+                <p>{{ message }}</p>
+            </section>
+            <section class="page-container__game-list">
+                <div v-for="item in gameList" :key="item.id" class="page-container__game-card">
+                    <p>{{ item.name }}</p>
+                    <button class="page-container__game-card-btn" @click="goToGame(item)">
+                        Начать
+                    </button>
+                </div>
+            </section>
+            <section class="mainPageResirect-section">
+                <button class="action-button" @click="goMainButton">Вернуться на главную</button>
+            </section>
         </section>
     </section>
 
@@ -32,15 +35,20 @@
 import { computed, onMounted, ref } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import defaultPopup from '@/components/popups/defaultPopup.vue';
+import Loader from '@/components/Loader.vue';
 import { useCategoriesStore } from '@/stores/categories';
 
 const router = useRouter();
 const route = useRoute();
+const loading = ref(true);
 const hasEarnedStars = localStorage.getItem('earnedStars');
-const category = ref({});
+const category = ref(useCategoriesStore().chosedCategory);
 onMounted(async () => {
-    await useCategoriesStore().getChosedCategory(route.query.id);
-    category.value = useCategoriesStore().chosedCategory;
+    if (!category.value?.name) {
+        await useCategoriesStore().getChosedCategory(route.query.id);
+        category.value = useCategoriesStore().chosedCategory;
+    }
+    loading.value = false;
 });
 
 const openPopup = ref(false);

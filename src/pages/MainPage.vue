@@ -11,11 +11,12 @@
     <div class="page-content" :class="{ background_blur: !popupShowed }">
         <loader v-if="loading" />
         <div v-else class="scroll-container" :class="{ content_blur: !popupShowed }">
+            <add-categories-card v-if="isAdmin" />
             <CategoryChoice
                 v-for="section in sections"
                 :key="section.id"
                 :id="section.id"
-                :sectionName="section.name"
+                :sectionName="section.english_name"
                 :imgUrl="section.category_photo"
                 :backgroundColor="randomColor(section.id)"
                 :progress="section.completed_category"
@@ -34,24 +35,39 @@
         @close="closePopup"
         @arrow-click="closePopup"
     />
+
+    <subscribe-push-notify
+        :is-visible="subscribePopup"
+        @close-popup="closeSubscribePopup"
+        @reject="rejectSubscribe"
+    />
 </template>
 
 <script setup>
+//vue
 import { ref, onMounted, computed } from 'vue';
+//components
 import CategoryChoice from '@/components/MainPage/CategoryChoice.vue';
-import BoyIcon from '@/assets/img/DefaultUserAvatar/male.svg';
-import GirlIcon from '@/assets/img/DefaultUserAvatar/female.svg';
 import loader from '@/components/Loader.vue';
 import HelloPopupWithSound from '@/components/popups/HelloPopupWithSound.vue';
-import SoundForPopup from '@/assets/audio/helloFromDi.mp3';
-import { useUserStore } from '@/stores/user';
-import { useCategoriesStore } from '@/stores/categories';
 import watchStarsPopup from '@/components/popups/watchStarsPopup.vue';
 import InstallAppPopup from '@/components/popups/InstallAppPopup.vue';
+import SubscribePushNotify from '@/components/popups/SubscribePushNotify.vue';
+import AddCategoriesCard from '@/components/categories/AddCategoriesCard.vue';
+//source
+import BoyIcon from '@/assets/img/DefaultUserAvatar/male.svg';
+import GirlIcon from '@/assets/img/DefaultUserAvatar/female.svg';
+import SoundForPopup from '@/assets/audio/helloFromDi.wav';
+//store
+import { useUserStore } from '@/stores/user';
+import { useCategoriesStore } from '@/stores/categories';
 
 const loading = ref(true);
 const openHelloPopup = ref(false);
 const popupShowed = ref(true);
+const subscribePopup = ref(false);
+const userStore = useUserStore();
+const isAdmin = computed(() => userStore.isAdmin);
 
 onMounted(async () => {
     await useCategoriesStore().getCategories();
@@ -69,30 +85,50 @@ onMounted(async () => {
         hasVisited.value = true;
         localStorage.setItem('hasVisited', 'true');
     }
+
+    if (userStore.user.ever_played_game) {
+        if (userStore.isSubscribed === null) await userStore.checkUserSubscribe();
+        subscribePopup.value = !userStore.isSubscribed;
+    }
+    if (userStore.unsubscribed_at && userStore.isSubscribed === 'unsubscribe')
+        checkTimeForLastReject();
 });
 
 const colorPalette = ['#BD8BCF', '#F6B390', '#79BBFB', '#FF98A5'];
 
-const getRandomColorFromPalette = () => {
-    const randomIndex = Math.floor(Math.random() * colorPalette.length);
-    return colorPalette[randomIndex];
-};
+const generateColors = (count) => {
+    const result = [];
+    const repeats = Math.floor(count / colorPalette.length);
+    const remainder = count % colorPalette.length;
 
-const colorCache = ref({});
-
-const randomColor = (id) => {
-    if (!colorCache.value[id]) {
-        colorCache.value[id] = getRandomColorFromPalette();
+    for (let i = 0; i < repeats; i++) {
+        result.push(...colorPalette);
     }
-    return colorCache.value[id];
+
+    const shuffled = [...colorPalette].sort(() => Math.random() - 0.5);
+    result.push(...shuffled.slice(0, remainder));
+
+    return result.sort(() => Math.random() - 0.5);
 };
+
+const randomColor = (id) => colorsForSections.value[id];
 
 const hasVisited = ref(localStorage.getItem('hasVisited') === 'true');
 
-const currentUser = computed(() => useUserStore().getCurrentUser());
+const currentUser = computed(() => userStore.getCurrentUser());
 const userName = computed(() => currentUser.value.name);
 const avatarIcon = computed(() => (currentUser.value.gender === 'male' ? BoyIcon : GirlIcon));
 const sections = computed(() => useCategoriesStore().categories);
+
+const colorsForSections = computed(() => {
+    const total = sections.value.length;
+    const colors = generateColors(total);
+    const mapping = {};
+    sections.value.forEach((section, index) => {
+        mapping[section.id] = colors[index];
+    });
+    return mapping;
+});
 
 const closePopup = () => {
     openHelloPopup.value = !openHelloPopup.value;
@@ -103,8 +139,23 @@ const titlePopup = 'Добро пожаловать!';
 const messagePopup =
     'Привет! Меня зовут Di, и я рада приветствовать тебя в мире изучения английских слов! Ты сделал важный шаг к своей мечте - свободному владению иностранным языком.';
 
+const checkTimeForLastReject = () => {
+    if (!userStore.unsubscribed_at) return false;
+    const unsubscribeDate = new Date(userStore.unsubscribed_at.replace(' ', 'T'));
+    subscribePopup.value = Date.now() - unsubscribeDate >= 24 * 60 * 60 * 1000;
+};
+
 const handlePopup = async () => {
     popupShowed.value = true;
+};
+
+const closeSubscribePopup = () => {
+    subscribePopup.value = !subscribePopup.value;
+};
+
+const rejectSubscribe = () => {
+    userStore.unSubscribeUser();
+    closeSubscribePopup();
 };
 </script>
 
@@ -161,7 +212,6 @@ const handlePopup = async () => {
 
 .scroll-container {
     display: grid !important;
-    /* grid-template-columns: repeat(2, 148px); */
     grid-template-columns: repeat(2, 1fr);
     grid-auto-rows: 220px;
     justify-content: space-between;

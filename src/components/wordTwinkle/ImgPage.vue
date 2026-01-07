@@ -10,8 +10,8 @@ defineProps({
 </script>
 <style scoped>
 .img_container {
-    width: 100%;
-    height: 100%;
+    max-width: 320px;
+    height: auto;
     border-radius: 20px;
     overflow: hidden;
     display: flex;
@@ -19,10 +19,10 @@ defineProps({
     justify-content: center;
 }
 
-.card_image {
+img {
     width: 100%;
     height: 100%;
-    object-fit: cover;
+    object-fit: fill;
     border-radius: 20px;
 }
 </style>

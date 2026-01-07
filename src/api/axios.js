@@ -1,5 +1,6 @@
 import axios from 'axios';
 import { useUserStore } from '../stores/user';
+import router from '@/router';
 
 const apiClient = axios.create({
     baseURL: 'https://dicardz.com/api/api',
@@ -17,7 +18,7 @@ export function setupInterceptors(pinia) {
 
     apiClient.interceptors.request.use(
         (config) => {
-            const token = authStore.token;
+            const token = authStore.token || localStorage.getItem('access_token');
             if (token) {
                 config.headers.Authorization = `Bearer ${token}`;
             }
@@ -36,7 +37,7 @@ export function setupInterceptors(pinia) {
             }
 
             if ([404, 408, 410, 500, 501, 502, 503].includes(status)) {
-                router.push(`/error/${status}`);
+                router?.push(`/error/${status}`);
             }
 
             return Promise.reject(error.response?.data || { message: 'Server error' });

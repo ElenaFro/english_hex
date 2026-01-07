@@ -109,14 +109,19 @@ const goToNext = async () => {
     selectedOption.value = null;
     showAnswer.value = false;
     activeComponent.value = 'ImgPage';
-    setTimeout(goToAnswers, 4000);
+    setTimeout(goToAnswers, 2000);
 };
 
 const goToResult = () => {
     emit('game-finished');
     router.push({
         name: 'gameResult',
-        query: { wrong: wrongCount.value, from: 'flickering_words', gameSource: 'flickering_words' },
+        query: {
+            wrong: wrongCount.value,
+            from: 'wordTwinkle',
+            gameSource: 'flickering_words',
+            id: route.query.id || useCategoriesStore().chosedCategory.id,
+        },
     });
 };
 </script>
@@ -167,6 +172,7 @@ const goToResult = () => {
     row-gap: 10px;
     justify-content: space-between;
     margin-top: 2dvh;
+    z-index: 1000;
 }
 
 .button {

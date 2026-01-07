@@ -50,7 +50,7 @@ const localStorageStars = Number(localStorage.getItem('earnedStars') ?? 0);
 const gameSource = ref(route.query.gameSource);
 const earnedStars = ref(0);
 const totalStars = ref(currentUser.rating);
-const queryStars = ref(0)
+const queryStars = ref(0);
 
 onMounted(async () => {
     try {
@@ -67,6 +67,17 @@ onMounted(async () => {
 
     if (earnedStars.value) {
         animateStars.value = true;
+        if (gameSource.value) {
+            await userStore.addRatingToGame(
+                chosedCategory.id,
+                gameSource.value,
+                localStorageStars ? earnedStars.value - localStorageStars : earnedStars.value
+            );
+        }
+        if (localStorageStars) {
+            await userStore.addRatingToCategory(chosedCategory.id);
+            if (localStorageStars) localStorage.removeItem('earnedStars');
+        }
     }
 });
 
@@ -87,17 +98,6 @@ const handleAnimationEnd = async () => {
     try {
         const afterFirstGame = everPlayedGame.value;
         if (!afterFirstGame) showGoToMain.value = true;
-        if(gameSource.value){
-            await userStore.addRatingToGame(
-            chosedCategory.id,
-            gameSource.value,
-            localStorageStars ? earnedStars.value - localStorageStars : earnedStars.value
-            );
-        } 
-        if (localStorageStars){
-            await userStore.addRatingToCategory(chosedCategory.id);
-            if (localStorageStars) localStorage.removeItem('earnedStars');
-        } 
         userStore.fetchUser();
         const query = { ...route.query };
         delete query.earnedStars;

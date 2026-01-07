@@ -20,7 +20,8 @@ const props = defineProps({
     title: { type: String, default: '' },
     subtitle: { type: String, default: '' },
     message: { type: String, default: '' },
-    routerPath: { type: String, default: '' },
+    gameName: { type: String, default: '' },
+    id: { type: String, default: '' },
 });
 
 const emit = defineEmits(['start']);
@@ -28,7 +29,7 @@ const emit = defineEmits(['start']);
 const router = useRouter();
 
 const start = () => {
-    emit('start');
+    router.push({ name: 'flyAnimation', query: { name: props.gameName, id: props.id } });
 };
 </script>
 <style scoped lang="scss">

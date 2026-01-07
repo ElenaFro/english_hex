@@ -17,8 +17,6 @@ setupInterceptors(pinia);
 
 registerSW({
     immediate: true,
-    onNeedRefresh() {},
-    onOfflineReady() {},
 });
 
 app.mount('#app');

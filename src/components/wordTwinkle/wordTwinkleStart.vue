@@ -13,7 +13,7 @@
                     секунда ко времени. Готовы? <br />
                     Начинаем!
                 </p>
-                <button class="button button--blue" @click="$emit('start')">Начать</button>
+                <button class="button button--blue" @click="start">Начать</button>
             </div>
             <div class="img-container">
                 <img src="@/assets/img/girl-img2.png" alt="" class="img-container__girl-img" />
@@ -23,7 +23,17 @@
 </template>
 
 <script setup>
-defineEmits(['start']);
+import { useRouter } from 'vue-router';
+const props = defineProps({
+    gameName: { type: String, default: '' },
+    id: { type: String, default: '' },
+});
+
+const router = useRouter();
+
+const start = () => {
+    router.push({ name: 'flyAnimation', query: { name: props.gameName, id: props.id } });
+};
 </script>
 
 <style scoped lang="scss">

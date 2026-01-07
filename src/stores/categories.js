@@ -51,6 +51,94 @@ export const useCategoriesStore = defineStore('categories', () => {
         }
     }
 
+    async function createCategory(category) {
+        try {
+            const response = await apiClient.post('/admin/category/create', {
+                params: {
+                    name: category.name,
+                    description: category.description,
+                    category_photo: category.category_photo,
+                },
+            });
+            return response.data;
+        } catch (error) {
+            console.error(error);
+            throw error;
+        }
+    }
+
+    async function updateCategory(category) {
+        try {
+            const response = await apiClient.post(`/admin/category/update/${category.id}`, {
+                params: {
+                    name: category.name,
+                    description: category.description,
+                    category_photo: category.category_photo,
+                },
+            });
+            return response.data;
+        } catch (error) {
+            console.error(error);
+            throw error;
+        }
+    }
+
+    async function deleteCategory(id) {
+        try {
+            const response = await apiClient.delete(`/admin/category/delete/${id}`);
+            return response.data;
+        } catch (error) {
+            console.error(error);
+            throw error;
+        }
+    }
+
+    async function createCard(categoryId, card) {
+        try {
+            const response = await apiClient.post(`/admin/card/create/${categoryId}`, {
+                params: {
+                    word: card.word,
+                    translation_word: card.translation_word,
+                    card_photo: card.photo,
+                    video: card.video,
+                    audio: card.audio,
+                },
+            });
+            return response.data;
+        } catch (error) {
+            console.error(error);
+            throw error;
+        }
+    }
+
+    async function updateCard(card) {
+        try {
+            const response = await apiClient.post(`/admin/card/update/${card.id}`, {
+                params: {
+                    word: card.word,
+                    translation_word: card.translation_word,
+                    card_photo: card.photo,
+                    video: card.video,
+                    audio: card.audio,
+                },
+            });
+            return response.data;
+        } catch (error) {
+            console.error(error);
+            throw error;
+        }
+    }
+
+    async function deleteCard(id) {
+        try {
+            const response = await apiClient.delete(`/admin/card/delete/${id}`);
+            return response.data;
+        } catch (error) {
+            console.error(error);
+            throw error;
+        }
+    }
+
     return {
         categories,
         chosedCategory,
@@ -59,5 +147,11 @@ export const useCategoriesStore = defineStore('categories', () => {
         getChosedCategory,
         updateComplateCategory,
         getCategoryStars,
+        createCategory,
+        updateCategory,
+        deleteCategory,
+        createCard,
+        updateCard,
+        deleteCard,
     };
 });

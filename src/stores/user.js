@@ -6,9 +6,10 @@ export const useUserStore = defineStore('user', () => {
     const user = ref(JSON.parse(localStorage.getItem('user')) || null);
     const token = ref(localStorage.getItem('access_token') || null);
     const isAuthenticated = ref(!!localStorage.getItem('access_token'));
+    const isSubscribed = ref(null);
     const notifications = ref([]);
     const unsubscribed_at = ref(null);
-    const isAdmin = ref(null);
+    const isAdmin = ref(false);
 
     const getCurrentUser = () => {
         return user.value;
@@ -34,9 +35,6 @@ export const useUserStore = defineStore('user', () => {
             token.value = newToken;
             isAuthenticated.value = true;
             localStorage.setItem('access_token', newToken);
-            await apiClient.patch('/push/subscribe', {
-                push_subscription_id: localStorage.getItem('subscribe_id'),
-            });
             return response.data;
         } catch (error) {
             throw error;
@@ -68,6 +66,39 @@ export const useUserStore = defineStore('user', () => {
         } catch (error) {
             console.error('Fetch user error:', error);
             logout();
+        }
+    }
+
+    async function getUserRole() {
+        if (!token.value) return;
+        try {
+            const response = await apiClient.get('/is-role');
+            isAdmin.value = response.data?.role === 'admin' ? true : false;
+        } catch (error) {
+            console.error('Fetch role error:', error);
+            logout();
+        }
+    }
+
+    async function checkUserSubscribe() {
+        if (!token.value) return;
+        try {
+            const response = await apiClient.get('/push/is-subscribe');
+            isSubscribed.value = response.data.push_subscription;
+            if (response.data?.unsubscribed_at)
+                unsubscribed_at.value = response.data?.unsubscribed_at;
+        } catch (error) {
+            console.error('Fetch subscribe error:', error);
+        }
+    }
+
+    async function unSubscribeUser() {
+        if (!token.value) return;
+        try {
+            const response = await apiClient.get('/push/unsubscribe');
+            isSubscribed.value = response.data.push_subscription;
+        } catch (error) {
+            console.error('Fetch unSubscribe error:', error);
         }
     }
 
@@ -144,7 +175,10 @@ export const useUserStore = defineStore('user', () => {
         user,
         token,
         isAuthenticated,
+        isSubscribed,
         notifications,
+        unsubscribed_at,
+        isAdmin,
         register,
         login,
         logout,
@@ -157,5 +191,8 @@ export const useUserStore = defineStore('user', () => {
         addRatingToCategory,
         getUserNotifications,
         markReadNotifications,
+        checkUserSubscribe,
+        unSubscribeUser,
+        getUserRole,
     };
 });

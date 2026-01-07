@@ -24,7 +24,7 @@ const message =
     'Отвечайте на вопросы правильно, чтобы остановить приближение метеорита. За каждую ошибку он подлетает ближе. 5 ошибок — и планета будет разрушена. Максимальная награда — 50 звёзд. За каждую ошибку вычитается 5 звёзд.';
 
 const goToGamePage = () => {
-    router.push({ name: 'planetAttackPage', query: { id: route.query.id } });
+    router.push({ name: 'flyAnimation', query: { name: 'planetAttackPage', id: route.query.id } });
 };
 </script>
 <style scoped lang="scss">

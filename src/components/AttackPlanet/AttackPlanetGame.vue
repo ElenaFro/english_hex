@@ -54,8 +54,8 @@ const currentUser = useUserStore().getCurrentUser();
 const emit = defineEmits(['update:lives', 'update:earnedStars', 'switch-component']);
 const lives = ref(5);
 const earnedStars = ref(currentUser.rating);
-const chosedCategory = computed(()=> useCategoriesStore().chosedCategory);
-const maxStarsForGame = ref(50)
+const chosedCategory = computed(() => useCategoriesStore().chosedCategory);
+const maxStarsForGame = ref(50);
 
 const categoryId = computed(() => chosedCategory.value.id || route.query.id);
 
@@ -133,21 +133,30 @@ const nextQuestion = () => {
 
     if (lives.value > 0 && currentQuestionIndex.value < questions.value.length - 1) {
         currentQuestionIndex.value++;
-    } else if (currentQuestionIndex.value >= questions.value.length - 1 && maxStarsForGame.value === 0) {
+    } else if (
+        currentQuestionIndex.value >= questions.value.length - 1 &&
+        maxStarsForGame.value === 0
+    ) {
         earnedStars.value = 0;
         emit('update:earnedStars', earnedStars.value);
         emit('switch-component', 'AttackPlanetAllStarsGiven');
-    } else if (lives.value === 5 && currentQuestionIndex.value >= questions.value.length - 1 && maxStarsForGame.value === 50) {
+    } else if (
+        lives.value === 5 &&
+        currentQuestionIndex.value >= questions.value.length - 1 &&
+        maxStarsForGame.value === 50
+    ) {
         earnedStars.value = 50;
         emit('update:earnedStars', earnedStars.value);
         emit('switch-component', 'AttackPlanetWin');
     } else if (
         lives.value > 0 &&
         lives.value <= 5 &&
-        currentQuestionIndex.value >= questions.value.length - 1 && maxStarsForGame.value > 0
+        currentQuestionIndex.value >= questions.value.length - 1 &&
+        maxStarsForGame.value > 0
     ) {
         const starsForLives = 50 - 5 * (5 - lives.value);
-        earnedStars.value = starsForLives > maxStarsForGame.value ? maxStarsForGame.value : starsForLives;
+        earnedStars.value =
+            starsForLives > maxStarsForGame.value ? maxStarsForGame.value : starsForLives;
         emit('update:earnedStars', earnedStars.value);
         emit('switch-component', 'AttackPlanetResult');
     } else if (lives.value <= 0) {
@@ -157,31 +166,31 @@ const nextQuestion = () => {
 
 const meteorTop = ref('-25px');
 const meteorRight = ref('-4px');
-const meteorWidth = ref('74px');
 
 onMounted(async () => {
-if(!chosedCategory.value.id) useCategoriesStore().getChosedCategory(route.query.id)
-    try
-    {
-    if (soundRef.value) {
-        soundRef.value.addEventListener('ended', onAudioEnded);
-    }
-    if (!chosedCategory.value) return;
-    const response = await useGamesStore().fetchDataForPlanetAttack(categoryId.value);
+    if (!chosedCategory.value.id) useCategoriesStore().getChosedCategory(route.query.id);
+    try {
+        if (soundRef.value) {
+            soundRef.value.addEventListener('ended', onAudioEnded);
+        }
+        if (!chosedCategory.value) return;
+        const response = await useGamesStore().fetchDataForPlanetAttack(categoryId.value);
 
-    questions.value = response.map((question) => ({
-        id: question.id,
-        audio: question.audio,
-        correctAnswer: question.correctAnswer,
-        options: question.options,
-    }));
-    if(categoryId.value){
-        const currentStarsForCategory = await useCategoriesStore().getCategoryStars(categoryId.value);
-        maxStarsForGame.value = maxStarsForGame.value - currentStarsForCategory?.planet_attack
-    }
+        questions.value = response.map((question) => ({
+            id: question.id,
+            audio: question.audio,
+            correctAnswer: question.correctAnswer,
+            options: question.options,
+        }));
+        if (categoryId.value) {
+            const currentStarsForCategory = await useCategoriesStore().getCategoryStars(
+                categoryId.value
+            );
+            maxStarsForGame.value = maxStarsForGame.value - currentStarsForCategory?.planet_attack;
+        }
     } catch (error) {
-    console.error('Ошибка при загрузке данных:', error);
-  }
+        console.error('Ошибка при загрузке данных:', error);
+    }
 });
 
 onBeforeUnmount(() => {
@@ -231,7 +240,7 @@ onBeforeUnmount(() => {
 
 .meteor {
     position: absolute;
-    width: 74px;
+    width: min(18dvw, 74px);
     height: auto;
     right: -4px;
     top: -25px;
@@ -252,7 +261,7 @@ onBeforeUnmount(() => {
     line-height: 22px;
     color: #262060;
     width: 100%;
-    padding: 9px 24px;
+    padding: min(2dvh, 8px) min(10dvw, 24px);
     border-radius: 16px;
     font-weight: 700;
     font-size: 18px;
@@ -266,7 +275,7 @@ onBeforeUnmount(() => {
 }
 .question {
     font-weight: 800;
-    font-size: 71px;
+    font-size: 8dvh;
     line-height: 100%;
     letter-spacing: 0%;
     text-align: center;
@@ -299,9 +308,6 @@ onBeforeUnmount(() => {
         width: 163px;
         height: 173px;
     }
-    .question {
-        font-size: 60px;
-    }
     .page-container {
         gap: 18px;
     }
@@ -310,7 +316,7 @@ onBeforeUnmount(() => {
         height: auto;
     }
     .planet {
-        width: 200px;
+        width: min(46dvw, 200px);
         height: auto;
     }
     .page-container__button {
@@ -323,9 +329,6 @@ onBeforeUnmount(() => {
         width: 143px;
         height: 153px;
     }
-    .question {
-        font-size: 60px;
-    }
     .page-container {
         gap: 18px;
     }
@@ -333,24 +336,11 @@ onBeforeUnmount(() => {
         width: 38px;
         height: auto;
     }
-    .planet {
-        width: 200px;
-        height: auto;
-    }
     .page-container__button {
         margin-bottom: 93px;
     }
 }
 @media (max-height: 668px) {
-    .planet {
-        width: 180px;
-        height: auto;
-    }
-    .page-container__game {
-        gap: 7px;
-        width: 140px;
-        height: 140px;
-    }
     .page-container {
         gap: 16px;
     }
@@ -360,10 +350,6 @@ onBeforeUnmount(() => {
     }
 }
 @media (max-height: 600px) {
-    .planet {
-        width: 150px;
-        height: auto;
-    }
     .page-container__game {
         gap: 5px;
         width: 130px;
@@ -376,9 +362,6 @@ onBeforeUnmount(() => {
         width: 28px;
         height: auto;
     }
-    .question {
-        font-size: 46px;
-    }
     .line {
         display: flex;
         width: calc(50% - 6px);
@@ -390,5 +373,16 @@ onBeforeUnmount(() => {
     margin: 70% 0;
     min-width: 360px;
     min-height: auto;
+}
+
+.page-container__game {
+    gap: 7px;
+    width: min(80dvw, 315px);
+    height: min(22dvh, 238px);
+    background-color: #ffffff;
+    background-image: url('@/assets/lesson/word_card_bg.png');
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: center;
 }
 </style>
