@@ -54,7 +54,12 @@ const wrongCount = ref(0);
 const everPlayedGame = ref(currentUser.ever_played_game);
 const chosedCategoryId = computed(() => useCategoriesStore().chosedCategory?.id || route.query.id);
 
-const emit = defineEmits(['wrong-answer', 'game-finished']);
+const emit = defineEmits([
+    'wrong-answer',
+    'game-finished',
+    'question-opened',
+    'image-opened',
+]);
 
 const currentQuestion = computed(() => {
     const question = answerList.value[currentIndex.value] || {};
@@ -72,11 +77,14 @@ onMounted(async () => {
     } catch (error) {
         console.error('Error fetching game data:', error);
     }
+    emit('image-opened');
     setTimeout(goToAnswers, 4000);
 });
 
 const goToAnswers = () => {
     activeComponent.value = 'AnswersPage';
+    emit('question-opened');
+
     setTimeout(() => {
         showAnswers();
     }, 800);
@@ -105,6 +113,7 @@ const checkAnswer = (option) => {
 
 const goToNext = async () => {
     if (currentIndex.value >= answerList.value.length - 1) return goToResult();
+    emit('image-opened');
     currentIndex.value += 1;
     selectedOption.value = null;
     showAnswer.value = false;
@@ -113,6 +122,7 @@ const goToNext = async () => {
 };
 
 const goToResult = () => {
+    emit('image-opened');
     emit('game-finished');
     router.push({
         name: 'gameResult',

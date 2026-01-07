@@ -5,7 +5,12 @@
             <p v-show="isVisible" class="timer-container__timer-wrong">+ {{ timeWrong }} сек</p>
         </div>
         <div class="scroll-container">
-            <gameComponent @wrong-answer="addTime" @game-finished="onGameFinished" />
+            <gameComponent
+            @wrong-answer="addTime"
+            @game-finished="onGameFinished"
+            @question-opened="startTimer"
+            @image-opened="stopTimer"
+            />
         </div>
     </div>
 </template>
@@ -22,9 +27,17 @@ const isVisible = ref(false);
 let timer = null;
 
 const startTimer = () => {
+    if (timer) return;
     timer = setInterval(() => {
         time.value++;
     }, 1000);
+};
+
+const stopTimer = () => {
+    if (timer) {
+        clearInterval(timer);
+        timer = null;
+    }
 };
 
 const addTime = () => {
@@ -40,6 +53,7 @@ onMounted(() => {
 });
 
 const onGameFinished = () => {
+    stopTimer();
     const total = timeCalcul();
 };
 
