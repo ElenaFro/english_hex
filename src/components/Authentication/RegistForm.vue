@@ -47,14 +47,17 @@
                     </p>
                     <div class="login-form__input-container">
                         <input
-                            v-model.trim="password"
-                            placeholder="Введите пароль"
-                            :type="showPassword ? 'text' : 'password'"
-                            :class="{
-                                'login-form__input-field': true,
-                                'login-form__input-field--error': passwordError,
-                            }"
+                        v-model.trim="password"
+                        placeholder="Введите пароль"
+                        :type="showPassword ? 'text' : 'password'"
+                        :class="{
+                            'login-form__input-field': true,
+                            'login-form__input-field--error': passwordError,
+                        }"
+                        @focus="passwordFocused = true"
+                        @blur="passwordFocused = false"
                         />
+
                         <button type="button" class="show-password-button" @click="togglePassword">
                             <img
                                 class="show-password-button__visibility"
@@ -146,6 +149,7 @@ const confirmEmailSend = ref(false);
 const loading = ref(false);
 const showPopup = ref(false);
 const errorMessage = ref(null);
+const passwordFocused = ref(false);
 
 const mode = ref('register');
 const emit = defineEmits(['change-component']);
@@ -202,7 +206,9 @@ watch(email, (newVal) => {
 });
 
 watch(password, (newVal) => {
-    const passwordRegex = /^(?=.*[A-Z])(?=.*[0-9])[A-Za-z0-9.!]{8,30}$/;
+    const passwordRegex =
+        /^(?=.*[0-9])(?=.*[@#*:!;?/_.-])[A-Za-z0-9@#*:!;?/_.-]{8,30}$/;
+
     if (!newVal.trim()) {
         passwordError.value = true;
         passwordErrorText.value = 'Поле пароль не может быть пустым';
@@ -212,7 +218,7 @@ watch(password, (newVal) => {
     } else if (!passwordRegex.test(newVal) || newVal.includes(' ')) {
         passwordError.value = true;
         passwordErrorText.value =
-            'Пароль должен содержать хотя бы одну заглавную латинскую букву и одну цифру, без пробелов';
+            'Пароль должен содержать минимум одну цифру и один спецсимвол (@ # * : ! ; ? / _ -), без пробелов';
     } else {
         passwordError.value = false;
         passwordErrorText.value = '';
@@ -264,24 +270,25 @@ const formValidator = () => {
         emailErrorText.value = '';
     }
 
-    const passwordRegex = /^(?=.*[A-Z])(?=.*[0-9])[A-Za-z0-9.!]{8,30}$/;
+ const passwordRegex =
+    /^(?=.*[0-9])(?=.*[@#*:!;?/_.-])[A-Za-z0-9@#*:!;?/_.-]{8,30}$/;
     if (!password.value.trim()) {
-        passwordError.value = true;
-        passwordErrorText.value = 'Поле пароль не может быть пустым';
-        isValid = false;
-    } else if (password.value.length < 8 || password.value.length > 30) {
-        passwordError.value = true;
-        passwordErrorText.value = 'Пароль должен быть от 8 до 30 символов';
-        isValid = false;
-    } else if (!passwordRegex.test(password.value) || password.value.includes(' ')) {
-        passwordError.value = true;
-        passwordErrorText.value =
-            'Пароль должен содержать хотя бы одну латинскую заглавную букву и одну цифру, без пробелов';
-        isValid = false;
-    } else {
-        passwordError.value = false;
-        passwordErrorText.value = '';
-    }
+    passwordError.value = true;
+    passwordErrorText.value = 'Поле пароль не может быть пустым';
+    isValid = false;
+} else if (password.value.length < 8 || password.value.length > 30) {
+    passwordError.value = true;
+    passwordErrorText.value = 'Пароль должен быть от 8 до 30 символов';
+    isValid = false;
+} else if (!passwordRegex.test(password.value) || password.value.includes(' ')) {
+    passwordError.value = true;
+    passwordErrorText.value =
+        'Пароль должен содержать минимум одну цифру и один спецсимвол (@ # * : ! ; ? / _ -), без пробелов';
+    isValid = false;
+} else {
+    passwordError.value = false;
+    passwordErrorText.value = '';
+}
 
     if (!agreementCheckbox.value) {
         agreementError.value = true;
@@ -397,5 +404,17 @@ async function login() {
 
 .agreement-container__link--visited {
     color: #262060;
+}
+
+.login-form__hint {
+    font-size: 12px;
+    color: #cfc8ff;
+    margin-top: 6px;
+    line-height: 1.3;
+}
+
+.login-form__hint span {
+    color: #ffffff;
+    font-weight: 500;
 }
 </style>

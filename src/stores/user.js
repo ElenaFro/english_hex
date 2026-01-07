@@ -9,7 +9,7 @@ export const useUserStore = defineStore('user', () => {
     const isSubscribed = ref(null);
     const notifications = ref([]);
     const unsubscribed_at = ref(null);
-    const isAdmin = ref(false);
+    const isAdmin = ref(null);
 
     const getCurrentUser = () => {
         return user.value;

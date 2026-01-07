@@ -1,8 +1,6 @@
 import { reactive, watch, computed } from 'vue';
 
 export const useFormValidation = (formPart, validators) => {
-    console.log(formPart, validators);
-
     const errors = reactive({});
 
     const validateField = (field) => {
