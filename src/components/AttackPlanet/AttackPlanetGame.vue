@@ -56,6 +56,7 @@ const lives = ref(5);
 const earnedStars = ref(currentUser.rating);
 const chosedCategory = computed(() => useCategoriesStore().chosedCategory);
 const maxStarsForGame = ref(50);
+const meteorWidth = ref('min(18dvw, 74px)');
 
 const categoryId = computed(() => chosedCategory.value.id || route.query.id);
 
@@ -115,9 +116,9 @@ const sendAnswer = (answer) => {
             border: 'none',
         };
         lives.value--;
-        meteorTop.value = `calc(${meteorTop.value} + 2vh)`;
-        meteorRight.value = `${parseInt(meteorRight.value) + 4}px`;
-        meteorWidth.value = `${parseInt(meteorWidth.value) + 6}px`;
+        meteorTop.value = `calc(${meteorTop.value} + 3vh)`;
+        meteorRight.value = `${parseInt(meteorRight.value) + 8}px`;
+        meteorWidth.value = `${parseInt(meteorWidth.value) + 8}px`;
 
         emit('update:lives', lives.value);
         if (lives.value <= 0) {
