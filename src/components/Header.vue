@@ -149,6 +149,9 @@ watch(
                 case 'addCategories':
                     currentTitle.value = 'Редактирование';
                     break;
+                case 'editCategory':
+                    currentTitle.value = 'Редактирование';
+                    break;
                 case 'learning':
                     currentTitle.value = route.query.name;
                     break;

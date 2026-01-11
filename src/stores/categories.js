@@ -55,7 +55,7 @@ export const useCategoriesStore = defineStore('categories', () => {
         try {
             const response = await apiClient.post('/admin/category/create', {
                 params: {
-                    name: category.name,
+                    english_name: category.english_name,
                     description: category.description,
                     category_photo: category.category_photo,
                 },
@@ -71,7 +71,7 @@ export const useCategoriesStore = defineStore('categories', () => {
         try {
             const response = await apiClient.post(`/admin/category/update/${category.id}`, {
                 params: {
-                    name: category.name,
+                    english_name: category.english_name,
                     description: category.description,
                     category_photo: category.category_photo,
                 },
@@ -99,7 +99,7 @@ export const useCategoriesStore = defineStore('categories', () => {
                 params: {
                     word: card.word,
                     translation_word: card.translation_word,
-                    card_photo: card.photo,
+                    card_photo: card.card_photo,
                     video: card.video,
                     audio: card.audio,
                 },
@@ -117,7 +117,7 @@ export const useCategoriesStore = defineStore('categories', () => {
                 params: {
                     word: card.word,
                     translation_word: card.translation_word,
-                    card_photo: card.photo,
+                    card_photo: card.card_photo,
                     video: card.video,
                     audio: card.audio,
                 },

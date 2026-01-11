@@ -44,7 +44,7 @@ const loading = ref(true);
 const hasEarnedStars = localStorage.getItem('earnedStars');
 const category = ref(useCategoriesStore().chosedCategory);
 onMounted(async () => {
-    if (!category.value?.name) {
+    if (!category.value?.english_name) {
         await useCategoriesStore().getChosedCategory(route.query.id);
         category.value = useCategoriesStore().chosedCategory;
     }
@@ -52,14 +52,14 @@ onMounted(async () => {
 });
 
 const openPopup = ref(false);
-const headerTopic = computed(() => `Ты изучил тему ${category.value?.name}`);
+const headerTopic = computed(() => `Ты изучил тему ${category.value?.english_name}`);
 const message =
     'Чтобы закрепить полученые знания — выбирай игру и продолжай покорять английский без потерь';
 
 const popupTitle = ' Уже уходите?';
 const popupMessage = computed(
     () =>
-        `Вы завершили обучение ${category.value?.name}, вам будут начислены 20 звезд, если вы не хотите увеличить награду подтвердите выбор, если хотите поднять рейтинг вернитесь к игре!`
+        `Вы завершили обучение ${category.value?.english_name}, вам будут начислены 20 звезд, если вы не хотите увеличить награду подтвердите выбор, если хотите поднять рейтинг вернитесь к игре!`
 );
 
 const gameList = ref([

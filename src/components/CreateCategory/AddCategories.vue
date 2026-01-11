@@ -2,25 +2,25 @@
     <div class="page-container">
         <div v-if="!showAddCard" class="categoryAddContainer">
             <div class="cover-upload">
-                <label class="cover-box" :class="{ error: errors.cover }">
+                <label class="cover-box" :class="{ error: errors.category_photo }">
                     <input
                         type="file"
                         accept="image/*"
                         class="hidden"
                         @change="handleCoverUpload"
                     />
-                    <div v-if="form.cover" class="cover-preview">
-                        <img :src="form.cover" alt="cover" />
+                    <div v-if="form.category_photo" class="cover-preview">
+                        <img :src="form.category_photo" alt="cover" />
                     </div>
                     <div v-else class="plus">+</div>
                 </label>
                 <span v-if="coverError" class="error-msg text-center">{{ coverError }}</span>
             </div>
 
-            <div class="form-group" :class="{ error: errors.title }">
+            <div class="form-group" :class="{ error: errors.english_name }">
                 <label>Название категории</label>
-                <input v-model="form.title" type="text" placeholder="Введите название" />
-                <span v-if="errors.title" class="error-msg">Поле заполнено некорректно</span>
+                <input v-model="form.english_name" type="text" placeholder="Введите название" />
+                <span v-if="errors.english_name" class="error-msg">Поле заполнено некорректно</span>
             </div>
 
             <div class="form-group" :class="{ error: errors.description }">
@@ -37,28 +37,40 @@
             v-else
             :model-value="{ cards: form.cards }"
             @update:model-value="(val) => (form.cards = val.cards)"
+            @publish="publishCategory"
         />
     </div>
 </template>
 
 <script setup>
 //vue
-import { reactive, ref, onUnmounted } from 'vue';
+import { reactive, ref, onUnmounted, computed, watch } from 'vue';
 //comonents
 import addCardToCategory from './addCardToCategory.vue';
 //composables
 import { useFormValidation } from '@/composables/useFormValidation';
 import { useFileUpload } from '@/composables/useFileUpload';
 import { useImageValidation } from '@/composables/useImageValidation';
+import { useCategoriesStore } from '@/stores/categories';
+import { Notivue, Notification, push } from 'notivue';
 
-const form = reactive({
-    title: '',
-    description: '',
-    cover: null,
-    cards: [],
+const props = defineProps({
+    updating: { type: Boolean, default: false },
 });
 
 const showAddCard = ref(false);
+const categoryStore = useCategoriesStore();
+const currentCategory = computed(() => categoryStore.chosedCategory);
+const loading = ref(false);
+
+const form = reactive({
+    english_name: props.updating ? currentCategory.value.english_name : '',
+    description: props.updating ? currentCategory.value.description : '',
+    category_photo: props.updating
+        ? `${import.meta.env.VITE_STORAGE_URI}/${currentCategory.value?.id}/images/${currentCategory.value.category_photo}`
+        : null,
+    cards: props.updating ? currentCategory.value.cards : [],
+});
 
 const uploadCover = useFileUpload();
 const { error: coverError, validateAndUpload } = useImageValidation({
@@ -74,7 +86,7 @@ const handleCoverUpload = async (e) => {
 
     const result = await validateAndUpload(file, uploadCover.handleUpload);
     if (result) {
-        form.cover = result;
+        form.category_photo = result;
         e.target.value = '';
     } else {
         e.target.value = '';
@@ -82,9 +94,14 @@ const handleCoverUpload = async (e) => {
 };
 
 const { errors, validateForm, isValid } = useFormValidation(form, {
-    title: (val) => !val.trim(),
+    english_name: (val) => {
+        const trimmed = val?.trim() || '';
+        if (!trimmed) return true;
+        const englishRegex = /^[a-zA-Z\s]+$/;
+        return !englishRegex.test(trimmed);
+    },
     description: (val) => !val.trim(),
-    cover: (val) => !val,
+    category_photo: (val) => !val,
 });
 
 const submitForm = () => {
@@ -93,6 +110,54 @@ const submitForm = () => {
         showAddCard.value = true;
     }
 };
+
+const publishCategory = async () => {
+    loading.value = true;
+    validateForm();
+    if (!isValid.value) return;
+
+    try {
+        const response = await categoryStore.createCategory({
+            english_name: form.english_name,
+            description: form.description,
+            category_photo: form.category_photo,
+        });
+
+        const categoryId = response?.data?.id;
+        if (!categoryId) {
+            push.error({
+                title: 'Ошибка создания категории',
+                message: 'Категория не создана',
+            });
+            throw new Error('Не удалось создать категорию');
+        }
+
+        await Promise.all(form.cards.map((card) => categoryStore.createCard(categoryId, card)));
+    } catch (error) {
+        console.error(error);
+        push.error({
+            title: 'Ошибка создания категории',
+            message: 'Категория не создана',
+        });
+    } finally {
+        loading.value = false;
+    }
+};
+
+watch(
+    () => props.updating,
+    (isUpdating) => {
+        if (!isUpdating || !currentCategory.value?.cards) return;
+
+        form.cards = currentCategory.value.cards.map((item) => ({
+            ...item,
+            card_photo: `${import.meta.env.VITE_STORAGE_URI}/${currentCategory.value.id}/cards/${item.id}/word_image/${item.card_photo}`,
+            video: `${import.meta.env.VITE_STORAGE_URI}/${currentCategory.value.id}/cards/${item.id}/video/${item.video}`,
+            audio: `${import.meta.env.VITE_STORAGE_URI}/${currentCategory.value.id}/cards/${item.id}/audio/${item.audio}`,
+        }));
+    },
+    { immediate: true }
+);
 
 onUnmounted(() => uploadCover.cleanup());
 </script>

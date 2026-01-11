@@ -39,7 +39,7 @@
                 <span v-if="errors.cards" class="error-msg">Добавьте хотя бы одну карточку</span>
 
                 <div class="btn_container">
-                    <button class="btn publish-btn" @click="publishCategory">Опубликовать</button>
+                    <button class="btn publish-btn" @click="openPublishModal">Опубликовать</button>
                     <button class="btn continue-btn" @click="openPreviewModal">Предпросмотр</button>
                 </div>
             </div>
@@ -67,6 +67,14 @@
                 @close="closePreviewModal"
                 @confirm="previewCategory"
             />
+
+            <default-popup
+                :is-visible="showPreviewModal"
+                title="Вы уверены что хотете Опубликовать?"
+                confirm-text="Продолжить"
+                @close="closePublishModal"
+                @confirm="publishCategory"
+            />
         </div>
     </div>
 </template>
@@ -74,14 +82,14 @@
 <script setup>
 import { ref, computed, watch } from 'vue';
 import { useFormValidation } from '@/composables/useFormValidation';
-import cardCreateForm from './cardCreateForm.vue';
-import DefaultPopup from './popups/defaultPopup.vue';
-import LessonsPage from './Learning/LessonsPage.vue';
+import cardCreateForm from '../CreateCategory/cardCreateForm.vue';
+import DefaultPopup from '../popups/defaultPopup.vue';
+import LessonsPage from '../Learning/LessonsPage.vue';
 
 const props = defineProps({
     modelValue: { type: Object, default: () => ({ cards: [] }) },
 });
-const emit = defineEmits(['update:modelValue']);
+const emit = defineEmits(['update:modelValue', 'publish']);
 
 const cards = computed({
     get: () => props.modelValue.cards,
@@ -96,6 +104,7 @@ const { errors, validateForm } = useFormValidation(
 );
 
 const showDeleteModal = ref(false);
+const showPublishModal = ref(false);
 const cardToDelete = ref(null);
 const createCardOpen = ref(false);
 const editingIndex = ref(null);
@@ -155,6 +164,14 @@ const closeCardForm = () => {
 const closeDeleteModal = () => {
     showDeleteModal.value = false;
     cardToDelete.value = null;
+};
+
+const closePublishModal = () => {
+    showPreviewModal.value = false;
+};
+
+const openPublishModal = () => {
+    showPreviewModal.value = true;
 };
 
 const enterSelectionMode = () => {
@@ -246,7 +263,7 @@ const playAudio = (src) => {
 const publishCategory = () => {
     validateForm();
     if (Object.values(errors).every((e) => !e)) {
-        console.log('Публикация:', { cards: cards.value });
+        emit('publish');
     }
 };
 </script>

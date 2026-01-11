@@ -33,6 +33,11 @@ const routes = [
                 component: () => import('@/pages/AddCategoriesPage.vue'),
             },
             {
+                path: 'editCategory/:id',
+                name: 'editCategory',
+                component: () => import('@/pages/EditCategoryPage.vue'),
+            },
+            {
                 path: 'rating',
                 name: 'rating',
                 component: () => import('@/pages/RatingPage.vue'),

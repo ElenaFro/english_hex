@@ -16,8 +16,8 @@
                                     class="hidden"
                                     @change="handlePhotoUpload"
                                 />
-                                <div v-if="localForm.photo" class="preview">
-                                    <img :src="localForm.photo" alt="Photo preview" />
+                                <div v-if="localForm.card_photo" class="preview">
+                                    <img :src="localForm.card_photo" alt="Photo preview" />
                                 </div>
                                 <div v-else class="placeholder">
                                     <img src="@/assets/icons/add_icon.svg" class="plus" alt="add" />
@@ -68,7 +68,11 @@
                         ref="videoInput"
                         @change="handleVideoUpload"
                     />
-                    <button class="delete-btn" :disabled="!localForm.video" @click="deleteVideo">
+                    <button
+                        class="delete-btn"
+                        :disabled="!localForm.video"
+                        @click="requestDelete('video')"
+                    >
                         <img src="@/assets/icons/delete_icon.svg" alt="Delete" />
                     </button>
                 </div>
@@ -113,7 +117,7 @@
                             <button
                                 class="delete-btn"
                                 :disabled="!localForm.audio"
-                                @click="deleteAudio"
+                                @click="requestDelete('audio')"
                             >
                                 <img src="@/assets/icons/delete_icon.svg" alt="Delete" />
                             </button>
@@ -122,10 +126,22 @@
                 </div>
                 <div class="btn-container">
                     <button class="action-btn" @click="saveCard">Сохранить</button>
-                    <button class="action-btn outline" @click="previewCard">Предпросмотр</button>
+                    <button
+                        :disabled="previewDisabled"
+                        class="action-btn outline"
+                        @click="previewCard"
+                    >
+                        Предпросмотр
+                    </button>
                 </div>
             </div>
         </div>
+        <defaultPopup
+            :is-visible="openDeletePopup"
+            title="Вы уверены что хотете удалить выбранный элемент?"
+            @confirm="deleteElement"
+            @close="closeDeletePopup"
+        />
     </div>
 </template>
 
@@ -133,7 +149,8 @@
 import { computed, reactive, ref, watch, onMounted } from 'vue';
 import { useFormValidation } from '@/composables/useFormValidation';
 import { useFileUpload } from '@/composables/useFileUpload';
-import LessonsPage from './Learning/LessonsPage.vue';
+import LessonsPage from '../Learning/LessonsPage.vue';
+import defaultPopup from '../popups/defaultPopup.vue';
 import { useImageValidation } from '@/composables/useImageValidation';
 import { useVideoValidation } from '@/composables/useVideoValidation';
 
@@ -141,7 +158,7 @@ const props = defineProps({
     modelValue: {
         type: Object,
         default: () => ({
-            photo: null,
+            card_photo: null,
             video: null,
             translation_word: '',
             word: '',
@@ -153,6 +170,8 @@ const emit = defineEmits(['update:modelValue', 'save', 'close']);
 
 const localForm = reactive({ ...props.modelValue });
 const photoUpload = useFileUpload();
+const openDeletePopup = ref(false);
+const deleteTarget = ref(null);
 
 watch(
     () => props.modelValue,
@@ -186,7 +205,7 @@ const { errors, validateForm } = useFormValidation(localForm, {
         const englishRegex = /^[а-яА-Я\s]+$/;
         return !englishRegex.test(trimmed);
     },
-    photo: (val) => !val,
+    card_photo: (val) => !val,
     video: (val) => !val,
     audio: (val) => !val,
 });
@@ -201,7 +220,7 @@ const handlePhotoUpload = async (e) => {
 
     const result = await validateAndUpload(file, photoUpload.handleUpload);
     if (result) {
-        localForm.photo = result;
+        localForm.card_photo = result;
         e.target.value = '';
     } else {
         e.target.value = '';
@@ -224,10 +243,11 @@ const handleVideoUpload = async (e) => {
     }
 };
 
-const deleteVideo = () => {
-    localForm.video = null;
-    videoUpload.cleanup();
+const requestDelete = (type) => {
+    deleteTarget.value = type;
+    openDeletePopup.value = true;
 };
+
 const videoInput = ref(null);
 
 const audioUpload = useFileUpload();
@@ -259,7 +279,7 @@ const englishAdded = computed(() => [
 const wordAdded = computed(() => [{ 'green-border': localForm.word, 'error-border': errors.word }]);
 
 const photoAdded = computed(() => [
-    { 'green-border': localForm.photo, 'error-border': errors.photo },
+    { 'green-border': localForm.card_photo, 'error-border': errors.card_photo },
 ]);
 
 const saveCard = () => {
@@ -274,6 +294,34 @@ const saveCard = () => {
 const previewCard = () => (showPreview.value = true);
 const closePreview = () => (showPreview.value = false);
 const closeForm = () => emit('close');
+
+const previewDisabled = computed(
+    () =>
+        !localForm?.card_photo ||
+        !localForm?.video ||
+        !localForm?.translation_word ||
+        !localForm?.word ||
+        !localForm?.audio
+);
+
+const closeDeletePopup = () => {
+    openDeletePopup.value = false;
+    deleteTarget.value = null;
+};
+
+const deleteElement = () => {
+    if (deleteTarget.value === 'video') {
+        localForm.video = null;
+        videoUpload.cleanup();
+    }
+
+    if (deleteTarget.value === 'audio') {
+        localForm.audio = null;
+        audioUpload.cleanup();
+    }
+
+    closeDeletePopup();
+};
 </script>
 
 <style scoped>
