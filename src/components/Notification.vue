@@ -10,6 +10,9 @@
                 />
             </div>
         </div>
+        <button v-if="isAdmin" @click="goToCreateNotify" class="button button--blue">
+            Новое уведомление
+        </button>
     </div>
 </template>
 
@@ -17,8 +20,11 @@
 import { ref, onMounted, onUnmounted, computed } from 'vue';
 import NotificationItem from './NotificationItem.vue';
 import { useUserStore } from '@/stores/user';
+import { useRouter } from 'vue-router';
 
+const router = useRouter();
 const userStore = useUserStore();
+const isAdmin = computed(() => userStore.isAdmin);
 const notifications = computed(() => userStore.notifications);
 const notificationItems = ref([]);
 
@@ -54,6 +60,10 @@ onMounted(async () => {
     });
 });
 
+const goToCreateNotify = () => {
+    router.push({ name: 'createNotification' });
+};
+
 onUnmounted(() => {
     if (observer) {
         observer.disconnect();
@@ -88,5 +98,11 @@ onUnmounted(() => {
     padding-left: 20px;
     padding-right: 20px;
     gap: 4px;
+}
+
+.button {
+    position: absolute;
+    right: 4%;
+    bottom: 4%;
 }
 </style>

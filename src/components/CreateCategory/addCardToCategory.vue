@@ -1,7 +1,12 @@
 <template>
     <div class="w-100">
         <div v-if="showPreview" class="bg-image-preview">
-            <lessons-page :props-cards="cards" @close-preview="closePreview" />
+            <lessons-page
+                :props-cards="cards"
+                is-preview
+                @close-preview="closePreview"
+                @publish="openPublishModal"
+            />
         </div>
         <div v-else>
             <div v-if="!createCardOpen" class="form-group">
@@ -69,7 +74,7 @@
             />
 
             <default-popup
-                :is-visible="showPreviewModal"
+                :is-visible="showPublishModal"
                 title="Вы уверены что хотете Опубликовать?"
                 confirm-text="Продолжить"
                 @close="closePublishModal"
@@ -167,11 +172,12 @@ const closeDeleteModal = () => {
 };
 
 const closePublishModal = () => {
-    showPreviewModal.value = false;
+    showPublishModal.value = false;
 };
 
 const openPublishModal = () => {
-    showPreviewModal.value = true;
+    closePreview();
+    showPublishModal.value = true;
 };
 
 const enterSelectionMode = () => {
@@ -275,6 +281,7 @@ const publishCategory = () => {
     flex-direction: column;
     width: 100%;
     padding: 0 20px;
+    margin-bottom: 40%;
 }
 
 .cards {

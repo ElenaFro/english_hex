@@ -146,6 +146,9 @@ watch(
                 case 'notifications':
                     currentTitle.value = 'Уведомления';
                     break;
+                case 'createNotification':
+                    currentTitle.value = 'Уведомления';
+                    break;
                 case 'addCategories':
                     currentTitle.value = 'Редактирование';
                     break;

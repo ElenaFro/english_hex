@@ -20,6 +20,9 @@
                 {{ isLastCard ? 'Закончить' : 'Продолжить' }}
             </button>
         </div>
+        <div v-if="isPreview" class="button-container center">
+            <button class="button publish-btn" @click="emit('publish')">Опубликовать</button>
+        </div>
         <defaultPopup
             :isVisible="isNotEndedLearn"
             :message="beforLeaveMessage"
@@ -40,9 +43,10 @@ import { useCategoriesStore } from '@/stores/categories';
 
 const props = defineProps({
     propsCards: { type: Array, default: () => [] },
+    isPreview: { type: Boolean, default: false },
 });
 
-const emit = defineEmits(['closePreview']);
+const emit = defineEmits(['closePreview', 'publish']);
 
 const cards = ref(props.propsCards);
 const currentCardIndex = ref(0);
@@ -210,6 +214,23 @@ const getAudioUrl = (card) => {
     background-color: white;
     color: #222;
     border: 2px solid #311d5d;
+}
+
+.publish-btn {
+    background: #2e236d;
+    color: white;
+    padding: 9px 24px;
+    font-family: Mulish;
+    font-weight: 600;
+    font-style: SemiBold;
+    font-size: 18px;
+    line-height: 120%;
+    letter-spacing: 0%;
+}
+
+.center {
+    align-content: center;
+    max-width: fit-content;
 }
 
 @media (max-width: 480px) {
