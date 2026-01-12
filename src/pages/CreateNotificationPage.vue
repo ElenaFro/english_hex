@@ -63,7 +63,7 @@ const publishNotify = async () => {
 
     try {
         // const response = await categoryStore.createCategory({
-        //     english_name: form.english_name,
+        //     name: form.name,
         //     description: form.description,
         //     category_photo: form.category_photo,
         // });

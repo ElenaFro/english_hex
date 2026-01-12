@@ -16,7 +16,7 @@
                 v-for="section in sections"
                 :key="section.id"
                 :id="section.id"
-                :sectionName="section.english_name"
+                :sectionName="section.name"
                 :imgUrl="section.category_photo"
                 :backgroundColor="randomColor(section.id)"
                 :progress="section.completed_category"

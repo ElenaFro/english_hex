@@ -17,10 +17,10 @@
                 <span v-if="coverError" class="error-msg text-center">{{ coverError }}</span>
             </div>
 
-            <div class="form-group" :class="{ error: errors.english_name }">
+            <div class="form-group" :class="{ error: errors.name }">
                 <label>Название категории</label>
-                <input v-model="form.english_name" type="text" placeholder="Введите название" />
-                <span v-if="errors.english_name" class="error-msg">Поле заполнено некорректно</span>
+                <input v-model="form.name" type="text" placeholder="Введите название" />
+                <span v-if="errors.name" class="error-msg">Поле заполнено некорректно</span>
             </div>
 
             <div class="form-group" :class="{ error: errors.description }">
@@ -64,7 +64,7 @@ const currentCategory = computed(() => categoryStore.chosedCategory);
 const loading = ref(false);
 
 const form = reactive({
-    english_name: props.updating ? currentCategory.value.english_name : '',
+    name: props.updating ? currentCategory.value.name : '',
     description: props.updating ? currentCategory.value.description : '',
     category_photo: props.updating
         ? `${import.meta.env.VITE_STORAGE_URI}/${currentCategory.value?.id}/images/${currentCategory.value.category_photo}`
@@ -94,7 +94,7 @@ const handleCoverUpload = async (e) => {
 };
 
 const { errors, validateForm, isValid } = useFormValidation(form, {
-    english_name: (val) => {
+    name: (val) => {
         const trimmed = val?.trim() || '';
         if (!trimmed) return true;
         const englishRegex = /^[a-zA-Z\s]+$/;
@@ -118,7 +118,7 @@ const publishCategory = async () => {
 
     try {
         const response = await categoryStore.createCategory({
-            english_name: form.english_name,
+            name: form.name,
             description: form.description,
             category_photo: form.category_photo,
         });

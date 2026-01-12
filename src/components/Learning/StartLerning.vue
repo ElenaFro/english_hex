@@ -90,7 +90,7 @@ const previewImages = computed(() => {
     );
 });
 
-const title = computed(() => currentCategory.value.english_name);
+const title = computed(() => currentCategory.value.name);
 const description = computed(() => useCategoriesStore().chosedCategory.description);
 const categoryComplite = computed(() => currentCategory.value.completed_category);
 const isAdmin = computed(() => userStore.isAdmin);
@@ -99,11 +99,11 @@ const goToGames = () => {
 };
 
 const imgSource = computed(() => {
-    if (currentCategory.value?.english_name === 'Животные') return animalsImg;
-    if (currentCategory.value?.english_name === 'Базовая одежда') return clothesImg;
-    if (currentCategory.value?.english_name === 'Части тела') return body_partImg;
-    if (currentCategory.value?.english_name === 'Семья') return femalyImg;
-    if (currentCategory.value?.english_name === 'Базовая еда') return food_baseImg;
+    if (currentCategory.value?.name === 'Животные') return animalsImg;
+    if (currentCategory.value?.name === 'Базовая одежда') return clothesImg;
+    if (currentCategory.value?.name === 'Части тела') return body_partImg;
+    if (currentCategory.value?.name === 'Семья') return femalyImg;
+    if (currentCategory.value?.name === 'Базовая еда') return food_baseImg;
     return house_baseImg;
 });
 
