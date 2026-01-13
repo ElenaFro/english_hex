@@ -10,7 +10,7 @@
                         @change="handleCoverUpload"
                     />
                     <div v-if="form.category_photo" class="cover-preview">
-                        <img :src="form.category_photo" alt="cover" />
+                        <img :src="form.category_photo_preview" alt="cover" />
                     </div>
                     <div v-else class="plus">+</div>
                 </label>
@@ -36,8 +36,9 @@
         <add-card-to-category
             v-else
             :model-value="{ cards: form.cards }"
+            :loading="loading"
             @update:model-value="(val) => (form.cards = val.cards)"
-            @publish="publishCategory"
+            @publish="saveAction"
         />
     </div>
 </template>
@@ -53,27 +54,34 @@ import { useFileUpload } from '@/composables/useFileUpload';
 import { useImageValidation } from '@/composables/useImageValidation';
 import { useCategoriesStore } from '@/stores/categories';
 import { Notivue, Notification, push } from 'notivue';
+import { useRouter } from 'vue-router';
 
 const props = defineProps({
     updating: { type: Boolean, default: false },
 });
 
+const router = useRouter();
 const showAddCard = ref(false);
 const categoryStore = useCategoriesStore();
 const currentCategory = computed(() => categoryStore.chosedCategory);
 const loading = ref(false);
 
+const saveAction = computed(() => (props.updating ? updateCategory : publishCategory));
+
 const form = reactive({
     name: props.updating ? currentCategory.value.name : '',
     description: props.updating ? currentCategory.value.description : '',
-    category_photo: props.updating
-        ? `${import.meta.env.VITE_STORAGE_URI}/${currentCategory.value?.id}/images/${currentCategory.value.category_photo}`
-        : null,
+    category_photo: props.updating ? currentCategory.value?.category_photo : null,
+    category_photo_preview: null,
     cards: props.updating ? currentCategory.value.cards : [],
 });
 
+if (props.updating && currentCategory.value?.category_photo) {
+    form.category_photo_preview = `${import.meta.env.VITE_STORAGE_URI}/${currentCategory.value.id}/images/${currentCategory.value.category_photo}`;
+}
+
 const uploadCover = useFileUpload();
-const { error: coverError, validateAndUpload } = useImageValidation({
+const { error: coverError, validate } = useImageValidation({
     minWidth: 50,
     minHeight: 50,
     maxWidth: 100,
@@ -84,13 +92,12 @@ const handleCoverUpload = async (e) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
-    const result = await validateAndUpload(file, uploadCover.handleUpload);
-    if (result) {
-        form.category_photo = result;
-        e.target.value = '';
-    } else {
-        e.target.value = '';
-    }
+    const isValid = await validate(file);
+    if (!isValid) return;
+
+    form.category_photo_preview = URL.createObjectURL(file);
+
+    form.category_photo = file;
 };
 
 const { errors, validateForm, isValid } = useFormValidation(form, {
@@ -123,7 +130,7 @@ const publishCategory = async () => {
             category_photo: form.category_photo,
         });
 
-        const categoryId = response?.data?.id;
+        const categoryId = response?.category?.id;
         if (!categoryId) {
             push.error({
                 title: 'Ошибка создания категории',
@@ -133,11 +140,49 @@ const publishCategory = async () => {
         }
 
         await Promise.all(form.cards.map((card) => categoryStore.createCard(categoryId, card)));
+        push.success({
+            message: 'Категория успешно создана',
+        });
+        router.push({ name: 'mainPage' });
     } catch (error) {
         console.error(error);
         push.error({
             title: 'Ошибка создания категории',
             message: 'Категория не создана',
+        });
+    } finally {
+        loading.value = false;
+    }
+};
+
+const updateCategory = async () => {
+    loading.value = true;
+    validateForm();
+    if (!isValid.value) return;
+
+    try {
+        const response = await categoryStore.updateCategory({
+            id: currentCategory.value.id,
+            name: form.name,
+            description: form.description,
+            category_photo: form.category_photo,
+        });
+
+        const categoryId = response?.data?.id;
+        if (!categoryId) {
+            push.error({
+                title: 'Ошибка обновления категории',
+                message: 'Категория не обновлена',
+            });
+            throw new Error('Не удалось обновить категорию');
+        }
+
+        await Promise.all(form.cards.map((card) => categoryStore.updateCard(card)));
+    } catch (error) {
+        console.error(error);
+        push.error({
+            title: 'Ошибка обновления категории',
+            message: 'Категория не обновлена',
         });
     } finally {
         loading.value = false;
@@ -151,15 +196,20 @@ watch(
 
         form.cards = currentCategory.value.cards.map((item) => ({
             ...item,
-            card_photo: `${import.meta.env.VITE_STORAGE_URI}/${currentCategory.value.id}/cards/${item.id}/word_image/${item.card_photo}`,
-            video: `${import.meta.env.VITE_STORAGE_URI}/${currentCategory.value.id}/cards/${item.id}/video/${item.video}`,
-            audio: `${import.meta.env.VITE_STORAGE_URI}/${currentCategory.value.id}/cards/${item.id}/audio/${item.audio}`,
+            card_photo_preview: `${import.meta.env.VITE_STORAGE_URI}/${currentCategory.value.id}/cards/${item.id}/word_image/${item.card_photo}`,
+            video_preview: `${import.meta.env.VITE_STORAGE_URI}/${currentCategory.value.id}/cards/${item.id}/video/${item.video}`,
+            audio_preview: `${import.meta.env.VITE_STORAGE_URI}/${currentCategory.value.id}/cards/${item.id}/audio/${item.audio}`,
         }));
     },
     { immediate: true }
 );
 
-onUnmounted(() => uploadCover.cleanup());
+onUnmounted(() => {
+    if (form.category_photo_preview?.startsWith('blob:')) {
+        URL.revokeObjectURL(form.category_photo_preview);
+    }
+    uploadCover.cleanup();
+});
 </script>
 
 <style scoped>

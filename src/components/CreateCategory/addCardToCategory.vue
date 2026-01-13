@@ -36,8 +36,8 @@
                             @change="toggleCardSelection(card.id)"
                             class="card-checkbox"
                         />
-                        <div v-if="card.photo" class="card-img">
-                            <img :src="card.photo" alt="card" />
+                        <div v-if="card.card_photo" class="card-img">
+                            <img :src="card.card_photo_preview" alt="card" />
                         </div>
                     </div>
                 </div>
@@ -77,6 +77,7 @@
                 :is-visible="showPublishModal"
                 title="Вы уверены что хотете Опубликовать?"
                 confirm-text="Продолжить"
+                :loading="loading"
                 @close="closePublishModal"
                 @confirm="publishCategory"
             />
@@ -93,6 +94,7 @@ import LessonsPage from '../Learning/LessonsPage.vue';
 
 const props = defineProps({
     modelValue: { type: Object, default: () => ({ cards: [] }) },
+    loading: { type: Boolean, default: false },
 });
 const emit = defineEmits(['update:modelValue', 'publish']);
 
@@ -121,7 +123,7 @@ const selectedCards = ref(new Set());
 const addCard = () => {
     editingIndex.value = null;
     editingCard.value = {
-        photo: null,
+        card_photo: null,
         video: null,
         translation_word: '',
         word: '',

@@ -4,55 +4,45 @@ import { ref } from 'vue';
 export function useImageValidation({ minWidth = 0, minHeight = 0, maxWidth, maxHeight }) {
     const error = ref(null);
 
-    const validateAndUpload = async (file, uploadHandler) => {
+    const validate = async (file) => {
         error.value = null;
 
-        if (!file.type.startsWith('image/')) {
-            error.value = 'Выберите только изображение.';
-            return null;
+        if (!file || !file.type.startsWith('image/')) {
+            error.value = 'Выберите изображение.';
+            return false;
         }
 
         return new Promise((resolve) => {
             const img = new Image();
+
             img.onload = () => {
                 const { naturalWidth: width, naturalHeight: height } = img;
 
                 if (
                     width < minWidth ||
-                    width > maxWidth ||
+                    (maxWidth && width > maxWidth) ||
                     height < minHeight ||
-                    height > maxHeight
+                    (maxHeight && height > maxHeight)
                 ) {
-                    error.value = `Размер изображения должен быть от ${minWidth}×${minHeight} до ${maxWidth}×${maxHeight} пикселей. Текущий: ${width}×${height}.`;
-                    resolve(null);
+                    error.value = `Размер изображения должен быть от ${minWidth}×${minHeight} до ${maxWidth}×${maxHeight}. Текущий: ${width}×${height}.`;
+                    resolve(false);
                     return;
                 }
 
-                const uploadResult = uploadHandler(file);
+                resolve(true);
+            };
 
-                if (uploadResult && typeof uploadResult.then === 'function') {
-                    uploadResult
-                        .then((result) => {
-                            resolve(result);
-                        })
-                        .catch((err) => {
-                            error.value = 'Ошибка загрузки изображения.';
-                            resolve(null);
-                        });
-                } else {
-                    resolve(uploadResult);
-                }
-            };
             img.onerror = () => {
-                error.value = 'Ошибка загрузки изображения.';
-                resolve(null);
+                error.value = 'Ошибка чтения изображения.';
+                resolve(false);
             };
+
             img.src = URL.createObjectURL(file);
         });
     };
 
     return {
         error,
-        validateAndUpload,
+        validate,
     };
 }

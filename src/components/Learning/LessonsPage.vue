@@ -20,7 +20,7 @@
                 {{ isLastCard ? 'Закончить' : 'Продолжить' }}
             </button>
         </div>
-        <div v-if="isPreview" class="button-container center">
+        <div v-if="isPreview && propsCards.length > 1" class="button-container center">
             <button class="button publish-btn" @click="emit('publish')">Опубликовать</button>
         </div>
         <defaultPopup
@@ -130,13 +130,13 @@ const handleTransitionEnd = () => {
 };
 
 const getVideoUrl = (card) => {
-    if (props.propsCards.length > 0) return card.video;
+    if (props.propsCards.length > 0) return card.video_preview;
     if (!card || !card.id || !card.video) return '';
     return `${import.meta.env.VITE_STORAGE_URI}/${chosedCategory.value.id}/cards/${card.id}/video/${card.video}`;
 };
 
 const getAudioUrl = (card) => {
-    if (props.propsCards.length > 0) return card.audio;
+    if (props.propsCards.length > 0) return card.audio_preview;
     if (!card || !card.id || !card.audio) return '';
     return `${import.meta.env.VITE_STORAGE_URI}/${chosedCategory.value.id}/cards/${card.id}/audio/${card.audio}`;
 };

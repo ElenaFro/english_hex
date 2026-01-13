@@ -1,6 +1,6 @@
 <template>
     <div v-if="showPreview" class="bg-image-preview">
-        <lessons-page :props-cards="[localForm]" @close-preview="closePreview" />
+        <lessons-page :props-cards="[localForm]" is-preview @close-preview="closePreview" />
     </div>
 
     <div v-else class="add-card-container font">
@@ -16,8 +16,8 @@
                                     class="hidden"
                                     @change="handlePhotoUpload"
                                 />
-                                <div v-if="localForm.card_photo" class="preview">
-                                    <img :src="localForm.card_photo" alt="Photo preview" />
+                                <div v-if="localForm.card_photo_preview" class="preview">
+                                    <img :src="localForm.card_photo_preview" alt="Photo preview" />
                                 </div>
                                 <div v-else class="placeholder">
                                     <img src="@/assets/icons/add_icon.svg" class="plus" alt="add" />
@@ -70,7 +70,7 @@
                     />
                     <button
                         class="delete-btn"
-                        :disabled="!localForm.video"
+                        :disabled="!localForm.video_preview"
                         @click="requestDelete('video')"
                     >
                         <img src="@/assets/icons/delete_icon.svg" alt="Delete" />
@@ -116,7 +116,7 @@
                             />
                             <button
                                 class="delete-btn"
-                                :disabled="!localForm.audio"
+                                :disabled="!localForm.audio_preview"
                                 @click="requestDelete('audio')"
                             >
                                 <img src="@/assets/icons/delete_icon.svg" alt="Delete" />
@@ -180,14 +180,14 @@ watch(
 );
 watch(localForm, () => emit('update:modelValue', localForm), { deep: true });
 
-const { error: coverError, validateAndUpload } = useImageValidation({
+const { error: coverError, validate } = useImageValidation({
     minWidth: 150,
     minHeight: 120,
     maxWidth: 320,
     maxHeight: 465,
 });
 
-const { error: videoError, validateAndUpload: validateVideoAndUpload } = useVideoValidation({
+const { error: videoError, validateVideo } = useVideoValidation({
     exactWidth: 720,
     exactHeight: 960,
 });
@@ -218,13 +218,12 @@ const handlePhotoUpload = async (e) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
-    const result = await validateAndUpload(file, photoUpload.handleUpload);
-    if (result) {
-        localForm.card_photo = result;
-        e.target.value = '';
-    } else {
-        e.target.value = '';
-    }
+    const isValid = await validate(file);
+    if (!isValid) return;
+
+    localForm.card_photo_preview = URL.createObjectURL(file);
+
+    localForm.card_photo = file;
 };
 
 const videoUpload = useFileUpload();
@@ -234,13 +233,12 @@ const handleVideoUpload = async (e) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
-    const result = await validateVideoAndUpload(file, videoUpload.handleUpload);
-    if (result) {
-        localForm.video = result;
-        e.target.value = '';
-    } else {
-        e.target.value = '';
-    }
+    const isValid = await validateVideo(file);
+    if (!isValid) return;
+
+    localForm.video_preview = URL.createObjectURL(file);
+
+    localForm.video = file;
 };
 
 const requestDelete = (type) => {
@@ -252,10 +250,15 @@ const videoInput = ref(null);
 
 const audioUpload = useFileUpload();
 const triggerAudioUpload = () => audioInput.value?.click();
+
 const handleAudioUpload = (e) => {
     const file = e.target.files?.[0];
-    if (file) localForm.audio = audioUpload.handleUpload(file);
+    if (!file) return;
+
+    localForm.audio_preview = audioUpload.handleUpload(file);
+    localForm.audio = file;
 };
+
 const deleteAudio = () => {
     localForm.audio = null;
     audioUpload.cleanup();
@@ -263,7 +266,9 @@ const deleteAudio = () => {
 const audioInput = ref(null);
 
 const playAudio = () => {
-    if (localForm.audio) new Audio(localForm.audio).play().catch(console.error);
+    if (localForm.audio_preview) {
+        new Audio(localForm.audio_preview).play().catch(console.error);
+    }
 };
 
 const addVideoText = computed(() => (localForm.video ? 'Видео загружено' : 'Загрузить видео'));
@@ -312,11 +317,13 @@ const closeDeletePopup = () => {
 const deleteElement = () => {
     if (deleteTarget.value === 'video') {
         localForm.video = null;
+        localForm.video_preview = null;
         videoUpload.cleanup();
     }
 
     if (deleteTarget.value === 'audio') {
         localForm.audio = null;
+        localForm.audio_preview = null;
         audioUpload.cleanup();
     }
 
