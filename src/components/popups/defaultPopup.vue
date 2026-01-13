@@ -7,7 +7,12 @@
             <slot name="content"></slot>
             <div class="popup-actions">
                 <slot name="actions">
-                    <button v-if="confirmText" class="confirm-button" @click="confirmAction">
+                    <button
+                        v-if="confirmText"
+                        :loading="loading"
+                        class="confirm-button"
+                        @click="confirmAction"
+                    >
                         {{ confirmText }}
                     </button>
                 </slot>
@@ -45,6 +50,10 @@ const props = defineProps({
         default: false,
     },
     messageLeft: {
+        type: Boolean,
+        default: false,
+    },
+    loading: {
         type: Boolean,
         default: false,
     },

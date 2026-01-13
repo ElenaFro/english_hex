@@ -1,3 +1,4 @@
+// src/composables/useVideoValidation.js
 import { ref } from 'vue';
 
 export function useVideoValidation({
@@ -10,12 +11,12 @@ export function useVideoValidation({
 }) {
     const error = ref(null);
 
-    const validateAndUpload = async (file, uploadHandler) => {
+    const validateVideo = async (file) => {
         error.value = null;
 
-        if (!file.type.startsWith('video/')) {
-            error.value = 'Выберите только видео-файл.';
-            return null;
+        if (!file || !file.type.startsWith('video/')) {
+            error.value = 'Выберите видео-файл.';
+            return false;
         }
 
         return new Promise((resolve) => {
@@ -25,46 +26,37 @@ export function useVideoValidation({
             video.onloadedmetadata = () => {
                 const { videoWidth: width, videoHeight: height } = video;
 
-                if (exactWidth !== undefined && exactHeight !== undefined) {
-                    if (width !== exactWidth || height !== exactHeight) {
-                        error.value = `Разрешение видео должно быть ровно ${exactWidth}×${exactHeight} пикселей. Текущее: ${width}×${height}.`;
-                        URL.revokeObjectURL(video.src);
-                        resolve(null);
-                        return;
-                    }
-                } else {
-                    if (
-                        width < minWidth ||
+                if (
+                    exactWidth !== undefined &&
+                    exactHeight !== undefined &&
+                    (width !== exactWidth || height !== exactHeight)
+                ) {
+                    error.value = `Разрешение видео должно быть ${exactWidth}×${exactHeight}px. Сейчас: ${width}×${height}px.`;
+                    URL.revokeObjectURL(video.src);
+                    resolve(false);
+                    return;
+                }
+
+                if (
+                    exactWidth === undefined &&
+                    (width < minWidth ||
                         width > maxWidth ||
                         height < minHeight ||
-                        height > maxHeight
-                    ) {
-                        error.value = `Разрешение видео должно быть от ${minWidth}×${minHeight} до ${maxWidth}×${maxHeight} пикселей. Текущее: ${width}×${height}.`;
-                        URL.revokeObjectURL(video.src);
-                        resolve(null);
-                        return;
-                    }
+                        height > maxHeight)
+                ) {
+                    error.value = `Разрешение видео должно быть от ${minWidth}×${minHeight} до ${maxWidth}×${maxHeight}px. Сейчас: ${width}×${height}px.`;
+                    URL.revokeObjectURL(video.src);
+                    resolve(false);
+                    return;
                 }
 
-                const uploadResult = uploadHandler(file);
-
-                if (uploadResult && typeof uploadResult.then === 'function') {
-                    uploadResult
-                        .then((result) => {
-                            resolve(result);
-                        })
-                        .catch((err) => {
-                            error.value = 'Ошибка загрузки видео.';
-                            resolve(null);
-                        });
-                } else {
-                    resolve(uploadResult);
-                }
+                URL.revokeObjectURL(video.src);
+                resolve(true);
             };
 
             video.onerror = () => {
-                error.value = 'Ошибка загрузки видео.';
-                resolve(null);
+                error.value = 'Ошибка чтения видео.';
+                resolve(false);
             };
 
             video.src = URL.createObjectURL(file);
@@ -73,6 +65,6 @@ export function useVideoValidation({
 
     return {
         error,
-        validateAndUpload,
+        validateVideo,
     };
 }
