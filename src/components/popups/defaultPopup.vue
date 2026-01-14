@@ -7,13 +7,9 @@
             <slot name="content"></slot>
             <div class="popup-actions">
                 <slot name="actions">
-                    <button
-                        v-if="confirmText"
-                        :loading="loading"
-                        class="confirm-button"
-                        @click="confirmAction"
-                    >
-                        {{ confirmText }}
+                    <button v-if="confirmText" :loading="loading" class="confirm-button" @click="confirmAction">
+                        <loader v-if="loading" size="20"/>
+                        <span v-else>{{ confirmText }}</span>
                     </button>
                 </slot>
             </div>
@@ -23,6 +19,7 @@
 
 <script setup>
 import { computed, ref, watch } from 'vue';
+import loader from '@/components/Loader.vue';
 
 const props = defineProps({
     isVisible: {
@@ -91,7 +88,6 @@ const closePopup = () => {
 
 const confirmAction = () => {
     emit('confirm');
-    closePopup();
 };
 </script>
 
@@ -160,11 +156,13 @@ const confirmAction = () => {
     font-weight: 600;
     cursor: pointer;
     transition: background-color 0.2s;
+    min-width: 161px;
 }
 
 .confirm-button:hover {
     background-color: #262567;
 }
+
 .textLeft {
     text-align: left;
 }

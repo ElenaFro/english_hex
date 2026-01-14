@@ -65,6 +65,8 @@ const showAddCard = ref(false);
 const categoryStore = useCategoriesStore();
 const currentCategory = computed(() => categoryStore.chosedCategory);
 const loading = ref(false);
+const originalCategory = ref(null);
+const originalCards = ref([]);
 
 const saveAction = computed(() => (props.updating ? updateCategory : publishCategory));
 
@@ -118,6 +120,94 @@ const submitForm = () => {
     }
 };
 
+const getCategoryDiff = () => {
+    const diff = {};
+
+    if (form.name !== originalCategory.value.name) {
+        diff.name = form.name;
+    }
+
+    if (form.description !== originalCategory.value.description) {
+        diff.description = form.description;
+    }
+
+    if (form.category_photo instanceof File) {
+        diff.category_photo = form.category_photo;
+    }
+
+    return diff;
+};
+
+const CARD_DB_FIELDS = ['id', 'word', 'translation_word', 'card_photo', 'audio', 'video'];
+
+const CARD_IGNORED_FIELDS = ['card_photo_preview', 'video_preview', 'audio_preview'];
+
+const getCardDiff = (current, original) => {
+    const diff = {};
+
+    CARD_DB_FIELDS.forEach((key) => {
+        if (key === 'id') return;
+        if (CARD_IGNORED_FIELDS.includes(key)) return;
+
+        const currentValue = current[key];
+        const originalValue = original[key];
+
+        if (currentValue instanceof File) {
+            diff[key] = currentValue;
+            return;
+        }
+
+        if (currentValue !== originalValue) {
+            diff[key] = currentValue;
+        }
+    });
+
+    return diff;
+};
+
+const getCardsDiff = () => {
+    const toCreate = [];
+    const toUpdate = [];
+    const toDelete = [];
+
+    const originalMap = new Map(originalCards.value.map((card) => [card.id, card]));
+
+    for (const card of form.cards) {
+        if (!card.id || !originalMap.has(card.id)) {
+            const payload = {};
+
+            CARD_DB_FIELDS.forEach((key) => {
+                if (key === 'id') return;
+                if (card[key] instanceof File) payload[key] = card[key];
+                else payload[key] = card[key] ?? null;
+            });
+
+            toCreate.push(payload);
+            continue;
+        }
+
+        const original = originalMap.get(card.id);
+        if (!original) continue;
+
+        const diff = getCardDiff(card, original);
+
+        if (Object.keys(diff).length) {
+            toUpdate.push({
+                id: card.id,
+                ...diff,
+            });
+        }
+
+        originalMap.delete(card.id);
+    }
+
+    for (const [id] of originalMap) {
+        toDelete.push(id);
+    }
+
+    return { toCreate, toUpdate, toDelete };
+};
+
 const publishCategory = async () => {
     loading.value = true;
     validateForm();
@@ -157,27 +247,29 @@ const publishCategory = async () => {
 
 const updateCategory = async () => {
     loading.value = true;
-    validateForm();
-    if (!isValid.value) return;
-
     try {
-        const response = await categoryStore.updateCategory({
-            id: currentCategory.value.id,
-            name: form.name,
-            description: form.description,
-            category_photo: form.category_photo,
-        });
+        validateForm();
+        if (!isValid.value) return;
 
-        const categoryId = response?.data?.id;
-        if (!categoryId) {
-            push.error({
-                title: 'Ошибка обновления категории',
-                message: 'Категория не обновлена',
+        const categoryDiff = getCategoryDiff();
+
+        if (Object.keys(categoryDiff).length) {
+            await categoryStore.updateCategory({
+                id: currentCategory.value.id,
+                ...categoryDiff,
             });
-            throw new Error('Не удалось обновить категорию');
         }
 
-        await Promise.all(form.cards.map((card) => categoryStore.updateCard(card)));
+        const { toCreate, toUpdate, toDelete } = getCardsDiff();
+
+        await Promise.all([
+            ...toCreate.map((card) => categoryStore.createCard(currentCategory.value.id, card)),
+            ...toUpdate.map((card) => categoryStore.updateCard(card)),
+            ...toDelete.map((id) => categoryStore.deleteCard(id)),
+        ]);
+
+        push.success({ message: 'Категория успешно обновлена' });
+        router.push({ name: 'mainPage' });
     } catch (error) {
         console.error(error);
         push.error({
@@ -200,6 +292,30 @@ watch(
             video_preview: `${import.meta.env.VITE_STORAGE_URI}/${currentCategory.value.id}/cards/${item.id}/video/${item.video}`,
             audio_preview: `${import.meta.env.VITE_STORAGE_URI}/${currentCategory.value.id}/cards/${item.id}/audio/${item.audio}`,
         }));
+    },
+    { immediate: true }
+);
+
+watch(
+    () => currentCategory.value,
+    (category) => {
+        if (!category) return;
+
+        originalCategory.value = {
+            name: category.name,
+            description: category.description,
+            category_photo: category.category_photo,
+        };
+
+        originalCards.value = category.cards.map((card) => {
+            const clean = {};
+
+            CARD_DB_FIELDS.forEach((key) => {
+                clean[key] = card[key] ?? null;
+            });
+
+            return clean;
+        });
     },
     { immediate: true }
 );

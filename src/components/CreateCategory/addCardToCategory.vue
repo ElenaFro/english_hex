@@ -218,6 +218,7 @@ const deleteSelectedCards = () => {
     selectedCards.value.clear();
     isSelectionMode.value = false;
     validateForm();
+    closeDeleteModal();
 };
 
 const handleHeaderDeleteClick = () => {
@@ -272,6 +273,7 @@ const publishCategory = () => {
     validateForm();
     if (Object.values(errors).every((e) => !e)) {
         emit('publish');
+        closePublishModal();
     }
 };
 </script>
