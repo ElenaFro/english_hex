@@ -289,7 +289,6 @@ const photoAdded = computed(() => [
 
 const saveCard = () => {
     const valid = validateForm();
-    console.log(valid, errors);
     if (valid) {
         emit('save', localForm);
         emit('close');
