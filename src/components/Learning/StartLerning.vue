@@ -188,11 +188,13 @@ const goToEditCategory = () => {
 .stack-img--1 {
     transform: rotate(5deg) translateX(20px);
     z-index: 2;
+    right: -20px;
 }
 
 /* Передняя */
 .stack-img--2 {
     transform: rotate(0deg);
     z-index: 3;
+    left: 22px;
 }
 </style>

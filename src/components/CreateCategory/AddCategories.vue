@@ -299,7 +299,7 @@ watch(
 watch(
     () => currentCategory.value,
     (category) => {
-        if (!category) return;
+        if (!category || Object.keys(category).length === 0) return;
 
         originalCategory.value = {
             name: category.name,
