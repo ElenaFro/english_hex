@@ -6,10 +6,7 @@
             </div>
             <div class="message-block message-block--shadow">
                 <p class="message-block__title">Привет! Давай учить английский вместе</p>
-                <button
-                    @click="$emit('change-component', 'AgeVerif')"
-                    class="button button--purple"
-                >
+                <button @click="goToNext" class="button button--purple">
                     Начать
                     <img src="@/assets/img/arrow_icon.svg" alt="arrow" />
                 </button>
@@ -18,7 +15,13 @@
     </div>
 </template>
 
-<script setup></script>
+<script setup>
+const emit = defineEmits(['change-component']);
+function goToNext() {
+    localStorage.setItem('salutionShown', 'true');
+    emit('change-component', 'Onboarding');
+}
+</script>
 
 <style scoped>
 .content-container {

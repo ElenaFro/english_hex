@@ -20,8 +20,9 @@
             <p class="content-container__title">Подтверждение регистрации</p>
             <div class="message-block message-block--shadow">
                 <div class="message-block__text">
-                    На указанный email будет отправлена ссылка для подтверждения регистрации —
-                    перейдите по ней, чтобы завершить процесс.
+                    Почти готово! <br />
+                    Мы отправили вам письмо со ссылкой на почту — перейди по ней, чтобы активировать
+                    аккаунт и начать учить слова.
                 </div>
             </div>
         </div>
@@ -36,7 +37,11 @@
 }
 
 .message-block__text {
-    font-size: 18px;
     font-weight: 500;
+    font-style: Medium;
+    font-size: 18px;
+    line-height: 100%;
+    letter-spacing: 0%;
+    color: #262060;
 }
 </style>
