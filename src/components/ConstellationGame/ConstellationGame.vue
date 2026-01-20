@@ -7,23 +7,14 @@
                     <span>{{ timer }} сек</span>
                     <span v-if="errorCount > 0" class="error-count">+1</span>
                 </div>
-                <div class="card-grid">
-                    <div
-                        v-for="(card, index) in displayedCards"
-                        :key="index"
-                        class="card"
-                        :class="{
-                            selected: selectedCards.includes(card),
-                            correct: isCorrect(card),
-                            incorrect: incorrectCards.includes(card),
-                            hidden: !card.visible,
-                            translation: !card.isTranslation,
-                        }"
-                        @click="selectCard(card)"
-                    >
-                        <span v-if="card.visible"> {{ card.displayWord }}</span>
-                    </div>
-                </div>
+                <ConstellationGameGrid
+                    :displayed-cards="displayedCards"
+                    :selected-cards="selectedCards"
+                    :matched-pairs="matchedPairs"
+                    :correct-cards="correctCards"
+                    :incorrect-cards="incorrectCards"
+                    @select:card="selectCard"
+                />
             </section>
         </div>
         <CongratulationPopup
@@ -42,6 +33,7 @@ import { useRoute, useRouter } from 'vue-router';
 //component
 import CongratulationPopup from '../myPlanetPopup/CongratulationPopup.vue';
 import Loader from '../Loader.vue';
+import ConstellationGameGrid from '@/shared/ui/ConstellationGameGrid.vue';
 //stores
 import { useGamesStore } from '@/stores/games';
 import { useCategoriesStore } from '@/stores/categories';
@@ -74,14 +66,6 @@ const shuffleArray = (array) => {
     }
     return array;
 };
-
-const isCorrect = computed(() => (card) => {
-    if (card.isTranslation) {
-        return correctCards.value.includes(card.pairId);
-    }
-
-    return matchedPairs.value.includes(card.pairId);
-});
 
 const nonBg = computed(() => (allMatched.value ? 'pageNoBg' : ''));
 
@@ -136,7 +120,7 @@ const checkMatch = () => {
             }
         }, 1000);
     } else {
-        incorrectCards.value = selectedCards.value.filter((c) => c.isTranslation);
+        incorrectCards.value = selectedCards.value;
         errorCount.value++;
         wrongCount.value++;
         timer.value++;
@@ -245,14 +229,14 @@ onMounted(async () => {
         const pairId = item.id;
         const wordCard = {
             pairId,
-            displayWord: item.word,
+            displayWord: item.translation_word,
             isTranslation: false,
             visible: true,
         };
 
         const translationCard = {
             pairId,
-            displayWord: item.translation_word,
+            displayWord: item.word,
             isTranslation: true,
             visible: true,
         };
@@ -299,31 +283,6 @@ onUnmounted(() => {
     transition: opacity 1s;
 }
 
-.card-grid {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 20px;
-    justify-content: center;
-    align-items: center;
-    width: 100%;
-}
-
-.card {
-    border: 2px solid #262060;
-    width: 100%;
-    aspect-ratio: 5 / 3;
-    max-width: 150px;
-    min-width: 80px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    transition: all 0.5s;
-    border-radius: 20px;
-    margin: 0 auto;
-}
-
-.card,
 .timer-area {
     font-size: 18px;
     font-weight: 700;
@@ -337,19 +296,6 @@ onUnmounted(() => {
     height: 100%;
     object-fit: cover;
     border-radius: 20px;
-}
-
-.selected {
-    border-color: yellow;
-}
-
-.hidden {
-    border: none;
-    width: 0;
-    height: 0;
-    margin: 0;
-    padding: 0;
-    opacity: 0;
 }
 
 .popup {
@@ -374,35 +320,5 @@ onUnmounted(() => {
 .popup-content button {
     margin-top: 10px;
     padding: 5px 10px;
-}
-
-.card:not(.translation) {
-    background: #fff;
-    color: #262060;
-}
-
-.card.translation {
-    background: #262060;
-    color: #fff;
-}
-
-.card.correct:not(.translation) {
-    border-color: #3e9d47;
-}
-
-.card.incorrect:not(.translation) {
-    border-color: #a90000;
-}
-
-.card.translation.correct {
-    background: #3e9d47;
-    border-color: #3e9d47;
-    color: #fff;
-}
-
-.card.translation.incorrect {
-    background: #a90000;
-    border-color: #a90000;
-    color: #fff;
 }
 </style>

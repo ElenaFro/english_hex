@@ -24,7 +24,7 @@
                     <input
                         v-model.trim="nick"
                         type="text"
-                        placeholder="Введите ник"
+                        placeholder="Ник"
                         :class="{
                             'login-form__input-field': true,
                             'login-form__input-field--error': nickError,
@@ -36,7 +36,7 @@
                     <input
                         v-model.trim="email"
                         type="email"
-                        placeholder="example@domain.com"
+                        placeholder="email"
                         :class="{
                             'login-form__input-field': true,
                             'login-form__input-field--error': emailError,
@@ -47,15 +47,15 @@
                     </p>
                     <div class="login-form__input-container">
                         <input
-                        v-model.trim="password"
-                        placeholder="Введите пароль"
-                        :type="showPassword ? 'text' : 'password'"
-                        :class="{
-                            'login-form__input-field': true,
-                            'login-form__input-field--error': passwordError,
-                        }"
-                        @focus="passwordFocused = true"
-                        @blur="passwordFocused = false"
+                            v-model.trim="password"
+                            placeholder="Пароль"
+                            :type="showPassword ? 'text' : 'password'"
+                            :class="{
+                                'login-form__input-field': true,
+                                'login-form__input-field--error': passwordError,
+                            }"
+                            @focus="passwordFocused = true"
+                            @blur="passwordFocused = false"
                         />
 
                         <button type="button" class="show-password-button" @click="togglePassword">
@@ -108,7 +108,9 @@
                 </form>
             </section>
             <section v-else class="confirmText">
-                {{ confirmText }}
+                Почти готово! <br />
+                Мы отправили вам письмо со ссылкой на почту — перейди по ней, чтобы активировать
+                аккаунт и начать учить слова.
             </section>
         </section>
         <loader v-if="loading" />
@@ -163,9 +165,6 @@ const handleClick = () => {
     emit('change-component', 'PrivacyPolicy');
 };
 
-const confirmText =
-    'На указанный email будет отправлена ссылка для подтверждения регистрации — перейдите по ней, чтобы завершить процесс.';
-
 const switchToRegist = () => {
     mode.value = 'register';
 };
@@ -206,8 +205,7 @@ watch(email, (newVal) => {
 });
 
 watch(password, (newVal) => {
-    const passwordRegex =
-        /^(?=.*[0-9])(?=.*[@#*:!;?/_.-])[A-Za-z0-9@#*:!;?/_.-]{8,30}$/;
+    const passwordRegex = /^(?=.*[0-9])(?=.*[@#*:!;?/_.-])[A-Za-z0-9@#*:!;?/_.-]{8,30}$/;
 
     if (!newVal.trim()) {
         passwordError.value = true;
@@ -270,25 +268,24 @@ const formValidator = () => {
         emailErrorText.value = '';
     }
 
- const passwordRegex =
-    /^(?=.*[0-9])(?=.*[@#*:!;?/_.-])[A-Za-z0-9@#*:!;?/_.-]{8,30}$/;
+    const passwordRegex = /^(?=.*[0-9])(?=.*[@#*:!;?/_.-])[A-Za-z0-9@#*:!;?/_.-]{8,30}$/;
     if (!password.value.trim()) {
-    passwordError.value = true;
-    passwordErrorText.value = 'Поле пароль не может быть пустым';
-    isValid = false;
-} else if (password.value.length < 8 || password.value.length > 30) {
-    passwordError.value = true;
-    passwordErrorText.value = 'Пароль должен быть от 8 до 30 символов';
-    isValid = false;
-} else if (!passwordRegex.test(password.value) || password.value.includes(' ')) {
-    passwordError.value = true;
-    passwordErrorText.value =
-        'Пароль должен содержать минимум одну цифру и один спецсимвол (@ # * : ! ; ? / _ -), без пробелов';
-    isValid = false;
-} else {
-    passwordError.value = false;
-    passwordErrorText.value = '';
-}
+        passwordError.value = true;
+        passwordErrorText.value = 'Поле пароль не может быть пустым';
+        isValid = false;
+    } else if (password.value.length < 8 || password.value.length > 30) {
+        passwordError.value = true;
+        passwordErrorText.value = 'Пароль должен быть от 8 до 30 символов';
+        isValid = false;
+    } else if (!passwordRegex.test(password.value) || password.value.includes(' ')) {
+        passwordError.value = true;
+        passwordErrorText.value =
+            'Пароль должен содержать минимум одну цифру и один спецсимвол (@ # * : ! ; ? / _ -), без пробелов';
+        isValid = false;
+    } else {
+        passwordError.value = false;
+        passwordErrorText.value = '';
+    }
 
     if (!agreementCheckbox.value) {
         agreementError.value = true;
@@ -334,15 +331,16 @@ async function login() {
 }
 
 .confirmText {
-    font-size: 16px;
-    font-weight: 400;
+    font-weight: 500;
+    font-size: 18px;
+    line-height: 100%;
     color: #262060;
     width: 100%;
-    max-height: 140px;
+    max-height: 164px;
     background-color: #f8f5ff;
     padding: 20px 25px;
     border-radius: 20px;
-    line-height: 100%;
+    line-height: 130%;
 }
 
 .login-form__input-field--error {
