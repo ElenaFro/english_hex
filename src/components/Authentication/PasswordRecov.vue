@@ -40,7 +40,7 @@ async function sendRecoverEmail() {
             .then((response) => {
                 if (response.message) emit('change-component', 'PasswordRecovConfirm');
             })
-            .catch((error) => alert(error));
+            .catch((error) => alert('Ошибка проверьте email'));
     else alert('Email is empty');
     loading.value = false;
 }
