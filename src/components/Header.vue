@@ -1,5 +1,5 @@
 <template>
-    <div class="header-bar">
+    <div v-if="!isDailyRewardPage" class="header-bar">
         <template v-if="isHomePage">
             <span @click="goToMyPlanet" class="header-star">
                 {{ totalStars }}
@@ -129,6 +129,8 @@ const isHomePage = computed(() => route.fullPath === '/');
 // 	}
 // })
 const gameRoutes = ['games', 'planetGame', 'wordTwinkle', 'wordTwinkleGame', 'constellationGame'];
+
+const isDailyRewardPage = computed(() => route.name === 'DailyReward');
 
 watch(
     () => route.path,

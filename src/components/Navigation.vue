@@ -1,5 +1,5 @@
 <template>
-    <nav class="navigation-bar">
+    <nav v-if="!isDailyRewardPage" class="navigation-bar">
         <RouterLink
             v-for="item in navItems"
             :key="item.name"
@@ -18,6 +18,7 @@ import HomeIcon from '@/assets/icons/navBarIcon/Home.svg';
 import PlusIcon from '@/assets/icons/navBarIcon/Plus.svg';
 import RatingIcon from '@/assets/icons/navBarIcon/Raiting.png';
 import ProfileIcon from '@/assets/icons/navBarIcon/Profile.svg';
+import { computed } from 'vue';
 
 const route = useRoute();
 
@@ -51,6 +52,8 @@ const isActive = (item) => {
     }
     return route.path === item.path;
 };
+
+const isDailyRewardPage = computed(() => route.name === 'DailyReward');
 </script>
 
 <style scoped>

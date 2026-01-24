@@ -97,6 +97,11 @@ const routes = [
                 name: 'myPlanet',
                 component: () => import('@/pages/MyPlanetPage.vue'),
             },
+            {
+                path: 'DailyReward',
+                name: 'DailyReward',
+                component: () => import('@/pages/DailyRewardPage.vue'),
+            },
         ],
         meta: { requiresAuth: true },
     },
