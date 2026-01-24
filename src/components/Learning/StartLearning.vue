@@ -119,7 +119,7 @@ const goToEditCategory = () => {
 .img-container {
     display: block;
     position: relative;
-    padding-bottom: 19px;
+    padding-bottom: 24px;
     align-self: center;
     max-height: 34dvh;
 }
@@ -136,6 +136,7 @@ const goToEditCategory = () => {
     line-height: 100%;
     color: rgba(49, 29, 93, 1);
     margin-bottom: 16px;
+    margin-top: 24px;
 }
 
 .page-content__text {
@@ -181,6 +182,8 @@ const goToEditCategory = () => {
 .stack-img--0 {
     transform: rotate(-10deg) translateX(-30px);
     z-index: 1;
+    top: 10px;
+    left: -22px;
     opacity: 0.9;
 }
 
@@ -188,6 +191,7 @@ const goToEditCategory = () => {
 .stack-img--1 {
     transform: rotate(5deg) translateX(20px);
     z-index: 2;
+    top: 20px;
     right: -20px;
 }
 
@@ -195,6 +199,7 @@ const goToEditCategory = () => {
 .stack-img--2 {
     transform: rotate(0deg);
     z-index: 3;
+    top: 50px;
     left: 22px;
 }
 </style>

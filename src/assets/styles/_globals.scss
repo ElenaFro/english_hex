@@ -182,6 +182,18 @@ body,
     position: relative;
 }
 
+.absolute {
+    position: absolute;
+}
+
+.z-index-500 {
+    z-index: 500;
+}
+
+.text-white {
+    color: #ffffff;
+}
+
 .page-container {
     // width: 100%;
     width: 100vw;
@@ -205,3 +217,24 @@ body,
     //     width: 100%;
     // }
 }
+
+//под онбординг
+.hint-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 501;
+    background: rgba(0, 0, 0, 0.8);
+}
+
+.index-up {
+    z-index: 510;
+}
+
+.hint-text-above {
+    color: #ffffff;
+    font-size: 18px;
+    font-weight: 600;
+    line-height: 1.2;
+    z-index: 102;
+}
+//под онбординг

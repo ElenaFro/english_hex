@@ -332,26 +332,8 @@ const goToInfinityGame = () => {
 }
 
 /**/
-.hint-overlay {
-    position: fixed;
-    inset: 0;
-    z-index: 100;
-    background: rgba(0, 0, 0, 0.8);
-}
-
-.index-up {
-    z-index: 101;
-}
 .task-wrapper {
     max-width: 315px;
-}
-
-.hint-text-above {
-    color: #ffffff;
-    font-size: 18px;
-    font-weight: 600;
-    line-height: 1.2;
-    z-index: 102;
 }
 
 .hint-text-above:first-child {

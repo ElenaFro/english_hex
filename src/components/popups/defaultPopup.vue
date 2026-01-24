@@ -1,20 +1,27 @@
 <template>
-    <div v-if="isVisible" class="popup-overlay" @click.self="closePopup">
-        <div class="popup-content" :class="popupPaddings" :style="paddingClass">
-            <button class="close-button" @click="closePopup">×</button>
-            <h2 v-if="title" class="popup-title" :class="titleClasses">{{ title }}</h2>
-            <p v-if="message" class="popup-message" :class="messageClass">{{ message }}</p>
-            <slot name="content"></slot>
-            <div class="popup-actions">
-                <slot name="actions">
-                    <button v-if="confirmText" :loading="loading" class="confirm-button" @click="confirmAction">
-                        <loader v-if="loading" size="20"/>
-                        <span v-else>{{ confirmText }}</span>
-                    </button>
-                </slot>
+    <teleport to="body">
+        <div v-if="isVisible" class="popup-overlay" @click.self="closePopup">
+            <div class="popup-content" :class="popupPaddings" :style="paddingClass">
+                <button class="close-button" @click="closePopup">×</button>
+                <h2 v-if="title" class="popup-title" :class="titleClasses">{{ title }}</h2>
+                <p v-if="message" class="popup-message" :class="messageClass">{{ message }}</p>
+                <slot name="content"></slot>
+                <div class="popup-actions">
+                    <slot name="actions">
+                        <button
+                            v-if="confirmText"
+                            :loading="loading"
+                            class="confirm-button"
+                            @click="confirmAction"
+                        >
+                            <loader v-if="loading" size="20" />
+                            <span class="text-white" v-else>{{ confirmText }}</span>
+                        </button>
+                    </slot>
+                </div>
             </div>
         </div>
-    </div>
+    </teleport>
 </template>
 
 <script setup>
@@ -151,7 +158,6 @@ const confirmAction = () => {
     border: none;
     border-radius: 20px;
     background: #262060;
-    color: #ffffff;
     font-size: 18px;
     font-weight: 600;
     cursor: pointer;

@@ -3,7 +3,12 @@
         <div class="flip-card" :class="{ flipped: activeComponent === 'WordPage' }">
             <div class="flip-card__inner" @transitionend="handleTransitionEnd">
                 <div class="flip-card__side flip-card__front">
-                    <VideoPage :videoUrl="getVideoUrl(currentCard)" ref="videoRef" />
+                    <VideoPage
+                        ref="videoRef"
+                        :videoUrl="getVideoUrl(currentCard)"
+                        @show-retry-hint="showRetryHint"
+                        @show-previous-hint="openPreviousHint"
+                    />
                 </div>
                 <div class="flip-card__side flip-card__back">
                     <WordPage
@@ -14,8 +19,18 @@
                 </div>
             </div>
         </div>
-        <div class="button-container">
-            <button class="button button--white" @click="replayAgain">Повторить</button>
+        <div class="button-container" :class="btnContainerClass">
+            <button
+                ref="previousBtnRef"
+                v-if="currentCardIndex > 0"
+                class="button button--white arrow"
+                @click="goPreviousCard"
+            >
+                <img class="arrow_icon" src="@/assets/icons/arrow-left.svg" alt="arrow-left" />
+            </button>
+            <button ref="retryBtnRef" class="button button--white" @click="replayAgain">
+                Повторить
+            </button>
             <button class="button button--blue" @click="handleNextOrFinish">
                 {{ isLastCard ? 'Закончить' : 'Продолжить' }}
             </button>
@@ -31,38 +46,117 @@
             @close="handleClosePopup"
         />
     </div>
+    <teleport to="body">
+        <div v-if="isShowRetryHint" class="hint-overlay" @click="closeRetryHint">
+            <div class="arrow-container" :style="highlightStyle">
+                <span class="arrow-container_text"
+                    >Нажми на кнопку «Повторить», чтобы снова воспроизвести видео</span
+                >
+                <img
+                    class="arrow-container_icon"
+                    src="@/assets/onboarding/arrow_down.svg"
+                    alt="arrow"
+                />
+            </div>
+
+            <button
+                class="button button--white absolute"
+                :class="overlayClass"
+                :style="btnPositionClass"
+            >
+                Повторить
+            </button>
+        </div>
+    </teleport>
+
+    <teleport to="body">
+        <div v-if="isShowPreviousHint" class="hint-overlay" @click="closePreviousHint">
+            <div class="previous-container" :style="highlightStylePrevious">
+                <span class="previous-container_text"
+                    >Нажми на кнопку <br />
+                    «Стрелочку», чтобы снова<br />
+                    вернуться к предыдущему слову</span
+                >
+                <img
+                    class="previous-container_icon"
+                    src="@/assets/onboarding/arrow_down.svg"
+                    alt="arrow"
+                />
+            </div>
+
+            <button
+                v-if="currentCardIndex > 0"
+                class="button button--white arrow absolute"
+                :style="arrowBtnPositionClass"
+            >
+                <img class="arrow_icon" src="@/assets/icons/arrow-left.svg" alt="arrow-left" />
+            </button>
+        </div>
+    </teleport>
 </template>
 
 <script setup>
-import { ref, onMounted, computed } from 'vue';
+import { ref, onMounted, computed, watch, nextTick } from 'vue';
 import { useRouter, onBeforeRouteLeave } from 'vue-router';
 import WordPage from './WordPage.vue';
 import VideoPage from './VideoPage.vue';
 import defaultPopup from '../popups/defaultPopup.vue';
 import { useCategoriesStore } from '@/stores/categories';
+import { useElementPosition } from '@/shared/composables/useElementPosition';
 
 const props = defineProps({
     propsCards: { type: Array, default: () => [] },
     isPreview: { type: Boolean, default: false },
 });
 
-const emit = defineEmits(['closePreview', 'publish']);
+const emit = defineEmits(['closePreview', 'publish', 'showLikeHint', 'like-changed']);
 
 const cards = ref(props.propsCards);
 const currentCardIndex = ref(0);
 const chosedCategory = ref({});
 const videoRef = ref(null);
+const retryBtnRef = ref(null);
+const previousBtnRef = ref(null);
 const activeComponent = ref('VideoPage');
 const isTransitioning = ref(false);
 const isNotEndedLearn = ref(false);
 const navigationNext = ref(null);
 const router = useRouter();
-const beforLeaveMessage = 'Чтобы не потерять текущий прогресс завершите изучение раздела';
+const beforLeaveMessage = 'Чтобы не потерять текущий прогресс заверши изучение раздела';
+
+const isRetryHintShowed = ref(!!localStorage.getItem('retry_hint_shown'));
+const isPreviousHintShowed = ref(!!localStorage.getItem('previous_hint_shown'));
+const isShowRetryHint = ref(false);
+const isShowPreviousHint = ref(false);
+
+const { calculatePositionDelayed, getPositionStyle } = useElementPosition(retryBtnRef, {
+    autoUpdate: true,
+    watchResize: true,
+});
+
+const { calculatePositionDelayed: calculatePrevious, getPositionStyle: getPreviousPosition } =
+    useElementPosition(previousBtnRef, {
+        autoUpdate: true,
+        watchResize: true,
+    });
 
 const currentCard = computed(() => cards.value[currentCardIndex.value] || {});
+
 const isLastCard = computed(
     () => currentCardIndex.value === cards.value.length - 1 && activeComponent.value === 'WordPage'
 );
+
+const highlightStyle = computed(() => getPositionStyle({ top: -117, width: 121 }));
+
+const highlightStylePrevious = computed(() => getPreviousPosition({ top: -125, width: 218 }));
+
+const overlayClass = computed(() => ({ 'index-up': isShowRetryHint.value }));
+
+const btnContainerClass = computed(() => (currentCardIndex.value === 0 ? 'max-250' : ''));
+
+const btnPositionClass = computed(() => getPositionStyle());
+
+const arrowBtnPositionClass = computed(() => getPreviousPosition());
 
 onMounted(async () => {
     if (props.propsCards.length > 0) return;
@@ -97,6 +191,16 @@ const handleNextOrFinish = async () => {
         isTransitioning.value = true;
         activeComponent.value = 'VideoPage';
     }
+};
+
+const goPreviousCard = () => {
+    if (activeComponent.value === 'VideoPage') {
+        if (videoRef.value?.pauseVideo) {
+            videoRef.value.pauseVideo();
+        }
+    }
+    currentCardIndex.value = currentCardIndex.value - 1;
+    activeComponent.value = 'VideoPage';
 };
 
 onBeforeRouteLeave((to, from, next) => {
@@ -140,9 +244,61 @@ const getAudioUrl = (card) => {
     if (!card || !card.id || !card.audio) return '';
     return `${import.meta.env.VITE_STORAGE_URI}/${chosedCategory.value.id}/cards/${card.id}/audio/${card.audio}`;
 };
+
+function showRetryHint() {
+    if (!isRetryHintShowed.value) {
+        calculatePositionDelayed();
+        isShowRetryHint.value = true;
+    }
+}
+
+const closeRetryHint = () => {
+    isRetryHintShowed.value = true;
+    isShowRetryHint.value = false;
+    replayAgain();
+    localStorage.setItem('retry_hint_shown', 'true');
+};
+
+const closePreviousHint = () => {
+    isPreviousHintShowed.value = true;
+    isShowPreviousHint.value = false;
+    localStorage.setItem('retry_hint_shown', 'true');
+    setTimeout(() => {
+        emit('showLikeHint');
+    }, 500);
+};
+
+const openPreviousHint = async () => {
+    if (currentCardIndex.value !== 1) return;
+    await nextTick();
+    if (currentCardIndex.value === 1 && !isPreviousHintShowed.value && !isShowPreviousHint.value) {
+        calculatePrevious();
+        isShowPreviousHint.value = true;
+        localStorage.setItem('previous_hint_shown', 'true');
+    }
+};
+
+watch(
+    () => currentCard.value.isLiked,
+    (newValue) => {
+        emit('like-changed', newValue);
+    },
+    { immediate: true }
+);
+
+const updateLike = (liked) => {
+    if (cards.value[currentCardIndex.value]) {
+        cards.value[currentCardIndex.value].isLiked = liked;
+        // mutation/action
+    }
+};
+
+defineExpose({
+    updateLike,
+});
 </script>
 
-<style scoped>
+<style scoped lang="scss">
 .scroll-container {
     display: flex;
     flex-direction: column;
@@ -191,7 +347,7 @@ const getAudioUrl = (card) => {
 
 .button-container {
     width: 100%;
-    max-width: 356px;
+    max-width: 314px;
     margin-top: 2.5dvh;
     display: flex;
     justify-content: space-between;
@@ -208,12 +364,22 @@ const getAudioUrl = (card) => {
 .button--blue {
     background-color: #007bff;
     color: white;
+    max-width: 127px;
 }
 
 .button--white {
     background-color: white;
     color: #222;
     border: 2px solid #311d5d;
+    max-width: 114px;
+}
+
+.arrow_icon {
+    width: 29px;
+}
+
+.button.arrow {
+    padding: 6px;
 }
 
 .publish-btn {
@@ -237,5 +403,39 @@ const getAudioUrl = (card) => {
     .scroll-container {
         padding: 0;
     }
+}
+
+.arrow-container,
+.previous-container {
+    position: absolute;
+    z-index: 104;
+    display: flex;
+    flex-direction: column;
+    align-items: start;
+    justify-content: center;
+    cursor: pointer;
+    width: 300px;
+
+    &_text {
+        color: #fff;
+        text-align: center;
+        margin-top: 22px;
+        max-width: 300px;
+    }
+
+    &_icon {
+        width: 30px;
+    }
+}
+
+.previous-container_text {
+    text-align: center;
+    width: 314px;
+}
+.previous-container {
+    margin: 0 auto;
+}
+.max-250 {
+    max-width: 250px;
 }
 </style>

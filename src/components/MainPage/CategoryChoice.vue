@@ -9,15 +9,9 @@
         <p class="category-name">{{ sectionName }}</p>
         <div class="statusa-bar">
             <div class="statusa-bar__active">
-                <img src="@/assets/img/open-lock_icon.svg" alt="" />
-                <div class="status-circle">
-                    <StatusCircle :percent="checkedProgress" />
-                </div>
-            </div>
-            <div class="statusa-bar__active">
                 <img :src="locked ? closedLockIcon : openLockIcon" alt="" />
                 <div class="status-circle">
-                    <StatusCircle :percent="0" />
+                    <StatusCircle :percent="3" />
                 </div>
             </div>
         </div>
@@ -60,7 +54,7 @@ const img_url = computed(
     () => `${import.meta.env.VITE_STORAGE_URI}/${props.id}/images/${props.imgUrl}`
 );
 
-const checkedProgress = computed(() => (props.progress ? 100 : 0));
+const checkedProgress = computed(() => (props.progress ? 100 : 0)); // логику просчета добавить после бэка
 </script>
 
 <style la scoped>
@@ -116,13 +110,14 @@ const checkedProgress = computed(() => (props.progress ? 100 : 0));
     background-color: rgba(255, 255, 255, 0.3);
     border-radius: 10px;
     display: flex;
-    justify-content: space-between;
+    justify-content: center;
     padding: 11px 5px;
 }
 
 .statusa-bar__active {
     display: flex;
     align-items: center;
+    justify-content: center;
     gap: 3px;
 }
 
