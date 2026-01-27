@@ -171,6 +171,19 @@ export const useUserStore = defineStore('user', () => {
         }
     }
 
+    async function sendNotification(form) {
+        if (!token.value) return;
+        if (!isAdmin.value) return;
+        try {
+            await apiClient.post('/notification/send-notification', {
+                title: form.title,
+                message: form.message,
+            });
+        } catch (error) {
+            console.error('Ошибка отправки уведомления', error);
+        }
+    }
+
     return {
         user,
         token,
@@ -194,5 +207,6 @@ export const useUserStore = defineStore('user', () => {
         checkUserSubscribe,
         unSubscribeUser,
         getUserRole,
+        sendNotification,
     };
 });

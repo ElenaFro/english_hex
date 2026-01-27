@@ -62,19 +62,19 @@ const start = () => {
     &__subtitle_game {
         font-weight: 800;
         font-size: 22px;
-        line-height: 100%;
+        line-height: 120%;
         letter-spacing: 0%;
-        font-family: Mulish;
         text-align: center;
         color: #311d5d;
         margin-top: 12px;
         margin-bottom: 20px;
+        white-space: pre-line;
     }
 
     &__message {
         font-weight: 500;
         font-size: 24px;
-        line-height: 100%;
+        line-height: 120%;
         letter-spacing: 0%;
 
         color: #262060;

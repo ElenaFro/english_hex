@@ -57,30 +57,33 @@ const textPerfect =
     'Все ответы верны. Внимание и визуальная память на отличном уровне. Так держать!';
 const headerPassed = 'Задание выполнено';
 const textPassed =
-    'Были допущены небольшие ошибки - это часть процесса обучения. Продолжайте в том же духе.';
+    'Были допущены небольшие ошибки - это часть процесса обучения. Продолжай в том же духе.';
 const headerLoss = 'Задание не завершено';
 const textLoss =
-    'Не стоит расстраиваться - каждая ошибка приближает к успеху. Рекомендуется повторить попытку.';
-const textAllStarsGiven = 'Вы заработали максимальное количество звезд по данной категории в этой игре'
+    'Не стоит расстраиваться - каждая ошибка приближает к успеху. Рекомендую повторить попытку.';
+const textAllStarsGiven =
+    'Вы заработали максимальное количество звезд по данной категории в этой игре';
 const buttonText = ref('');
 const buttonPassed = 'Пройти еще раз';
 const buttonLoss = 'Попробовать еще раз';
 const stars = ref(0);
-const maxStarsForGame = ref(50)
+const maxStarsForGame = ref(50);
 const fromGame = route.query.from;
 const gameSource = route.query.gameSource;
 
-const categoryId = computed(()=> route.query.id || useCategoriesStore().chosedCategory.id)
+const categoryId = computed(() => route.query.id || useCategoriesStore().chosedCategory.id);
 
-onMounted(async()=>{
-    loading.value = true
-        if(categoryId.value){
-        const currentStarsForCategory = await useCategoriesStore().getCategoryStars(categoryId.value);
-        const currentStars = maxStarsForGame.value - currentStarsForCategory?.[gameSource]
+onMounted(async () => {
+    loading.value = true;
+    if (categoryId.value) {
+        const currentStarsForCategory = await useCategoriesStore().getCategoryStars(
+            categoryId.value
+        );
+        const currentStars = maxStarsForGame.value - currentStarsForCategory?.[gameSource];
         maxStarsForGame.value = currentStars < 0 ? 0 : currentStars;
     }
     loading.value = false;
-})
+});
 
 const resultHeader = computed(() => {
     if (wrong <= 2) {
@@ -94,7 +97,7 @@ const resultHeader = computed(() => {
 });
 
 const resultText = computed(() => {
-    if(maxStarsForGame.value === 0) return textAllStarsGiven;
+    if (maxStarsForGame.value === 0) return textAllStarsGiven;
     if (wrong <= 2) {
         return textPerfect;
     }
@@ -106,7 +109,7 @@ const resultText = computed(() => {
 });
 
 const showButton = computed(() => {
-    if(maxStarsForGame.value === 0) return false
+    if (maxStarsForGame.value === 0) return false;
     if (wrong <= 2 && wrong !== 0) {
         buttonText.value = buttonPassed;
         return true;
@@ -134,7 +137,10 @@ const goToMainPage = () => {
             name: 'games',
             query: { id: useCategoriesStore().chosedCategory?.id },
         });
-    router.push({ name: 'myPlanet', query: { earnedStars: totalStars.value, gameSource: gameSource } });
+    router.push({
+        name: 'myPlanet',
+        query: { earnedStars: totalStars.value, gameSource: gameSource },
+    });
 };
 </script>
 

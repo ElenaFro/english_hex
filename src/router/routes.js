@@ -93,6 +93,11 @@ const routes = [
                 component: () => import('@/pages/games/constellationGame/ConstellationPage.vue'),
             },
             {
+                path: 'galaxyPhrasesGame',
+                name: 'galaxyPhrasesGame',
+                component: () => import('@/pages/games/galaxyPhrases/galaxyPhrasesGame.vue'),
+            },
+            {
                 path: 'myPlanet',
                 name: 'myPlanet',
                 component: () => import('@/pages/MyPlanetPage.vue'),

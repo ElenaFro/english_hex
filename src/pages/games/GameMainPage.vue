@@ -4,6 +4,7 @@
         <section v-else>
             <section class="page-container__header">
                 <p>Поздравляю!</p>
+                <p>Ты изучил тему</p>
                 <p>{{ headerTopic }}</p>
             </section>
             <section class="page-container__message">
@@ -52,14 +53,14 @@ onMounted(async () => {
 });
 
 const openPopup = ref(false);
-const headerTopic = computed(() => `Ты изучил тему ${category.value?.name}`);
+const headerTopic = computed(() => `"${category.value?.name}"`);
 const message =
-    'Чтобы закрепить полученые знания — выбирай игру и продолжай покорять английский без потерь';
+    'Чтобы закрепить полученые знания\u00A0— выбирай игру и продолжай покорять английский';
 
-const popupTitle = ' Уже уходите?';
+const popupTitle = ' Уже уходишь?';
 const popupMessage = computed(
     () =>
-        `Вы завершили обучение ${category.value?.name}, вам будут начислены 20 звезд, если вы не хотите увеличить награду подтвердите выбор, если хотите поднять рейтинг вернитесь к игре!`
+        `Отличный прогресс! Ты завершил тему ${category.value?.name} и получаешь 20 звёзд! Можно выйти и сохранить результат, а можно вернуться в игру и попробовать заработать больше. Решать тебе!`
 );
 
 const gameList = ref([
@@ -77,6 +78,11 @@ const gameList = ref([
         id: 3,
         name: 'Мерцание слов',
         path: 'wordTwinkle',
+    },
+    {
+        id: 4,
+        name: 'Галактика фраз',
+        path: 'galaxyPhrasesGame',
     },
 ]);
 const goToGame = (item) => {
@@ -134,7 +140,6 @@ const goMainButton = () => {
         width: 100%;
         padding: 16px;
         background-color: #262060;
-        color: #fff;
         border-radius: 20px;
         align-items: center;
 
@@ -143,6 +148,7 @@ const goMainButton = () => {
             font-size: 20px;
             font-weight: 700;
             line-height: 100%;
+            color: #fff;
         }
     }
 
@@ -164,5 +170,6 @@ const goMainButton = () => {
     justify-content: flex-start;
     align-self: start;
     padding-bottom: 200px;
+    max-width: 244px;
 }
 </style>

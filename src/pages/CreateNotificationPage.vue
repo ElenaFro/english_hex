@@ -7,10 +7,10 @@
                 <span v-if="errors.title" class="error-msg">Поле заполнено некорректно</span>
             </div>
 
-            <div class="form-group" :class="{ error: errors.description }">
+            <div class="form-group" :class="{ error: errors.message }">
                 <label>Описание</label>
-                <textarea v-model="form.description" placeholder="Введите описание"></textarea>
-                <span v-if="errors.description" class="error-msg">Поле заполнено некорректно</span>
+                <textarea v-model="form.message" placeholder="Введите описание"></textarea>
+                <span v-if="errors.message" class="error-msg">Поле заполнено некорректно</span>
             </div>
 
             <div class="btn_container">
@@ -34,6 +34,7 @@ import { useFormValidation } from '@/composables/useFormValidation';
 import { Notivue, Notification, push } from 'notivue';
 import defaultPopup from '@/components/popups/defaultPopup.vue';
 import { useRouter } from 'vue-router';
+import { useUserStore } from '@/stores/user';
 
 const router = useRouter();
 const loading = ref(false);
@@ -41,12 +42,12 @@ const publishConfirmPopup = ref(false);
 
 const form = reactive({
     title: '',
-    description: '',
+    message: '',
 });
 
 const { errors, validateForm, isValid } = useFormValidation(form, {
     title: (val) => !val.trim(),
-    description: (val) => !val.trim(),
+    message: (val) => !val.trim(),
 });
 
 const openConfirmPopup = () => {
@@ -62,20 +63,15 @@ const publishNotify = async () => {
     if (!isValid.value) return;
 
     try {
-        // const response = await categoryStore.createCategory({
-        //     name: form.name,
-        //     description: form.description,
-        //     category_photo: form.category_photo,
-        // });
-        // const categoryId = response?.data?.id;
-        // if (!categoryId) {
-        //     push.error({
-        //         title: 'Ошибка создания категории',
-        //         message: 'Категория не создана',
-        //     });
-        //     throw new Error('Не удалось создать категорию');
-        // }
-        // await Promise.all(form.cards.map((card) => categoryStore.createCard(categoryId, card)));
+        const response = await useUserStore().sendNotification(form);
+        const notificationId = response?.data?.id;
+        if (!notificationId) {
+            push.error({
+                title: 'Ошибка создания уведомления',
+                message: 'Уведомление не создано',
+            });
+            throw new Error('Не удалось создать уведомление');
+        }
         push.success({
             message: 'Уведомление создано',
         });
