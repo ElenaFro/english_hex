@@ -1,14 +1,14 @@
 <template>
     <div v-if="!isDailyRewardPage" class="header-bar">
-        <template v-if="isHomePage">
-            <span @click="goToMyPlanet" class="header-star">
-                {{ totalStars }}
+        <template v-if="isHomePage || isGameWordTwinkle || myPlanet">
+            <div ref="starRef" class="header-star" :class="overlayClass" @click="goToMyPlanet">
+                <span>{{ totalStars }}</span>
                 <img
                     src="@/assets/icons/navBarIcon/star.svg"
                     class="header-star-left"
                     alt="Звезда"
                 />
-            </span>
+            </div>
         </template>
 
         <template v-else-if="isGamePlanetPage">
@@ -22,7 +22,7 @@
                 </span>
             </span>
         </template>
-        <template v-else-if="isGameWordTwinkle || myPlanet">
+        <!-- <template v-else-if="">
             <span @click="goToMyPlanet" class="header-star">
                 {{ totalStars }}
                 <img
@@ -31,7 +31,7 @@
                     alt="Звезда"
                 />
             </span>
-        </template>
+        </template> -->
         <template v-else>
             <button @click="goBack" class="header-item-button">
                 <img
@@ -70,6 +70,16 @@
             </span>
         </template>
     </div>
+
+    <teleport to="body">
+        <div v-if="isShowStarHint" class="hint-overlay" @click="closeStarHint">
+            <div class="previous-container" :style="highlightStyle">
+                <span class="previous-container_text"
+                    >Получай больше звезд и развивай свою планету!</span
+                >
+            </div>
+        </div>
+    </teleport>
 </template>
 
 <script setup>
@@ -81,19 +91,34 @@ import { defineProps } from 'vue';
 import { useUserStore } from '@/stores/user';
 import Bell from '@/assets/icons/navBarIcon/Bell.svg';
 import BellUnread from '@/assets/icons/navBarIcon/Bell_unread.svg';
+import { useElementPosition } from '@/shared/composables/useElementPosition';
 
 const router = useRouter();
-const currentNotifications = computed(() => useUserStore().notifications);
+const userStore = useUserStore();
+const currentNotifications = computed(() => userStore.notifications);
 
-const currentUser = computed(() => useUserStore().getCurrentUser());
+const currentUser = computed(() => userStore.getCurrentUser());
 const totalStars = computed(() => currentUser.value.rating);
 const props = defineProps(['lives']);
+const starRef = ref(null);
+const isShowStarHint = ref(false);
+
+const { calculatePositionDelayed, getPositionStyle } = useElementPosition(starRef, {
+    autoUpdate: true,
+    watchResize: true,
+});
+
+const overlayClass = computed(() => ({ 'index-up': isShowStarHint.value }));
+
+const highlightStyle = computed(() => getPositionStyle({ top: 58, width: 110, left: 77 }));
 
 const isGamePlanetPage = computed(() => route.path === '/planetAttackPage');
 
 const isGameWordTwinkle = computed(() => route.path === '/wordTwinkleResult');
 
 const myPlanet = computed(() => route.path === '/myPlanet');
+
+const isShowStarOverview = computed(() => userStore.isShowStarOverview);
 
 const hasUnreadNotify = computed(() =>
     currentNotifications.value?.find((notify) => notify.was_read === false)
@@ -120,14 +145,11 @@ const goToMyPlanet = () => {
 };
 const isHomePage = computed(() => route.fullPath === '/');
 
-// onMounted(async () => {
-// 	try {
-// 		const res = await axios.get('/test.json')
-// 		learningSections.value = res.data
-// 	} catch {
-// 		console.error(err)
-// 	}
-// })
+const closeStarHint = () => {
+    isShowStarHint.value = false;
+    userStore.switchStarOverview(false);
+};
+
 const gameRoutes = ['games', 'planetGame', 'wordTwinkle', 'wordTwinkleGame', 'constellationGame'];
 
 const isDailyRewardPage = computed(() => route.name === 'DailyReward');
@@ -171,9 +193,19 @@ watch(
     },
     { immediate: true }
 );
+
+watch(
+    () => route.name,
+    (newVal) => {
+        if (isShowStarOverview.value && newVal === 'myPlanet') {
+            isShowStarHint.value = true;
+            calculatePositionDelayed();
+        }
+    }
+);
 </script>
 
-<style scoped>
+<style scoped lang="scss">
 .header-bar {
     position: relative;
     display: flex;
@@ -203,6 +235,7 @@ watch(
     padding-bottom: 0px;
     align-items: center;
     cursor: pointer;
+    z-index: 502;
 }
 
 .header-live {
@@ -283,5 +316,27 @@ watch(
 .live-icon {
     width: 23.8px;
     height: 22.2px;
+}
+
+.previous-container {
+    position: absolute;
+    z-index: 104;
+    display: flex;
+    flex-direction: column;
+    align-items: start;
+    justify-content: center;
+    cursor: pointer;
+    width: 300px;
+
+    &_text {
+        color: #fff;
+        text-align: center;
+        margin-top: 22px;
+        max-width: 300px;
+    }
+
+    &_icon {
+        width: 30px;
+    }
 }
 </style>

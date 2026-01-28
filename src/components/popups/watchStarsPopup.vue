@@ -35,7 +35,7 @@ const closePopup = async () => {
     position: absolute;
     top: 55px;
     left: 100px;
-    z-index: 101;
+    z-index: 502;
 }
 
 .popup {

@@ -10,6 +10,7 @@ export const useUserStore = defineStore('user', () => {
     const notifications = ref([]);
     const unsubscribed_at = ref(null);
     const isAdmin = ref(null);
+    const isShowStarOverview = ref(false);
 
     const getCurrentUser = () => {
         return user.value;
@@ -184,6 +185,10 @@ export const useUserStore = defineStore('user', () => {
         }
     }
 
+    const switchStarOverview = (value) => {
+        isShowStarOverview.value = value;
+    };
+
     return {
         user,
         token,
@@ -192,6 +197,7 @@ export const useUserStore = defineStore('user', () => {
         notifications,
         unsubscribed_at,
         isAdmin,
+        isShowStarOverview,
         register,
         login,
         logout,
@@ -208,5 +214,6 @@ export const useUserStore = defineStore('user', () => {
         unSubscribeUser,
         getUserRole,
         sendNotification,
+        switchStarOverview,
     };
 });

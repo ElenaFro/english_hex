@@ -5,12 +5,14 @@
                 <img src="@/assets/Di_avatar/girl_head.png" alt="girl" class="girl" />
             </div>
             <h2 class="popup-title" :class="titleMargin">Поздравляю!</h2>
-            <p class="popup-message">Вы успешно завершили первую колоду. Теперь вы можете создать свою планету и продвигать её, зарабатывая звезды в каждой игре!</p>
+            <p class="popup-message">
+                Ты завершил первую колоду, теперь давайте создадим свою планету!
+            </p>
             <slot name="content"></slot>
             <div class="popup-actions">
                 <slot name="actions">
                     <button class="confirm-button" @click="goToNext">
-                        Дальше <img src="@/assets/icons/arrow_right.svg" alt="arrow_right">
+                        Дальше <img src="@/assets/icons/arrow_right.svg" alt="arrow_right" />
                     </button>
                 </slot>
             </div>
@@ -19,21 +21,20 @@
 </template>
 
 <script setup>
-import { computed } from "vue";
+import { computed } from 'vue';
 
 const props = defineProps({
     title: { type: String, default: '' },
     message: { type: String, default: '' },
 });
 
-const emit = defineEmits([ "next" ]);
+const emit = defineEmits(['next']);
 
 const goToNext = () => {
-	emit('next', 'toPlanet')
-}
+    emit('next', 'toPlanet');
+};
 
 const titleMargin = computed(() => (props.message ? 'd-mb-12' : 'd-mb-30'));
-
 </script>
 
 <style scoped>

@@ -61,13 +61,17 @@ import SoundForPopup from '@/assets/audio/helloFromDi.wav';
 //store
 import { useUserStore } from '@/stores/user';
 import { useCategoriesStore } from '@/stores/categories';
+import { useRouter } from 'vue-router';
 
 const loading = ref(true);
 const openHelloPopup = ref(false);
 const popupShowed = ref(true);
+
 const subscribePopup = ref(false);
 const userStore = useUserStore();
 const isAdmin = computed(() => userStore.isAdmin);
+
+const router = useRouter();
 
 onMounted(async () => {
     await useCategoriesStore().getCategories();
@@ -76,6 +80,7 @@ onMounted(async () => {
 
     if (localStorage.getItem('markFirstGame')) {
         popupShowed.value = false;
+        userStore.switchStarOverview(true);
         localStorage.removeItem('markFirstGame');
     }
 
@@ -147,6 +152,7 @@ const checkTimeForLastReject = () => {
 
 const handlePopup = async () => {
     popupShowed.value = true;
+    goToMyPlanet();
 };
 
 const closeSubscribePopup = () => {
@@ -156,6 +162,11 @@ const closeSubscribePopup = () => {
 const rejectSubscribe = () => {
     userStore.unSubscribeUser();
     closeSubscribePopup();
+};
+
+const goToMyPlanet = () => {
+    if (!currentUser.value.ever_played_game) return;
+    router.push({ path: '/myPlanet' });
 };
 </script>
 
