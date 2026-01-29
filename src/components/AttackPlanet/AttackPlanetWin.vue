@@ -23,9 +23,9 @@
                         <img src="@/assets/img/arrow_icon.svg" alt="arrow" />
                     </button>
                 </div>
+                <img src="@/assets/Di_avatar/girl_fly_win.png" alt="Di" class="avatar_result" />
             </section>
         </section>
-        <img src="@/assets/Di_avatar/girl_fly_win.png" alt="Di" class="avatar_result" />
     </div>
 </template>
 <script setup>
@@ -48,9 +48,9 @@ const goToPlanet = () => {
     gap: 23px;
     margin-top: 10px;
     &__result {
+        position: relative;
         display: flex;
         flex-direction: column;
-        justify-content: center;
         align-items: center;
         gap: 12px;
         width: 100%;
@@ -95,6 +95,7 @@ const goToPlanet = () => {
     text-align: start;
     color: #311d5d;
     width: 100%;
+    margin-bottom: 12px;
 }
 .text-result {
     font-weight: 400;
@@ -120,9 +121,9 @@ const goToPlanet = () => {
 }
 .avatar_result {
     position: absolute;
-    bottom: 124px;
-    right: 99px;
-    z-index: 5000;
+    bottom: -210px;
+    right: 21%;
+    z-index: 500;
 }
 
 @media (max-height: 810px) {
@@ -131,38 +132,12 @@ const goToPlanet = () => {
         margin-top: 0px;
         padding-top: 10px;
     }
-    .avatar_result {
-        position: absolute;
-        bottom: 120px;
-        right: 99px;
-        z-index: 5000;
-        width: 45%;
-        height: auto;
-    }
 }
 @media (max-height: 768px) {
     .page-container {
         gap: 18px;
         margin-top: 0px;
         padding-top: 10px;
-    }
-    .avatar_result {
-        position: absolute;
-        bottom: 120px;
-        right: 0px;
-        z-index: 5000;
-        width: 35%;
-        height: auto;
-    }
-}
-@media (max-height: 646px) {
-    .avatar_result {
-        position: absolute;
-        bottom: 124px;
-        right: 0px;
-        z-index: 5000;
-        width: 30%;
-        height: auto;
     }
 }
 </style>

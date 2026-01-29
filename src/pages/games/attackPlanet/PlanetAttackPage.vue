@@ -19,7 +19,7 @@ import AttackPlanetWin from '@/components/AttackPlanet/AttackPlanetWin.vue';
 
 const emit = defineEmits(['update:lives', 'switch-component']);
 
-const activeComponent = ref(markRaw(AttackPlanetGame));
+const activeComponent = ref(markRaw(AttackPlanetLoss));
 const lives = ref(5);
 const earnedStars = ref(0);
 

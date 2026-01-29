@@ -19,9 +19,9 @@ import { useRouter, useRoute } from 'vue-router';
 
 const router = useRouter();
 const route = useRoute();
-const describeGame = 'Спасите планету от метеоритной атаки';
+const describeGame = 'Спасите планету от метеоритной атаки!';
 const message =
-    'Отвечайте на вопросы правильно, чтобы остановить приближение метеорита. За каждую ошибку он подлетает ближе. 5 ошибок — и планета будет разрушена. Максимальная награда — 50 звёзд. За каждую ошибку вычитается 5 звёзд.';
+    'Отвечай правильно на вопросы — и\u00A0останавливай метеорит. Каждая ошибка приближает его к Земле. 5 ошибок — планета разрушена! Максимальная награда — 50 звёзд. За\u00A0каждый неверный ответ вычитается 5 звёзд. Спаси планету знанием!';
 
 const goToGamePage = () => {
     router.push({ name: 'flyAnimation', query: { name: 'planetAttackPage', id: route.query.id } });
@@ -58,9 +58,8 @@ const goToGamePage = () => {
     &__describe_game {
         font-weight: 800;
         font-size: 22px;
-        line-height: 100%;
+        line-height: 130%;
         letter-spacing: 0%;
-        font-family: Mulish;
         text-align: center;
         color: #311d5d;
         margin-top: 12px;
@@ -68,12 +67,12 @@ const goToGamePage = () => {
     &__message {
         font-weight: 500;
         font-size: 18px;
-        line-height: 100%;
+        line-height: 130%;
         letter-spacing: 0%;
-
         color: #262060;
         margin-bottom: 30px;
         margin-top: 12px;
+        text-align: left;
     }
 
     &__game-list {

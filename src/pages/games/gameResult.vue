@@ -110,11 +110,11 @@ const resultText = computed(() => {
 
 const showButton = computed(() => {
     if (maxStarsForGame.value === 0) return false;
-    if (wrong <= 2 && wrong !== 0) {
+    if (wrong <= 4 && wrong !== 0) {
         buttonText.value = buttonPassed;
         return true;
     }
-    if (wrong >= 2) {
+    if (wrong > 4) {
         buttonText.value = buttonLoss;
         return true;
     } else {

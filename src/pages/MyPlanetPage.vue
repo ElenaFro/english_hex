@@ -69,7 +69,7 @@ onMounted(async () => {
         animateStars.value = true;
         if (gameSource.value) {
             await userStore.addRatingToGame(
-                chosedCategory.id,
+                chosedCategory.id ?? route.query.id,
                 gameSource.value,
                 localStorageStars ? earnedStars.value - localStorageStars : earnedStars.value
             );

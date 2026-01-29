@@ -23,14 +23,14 @@
                         Пройти еще раз
                         <img src="@/assets/img/arrow_icon.svg" alt="arrow" />
                     </button>
-                    <button class="button button--purple d-mt-12" @click="goToGamesPage">
+                    <button class="button button--purple d-mt-12 d-mb-12" @click="goToGamesPage">
                         Дальше
                         <img src="@/assets/img/arrow_icon.svg" alt="arrow" />
                     </button>
                 </div>
+                <img src="@/assets/Di_avatar/girl_screams.webp" alt="Di" class="avatar_result" />
             </section>
         </section>
-        <img src="@/assets/Di_avatar/girl_head.png" alt="Di" class="avatar_result" />
     </div>
 </template>
 <script setup>
@@ -57,9 +57,9 @@ const goToGamePage = () => {
     gap: 23px;
     margin-top: 10px;
     &__result {
+        position: relative;
         display: flex;
         flex-direction: column;
-        justify-content: center;
         align-items: center;
         gap: 12px;
         width: 100%;
@@ -72,7 +72,7 @@ const goToGamePage = () => {
         margin-left: 30px;
         margin-right: 30px;
         color: #311d5d;
-        padding: 20px;
+        padding: 20px 20px 37px;
     }
 }
 .container-result {
@@ -104,6 +104,7 @@ const goToGamePage = () => {
     text-align: start;
     color: #311d5d;
     width: 100%;
+    margin-bottom: 12px;
 }
 .text-result {
     font-weight: 400;
@@ -129,33 +130,13 @@ const goToGamePage = () => {
 }
 .avatar_result {
     position: absolute;
-    bottom: 104px;
-    right: 10px;
-    z-index: 5000;
-}
-
-@media (max-height: 755px) {
-    .avatar_result {
-        width: 50%;
-        height: auto;
-        bottom: 110px;
-    }
-}
-
-@media (max-height: 715px) {
-    .avatar_result {
-        width: 40%;
-        height: auto;
-        bottom: 114px;
-    }
+    bottom: -224px;
+    right: 10%;
+    z-index: 500;
+    width: 175px;
 }
 
 @media (max-height: 665px) {
-    .avatar_result {
-        width: 35%;
-        height: auto;
-        bottom: 104px;
-    }
     .page-container {
         margin-top: 0px;
         padding-top: 0px;
