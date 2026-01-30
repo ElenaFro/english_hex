@@ -79,7 +79,8 @@ onMounted(async () => {
         const currentStarsForCategory = await useCategoriesStore().getCategoryStars(
             categoryId.value
         );
-        const currentStars = maxStarsForGame.value - currentStarsForCategory?.[gameSource];
+        const alreadyEarnedForGame = currentStarsForCategory?.[gameSource] ?? 0;
+        const currentStars = maxStarsForGame.value - alreadyEarnedForGame;
         maxStarsForGame.value = currentStars < 0 ? 0 : currentStars;
     }
     loading.value = false;
