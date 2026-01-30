@@ -74,7 +74,7 @@ const currentCategory = ref({});
 const showPopup = ref(false);
 const goEditConfirmPopup = ref(false);
 const popupMessage =
-    'Если вы хотите получить больше звёзд пройдите остальные три игры, за прохождение пройденных игр звёзды не начисляются';
+    'Для получения дополнительных звёзд пройди остальные три игры. Повторное прохождение пройденных игр звёзды не приносит.';
 
 onMounted(async () => {
     await useCategoriesStore().getChosedCategory(route.params.id);

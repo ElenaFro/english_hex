@@ -154,7 +154,7 @@ const confirmAction = () => {
 }
 
 .confirm-button {
-    padding: 12px 24px;
+    padding: 9px 24px;
     border: none;
     border-radius: 20px;
     background: #262060;
