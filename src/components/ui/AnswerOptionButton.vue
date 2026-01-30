@@ -51,7 +51,7 @@ const sizeClass = computed(() => (props.size === 'sm' ? 'answer-option--sm' : 'a
 
     &:disabled {
         cursor: default;
-        opacity: 1; // keep identical visual style across browsers
+        opacity: 1;
     }
 }
 

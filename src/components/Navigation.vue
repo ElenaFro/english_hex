@@ -15,7 +15,7 @@
 <script setup>
 import { RouterLink, useRoute } from 'vue-router';
 import HomeIcon from '@/assets/icons/navBarIcon/Home.svg';
-import PlusIcon from '@/assets/icons/navBarIcon/Plus.svg';
+import GameIcon from '@/assets/icons/navBarIcon/game.svg';
 import RatingIcon from '@/assets/icons/navBarIcon/Raiting.png';
 import ProfileIcon from '@/assets/icons/navBarIcon/Profile.svg';
 import { computed } from 'vue';
@@ -29,9 +29,9 @@ const navItems = [
         icon: HomeIcon,
     },
     {
-        name: 'addCategories',
-        path: '/addCategories',
-        icon: PlusIcon,
+        name: 'allGames',
+        path: '/allGames',
+        icon: GameIcon,
     },
     {
         name: 'rating',

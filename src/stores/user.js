@@ -11,6 +11,7 @@ export const useUserStore = defineStore('user', () => {
     const unsubscribed_at = ref(null);
     const isAdmin = ref(null);
     const isShowStarOverview = ref(false);
+    const currentHeaderTitle = ref(null);
 
     const getCurrentUser = () => {
         return user.value;
@@ -189,6 +190,10 @@ export const useUserStore = defineStore('user', () => {
         isShowStarOverview.value = value;
     };
 
+    const setHeaderTitle = (value) => {
+        currentHeaderTitle.value = value;
+    };
+
     return {
         user,
         token,
@@ -198,6 +203,7 @@ export const useUserStore = defineStore('user', () => {
         unsubscribed_at,
         isAdmin,
         isShowStarOverview,
+        currentHeaderTitle,
         register,
         login,
         logout,
@@ -215,5 +221,6 @@ export const useUserStore = defineStore('user', () => {
         getUserRole,
         sendNotification,
         switchStarOverview,
+        setHeaderTitle,
     };
 });

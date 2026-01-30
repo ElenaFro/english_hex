@@ -102,6 +102,7 @@ const totalStars = computed(() => currentUser.value.rating);
 const props = defineProps(['lives']);
 const starRef = ref(null);
 const isShowStarHint = ref(false);
+const currentHeaderTitle = computed(() => userStore.currentHeaderTitle);
 
 const { calculatePositionDelayed, getPositionStyle } = useElementPosition(starRef, {
     autoUpdate: true,
@@ -150,7 +151,14 @@ const closeStarHint = () => {
     userStore.switchStarOverview(false);
 };
 
-const gameRoutes = ['games', 'planetGame', 'wordTwinkle', 'wordTwinkleGame', 'constellationGame'];
+const gameRoutes = [
+    'games',
+    'planetGame',
+    'wordTwinkle',
+    'wordTwinkleGame',
+    'constellationGame',
+    'galaxyPhrasesGame',
+];
 
 const isDailyRewardPage = computed(() => route.name === 'DailyReward');
 
@@ -202,6 +210,14 @@ watch(
             calculatePositionDelayed();
         }
     }
+);
+
+watch(
+    currentHeaderTitle,
+    () => {
+        if (currentHeaderTitle.value !== null) currentTitle.value = currentHeaderTitle.value;
+    },
+    { immediate: true }
 );
 </script>
 
