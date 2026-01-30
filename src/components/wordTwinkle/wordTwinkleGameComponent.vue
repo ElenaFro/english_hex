@@ -10,23 +10,17 @@
         </div>
     </div>
     <div v-if="showAnswer" class="answer-container">
-        <button
+        <AnswerOptionButton
             v-for="(option, index) in currentQuestion.options"
             :key="index"
             @click="checkAnswer(option)"
             :disabled="selectedOption === option && option === currentQuestion.correctAnswer"
-            :class="[
-                'button button--white',
-                selectedOption === option && option !== currentQuestion.correctAnswer
-                    ? 'button--wrong'
-                    : '',
-                selectedOption === option && option === currentQuestion.correctAnswer
-                    ? 'button--correct'
-                    : '',
-            ]"
+            :state="getOptionState(option)"
+            size="sm"
+            class="answer-btn"
         >
             {{ option }}
-        </button>
+        </AnswerOptionButton>
     </div>
 </template>
 
@@ -37,6 +31,7 @@ import { useRouter, useRoute } from 'vue-router';
 //components
 import ImgPage from './ImgPage.vue';
 import AnswersPage from '@/components/wordTwinkle/AnswersPage.vue';
+import AnswerOptionButton from '@/components/ui/AnswerOptionButton.vue';
 //stores
 import { useGamesStore } from '@/stores/games';
 import { useCategoriesStore } from '@/stores/categories';
@@ -134,6 +129,11 @@ const goToResult = () => {
         },
     });
 };
+
+const getOptionState = (option) => {
+    if (selectedOption.value !== option) return 'default';
+    return option === currentQuestion.value.correctAnswer ? 'correct' : 'wrong';
+};
 </script>
 
 <style scoped>
@@ -185,22 +185,7 @@ const goToResult = () => {
     z-index: 1000;
 }
 
-.button {
+.answer-btn {
     width: 140px;
-    height: 40px;
-    border: 2px solid #262060;
-    font-weight: 700;
-}
-
-.button--wrong {
-    border: 0;
-    background-color: #881717;
-    color: #ffffff;
-}
-
-.button--correct {
-    border: 0;
-    background-color: #31af40;
-    color: #ffffff;
 }
 </style>

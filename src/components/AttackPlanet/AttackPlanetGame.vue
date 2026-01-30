@@ -25,14 +25,15 @@
                         v-for="(option, index) in currentQuestion.options"
                         :key="index"
                     >
-                        <button
+                        <AnswerOptionButton
                             class="answer-button"
                             :style="buttonStyles[index]"
-                            @click="sendAnswer(option)"
                             :disabled="!isQuestionPlayed"
+                            size="md"
+                            @click="sendAnswer(option)"
                         >
                             {{ option }}
-                        </button>
+                        </AnswerOptionButton>
                     </div>
                 </section>
             </section>
@@ -47,6 +48,7 @@ import { useCategoriesStore } from '@/stores/categories';
 import { useGamesStore } from '@/stores/games';
 import { useRoute } from 'vue-router';
 import Loader from '../Loader.vue';
+import AnswerOptionButton from '@/components/ui/AnswerOptionButton.vue';
 
 const soundRef = ref(null);
 const route = useRoute();
@@ -257,17 +259,7 @@ onBeforeUnmount(() => {
 }
 
 .answer-button {
-    background-color: #fff;
-    padding: 9px 24px;
-    line-height: 22px;
-    color: #262060;
     width: 100%;
-    padding: min(2dvh, 8px) min(10dvw, 24px);
-    border-radius: 16px;
-    font-weight: 700;
-    font-size: 18px;
-    line-height: 120%;
-    letter-spacing: 0%;
 }
 .line {
     display: flex;
