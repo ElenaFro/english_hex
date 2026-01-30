@@ -68,6 +68,11 @@ const routes = [
                 component: () => import('@/pages/games/GameMainPage.vue'),
             },
             {
+                path: 'allGames',
+                name: 'allGames',
+                component: () => import('@/pages/allGamesPage/AllGamesPage.vue'),
+            },
+            {
                 path: 'planetGame',
                 name: 'planetGame',
                 component: () => import('@/pages/games/attackPlanet/PlanetAttack.vue'),
@@ -95,7 +100,7 @@ const routes = [
             {
                 path: 'galaxyPhrasesGame',
                 name: 'galaxyPhrasesGame',
-                component: () => import('@/pages/games/galaxyPhrases/galaxyPhrasesGame.vue'),
+                component: () => import('@/pages/games/galaxyPhrases/galaxyPhrasesGamePage.vue'),
             },
             {
                 path: 'myPlanet',
