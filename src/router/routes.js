@@ -45,7 +45,29 @@ const routes = [
             {
                 path: 'profile',
                 name: 'profile',
-                component: () => import('@/pages/ProfilePage.vue'),
+                component: () => import('@/pages/ProfilePage/ProfilePage.vue'),
+                children: [
+                    {
+                        path: 'profileEdit',
+                        name: 'profileEdit',
+                        component: () => import('@/pages/ProfilePage/EditProfile/ProfileEditPage.vue'),
+                    },
+                    {
+                        path: 'profileAchievements',
+                        name: 'profileAchievements',
+                        component: () => import('@/pages/ProfilePage/AchievementsPage/ProfileAchievementsPage.vue'),
+                    },
+                    {
+                        path: 'dictionaryPage',
+                        name: 'dictionary',
+                        component: () => import('@/pages/ProfilePage/DictionaryPage/DictionaryPage.vue'),
+                    },
+                    {
+                        path: 'subscriptions',
+                        name: 'profileSubscriptions',
+                        component: () => import('@/pages/ProfilePage/SubscriptionsPage/SubscriptionsPage.vue'),
+                    },
+                ],
             },
             {
                 path: 'notifications',
@@ -100,7 +122,7 @@ const routes = [
             {
                 path: 'galaxyPhrasesGame',
                 name: 'galaxyPhrasesGame',
-                component: () => import('@/pages/games/galaxyPhrases/galaxyPhrasesGamePage.vue'),
+                component: () => import('@/pages/games/galaxyPhrases/GalaxyPhrasesGamePage.vue'),
             },
             {
                 path: 'myPlanet',

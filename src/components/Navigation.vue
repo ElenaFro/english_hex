@@ -46,11 +46,11 @@ const navItems = [
 ];
 
 const isActive = (item) => {
-    const isRouteInNav = navItems.some((navItem) => navItem.path === route.path);
-    if (!isRouteInNav) {
-        return item.name === 'mainPage';
-    }
-    return route.path === item.path;
+    if (route.path.startsWith('/profile')) return item.path === '/profile';
+    if (route.path.startsWith('/allGames')) return item.path === '/allGames';
+    if (route.path.startsWith('/rating')) return item.path === '/rating';
+    if (route.path === '/') return item.path === '/';
+    return item.path === '/';
 };
 
 const isDailyRewardPage = computed(() => route.name === 'DailyReward');

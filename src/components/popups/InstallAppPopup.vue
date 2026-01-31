@@ -114,7 +114,7 @@ function closePopup() {
 }
 </script>
 
-<style scoped>
+<style scoped lang="scss">
 .install-popup {
     position: fixed;
     top: 0;
@@ -141,10 +141,11 @@ function closePopup() {
     position: relative;
     color: #311d5d;
     text-align: center;
+    height: 406px;
 }
 
 .popup-actions {
-    padding: 12px 24px;
+    padding: 8px 24px;
     border: none;
     border-radius: 20px;
     background: #262060;
@@ -168,8 +169,8 @@ function closePopup() {
 
 .close-button {
     position: absolute;
-    top: -2px;
-    right: 10px;
+    top: -14px;
+    right: 0;
     background: none;
     border: none;
     font-size: 38px;
@@ -202,7 +203,6 @@ function closePopup() {
 }
 
 p {
-    padding-left: 10px;
     margin-bottom: 0;
     color: #311d5d;
     font-family: Mulish;
@@ -220,7 +220,6 @@ p {
     margin: 16px 10px 0 10px;
 }
 
-/* Анимации */
 @keyframes fadeIn {
     from {
         opacity: 0;
@@ -241,7 +240,6 @@ p {
     }
 }
 
-/* Адаптивность */
 @media (max-width: 400px) {
     .popup-content {
         width: 95%;

@@ -25,7 +25,7 @@
         </div>
     </div>
 
-    <InstallAppPopup />
+    <InstallAppPopup v-if="isShowInstallPopup" />
 
     <HelloPopupWithSound
         v-if="openHelloPopup"
@@ -45,7 +45,7 @@
 
 <script setup>
 //vue
-import { ref, onMounted, computed } from 'vue';
+import { ref, onMounted, computed, watch } from 'vue';
 //components
 import CategoryChoice from '@/components/MainPage/CategoryChoice.vue';
 import loader from '@/components/Loader.vue';
@@ -69,6 +69,7 @@ const popupShowed = ref(true);
 
 const subscribePopup = ref(false);
 const userStore = useUserStore();
+const isShowInstallPopup = ref(false);
 const isAdmin = computed(() => userStore.isAdmin);
 
 const router = useRouter();
@@ -168,6 +169,14 @@ const goToMyPlanet = () => {
     if (!currentUser.value.ever_played_game) return;
     router.push({ path: '/myPlanet' });
 };
+
+watch(
+    () => currentUser.value,
+    () => {
+        console.log('isWork');
+        if (currentUser.value.ever_played_game) return (isShowInstallPopup.value = true);
+    }
+);
 </script>
 
 <style scoped>

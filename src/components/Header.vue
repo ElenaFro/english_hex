@@ -172,6 +172,18 @@ watch(
                 case 'profile':
                     currentTitle.value = 'Профиль';
                     break;
+                case 'profileEdit':
+                    currentTitle.value = 'Настройки';
+                    break;
+                case 'profileAchievements':
+                    currentTitle.value = 'Достижения';
+                    break;
+                case 'dictionary':
+                    currentTitle.value = 'Избранное';
+                    break;
+                case 'profileSubscriptions':
+                    currentTitle.value = 'Моя подписка';
+                    break;
                 case 'rating':
                     currentTitle.value = 'Рейтинг';
                     break;
