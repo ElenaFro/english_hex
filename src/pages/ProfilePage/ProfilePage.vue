@@ -62,11 +62,7 @@
                         </button>
                     </section>
 
-                    <button
-                        class="profile-subscription"
-                        type="button"
-                        @click="goToSubscriptions"
-                    >
+                    <button class="profile-subscription" type="button" @click="goToSubscriptions">
                         Моя подписка
                     </button>
                 </div>
@@ -80,7 +76,7 @@ import { computed } from 'vue';
 import { RouterView, useRoute, useRouter } from 'vue-router';
 import { useUserStore } from '@/stores/user';
 
-import BoyIcon from '@/assets/img/DefaultUserAvatar/male.svg';
+import BoyIcon from '@/assets/img/DefaultUserAvatar/male.webp';
 import GirlIcon from '@/assets/img/DefaultUserAvatar/female.svg';
 import dictionaryImg from '@/assets/Di_avatar/girl-with-cart.webp';
 import profileHeroImg from '@/assets/Di_avatar/girl-img2.webp';
@@ -165,12 +161,15 @@ const goToSubscriptions = () => router.push({ name: 'profileSubscriptions' });
         display: flex;
         align-items: center;
         justify-content: center;
+        border: 3px solid #262060;
     }
 
     &__avatar-img {
         width: 100%;
         height: 100%;
-        object-fit: contain;
+        object-fit: cover;
+        border-radius: 50%;
+        object-position: top;
     }
 
     &__name {

@@ -55,7 +55,7 @@ import InstallAppPopup from '@/components/popups/InstallAppPopup.vue';
 import SubscribePushNotify from '@/components/popups/SubscribePushNotify.vue';
 import AddCategoriesCard from '@/components/categories/AddCategoriesCard.vue';
 //source
-import BoyIcon from '@/assets/img/DefaultUserAvatar/male.svg';
+import BoyIcon from '@/assets/img/DefaultUserAvatar/male.webp';
 import GirlIcon from '@/assets/img/DefaultUserAvatar/female.svg';
 import SoundForPopup from '@/assets/audio/helloFromDi.wav';
 //store
@@ -250,6 +250,8 @@ watch(
 .user-img {
     width: 100%;
     height: 100%;
-    object-fit: contain;
+    object-fit: cover;
+    border-radius: 50%;
+    object-position: top;
 }
 </style>

@@ -40,7 +40,7 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue';
 import { useUserStore } from '@/stores/user';
-import maleAvatar from '@/assets/img/DefaultUserAvatar/male.svg';
+import maleAvatar from '@/assets/img/DefaultUserAvatar/male.webp';
 import femaleAvatar from '@/assets/img/DefaultUserAvatar/female.svg';
 
 const raitingData = ref([]);
