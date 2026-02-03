@@ -71,7 +71,7 @@ const maxStarsForGame = ref(50);
 const fromGame = route.query.from;
 const gameSource = route.query.gameSource;
 
-const categoryId = computed(() => route.query.id || useCategoriesStore().chosedCategory.id);
+const categoryId = computed(() => route.query.id || useCategoriesStore().selectedCategory.id);
 
 onMounted(async () => {
     loading.value = true;
@@ -136,7 +136,7 @@ const goToMainPage = () => {
     if (totalStars.value <= 0)
         return router.push({
             name: 'games',
-            query: { id: useCategoriesStore().chosedCategory?.id },
+            query: { id: useCategoriesStore().selectedCategory?.id },
         });
     router.push({
         name: 'myPlanet',

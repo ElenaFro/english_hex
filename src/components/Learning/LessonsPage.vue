@@ -1,24 +1,16 @@
 <template>
     <div class="scroll-container">
-        <div class="flip-card" :class="{ flipped: activeComponent === 'WordPage' }">
-            <div class="flip-card__inner" @transitionend="handleTransitionEnd">
-                <div class="flip-card__side flip-card__front">
-                    <VideoPage
-                        ref="videoRef"
-                        :videoUrl="getVideoUrl(currentCard)"
-                        @show-retry-hint="showRetryHint"
-                        @show-previous-hint="openPreviousHint"
-                    />
-                </div>
-                <div class="flip-card__side flip-card__back">
-                    <WordPage
-                        :engWord="currentCard.translation_word"
-                        :rusWord="currentCard.word"
-                        :soundUrl="getAudioUrl(currentCard)"
-                    />
-                </div>
-            </div>
-        </div>
+        <CardFlip
+            ref="cardFlipRef"
+            :cards="cards"
+            :currentCardIndex="currentCardIndex"
+            :activeComponent="activeComponent"
+            :onTransitionEnd="handleTransitionEnd"
+            :getVideoUrl="getVideoUrl"
+            :getAudioUrl="getAudioUrl"
+            :showRetryHint="showRetryHint"
+            :openPreviousHint="openPreviousHint"
+        />
         <div class="button-container" :class="btnContainerClass">
             <button
                 ref="previousBtnRef"
@@ -46,6 +38,7 @@
             @close="handleClosePopup"
         />
     </div>
+
     <teleport to="body">
         <div v-if="isShowRetryHint" class="hint-overlay" @click="closeRetryHint">
             <div class="arrow-container" :style="highlightStyle">
@@ -98,8 +91,7 @@
 <script setup>
 import { ref, onMounted, computed, watch, nextTick } from 'vue';
 import { useRouter, onBeforeRouteLeave } from 'vue-router';
-import WordPage from './WordPage.vue';
-import VideoPage from './VideoPage.vue';
+import CardFlip from '@/shared/components/CardFlip.vue';
 import defaultPopup from '../popups/defaultPopup.vue';
 import { useCategoriesStore } from '@/stores/categories';
 import { useElementPosition } from '@/shared/composables/useElementPosition';
@@ -113,8 +105,8 @@ const emit = defineEmits(['closePreview', 'publish', 'showLikeHint', 'like-chang
 
 const cards = ref(props.propsCards);
 const currentCardIndex = ref(0);
-const chosedCategory = ref({});
-const videoRef = ref(null);
+const selectedCategory = ref({});
+const cardFlipRef = ref(null);
 const retryBtnRef = ref(null);
 const previousBtnRef = ref(null);
 const activeComponent = ref('VideoPage');
@@ -160,32 +152,28 @@ const arrowBtnPositionClass = computed(() => getPreviousPosition());
 
 onMounted(async () => {
     if (props.propsCards.length > 0) return;
-    chosedCategory.value = useCategoriesStore().chosedCategory;
-    cards.value = chosedCategory.value.cards || [];
+    selectedCategory.value = useCategoriesStore().selectedCategory;
+    cards.value = selectedCategory.value.cards || [];
 });
 
 const replayAgain = () => {
     if (activeComponent.value === 'WordPage') {
         activeComponent.value = 'VideoPage';
     }
-    if (videoRef.value?.replayVideo) {
-        videoRef.value.replayVideo();
-    }
+    cardFlipRef.value.replayVideo();
 };
 
 const handleNextOrFinish = async () => {
     if (isTransitioning.value) return;
     if (isLastCard.value) {
         if (props.propsCards.length > 0) return emit('closePreview');
-        if (!chosedCategory.value.completed_category) localStorage.setItem('earnedStars', 20);
-        await useCategoriesStore().updateComplateCategory(chosedCategory.value.id);
-        router.push({ name: 'games', query: { id: chosedCategory.value.id } });
+        if (!selectedCategory.value.completed_category) localStorage.setItem('earnedStars', 20);
+        await useCategoriesStore().updateComplateCategory(selectedCategory.value.id);
+        router.push({ name: 'games', query: { id: selectedCategory.value.id } });
         return;
     }
     if (activeComponent.value === 'VideoPage') {
-        if (videoRef.value?.pauseVideo) {
-            videoRef.value.pauseVideo();
-        }
+        cardFlipRef.value.pauseVideo();
         activeComponent.value = 'WordPage';
     } else {
         isTransitioning.value = true;
@@ -195,9 +183,7 @@ const handleNextOrFinish = async () => {
 
 const goPreviousCard = () => {
     if (activeComponent.value === 'VideoPage') {
-        if (videoRef.value?.pauseVideo) {
-            videoRef.value.pauseVideo();
-        }
+        cardFlipRef.value.pauseVideo();
     }
     currentCardIndex.value = currentCardIndex.value - 1;
     activeComponent.value = 'VideoPage';
@@ -236,13 +222,13 @@ const handleTransitionEnd = () => {
 const getVideoUrl = (card) => {
     if (props.propsCards.length > 0) return card.video_preview;
     if (!card || !card.id || !card.video) return '';
-    return `${import.meta.env.VITE_STORAGE_URI}/${chosedCategory.value.id}/cards/${card.id}/video/${card.video}`;
+    return `${import.meta.env.VITE_STORAGE_URI}/${selectedCategory.value.id}/cards/${card.id}/video/${card.video}`;
 };
 
 const getAudioUrl = (card) => {
     if (props.propsCards.length > 0) return card.audio_preview;
     if (!card || !card.id || !card.audio) return '';
-    return `${import.meta.env.VITE_STORAGE_URI}/${chosedCategory.value.id}/cards/${card.id}/audio/${card.audio}`;
+    return `${import.meta.env.VITE_STORAGE_URI}/${selectedCategory.value.id}/cards/${card.id}/audio/${card.audio}`;
 };
 
 function showRetryHint() {
@@ -306,43 +292,6 @@ defineExpose({
     height: 100dvh;
     box-sizing: border-box;
     overflow: hidden;
-}
-
-.flip-card {
-    perspective: 1000px;
-    width: 100%;
-    max-width: 356px;
-    aspect-ratio: 3 / 4;
-    position: relative;
-    flex-shrink: 0;
-    margin: 6dvh 0 0 0;
-    max-height: 60dvh;
-    max-width: 314px;
-}
-
-.flip-card__inner {
-    position: relative;
-    width: 100%;
-    height: 100%;
-    transform-style: preserve-3d;
-    transition: transform 0.8s ease-in-out;
-}
-
-.flip-card.flipped .flip-card__inner {
-    transform: rotateY(180deg);
-}
-
-.flip-card__side {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    backface-visibility: hidden;
-}
-
-.flip-card__back {
-    transform: rotateY(180deg);
 }
 
 .button-container {

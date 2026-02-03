@@ -113,7 +113,7 @@ const checkMatch = () => {
                             wrong: wrongCount.value,
                             from: 'constellationGame',
                             gameSource: 'constellation_word',
-                            id: route.query.id || useCategoriesStore().chosedCategory.id,
+                            id: route.query.id || useCategoriesStore().selectedCategory.id,
                         },
                     });
                 }
@@ -221,7 +221,7 @@ watch(currentStarsForCategory, (newVal) => {
 onMounted(async () => {
     loading.value = true;
 
-    const categoryId = route.query.id || useCategoriesStore().chosedCategory.id;
+    const categoryId = route.query.id || useCategoriesStore().selectedCategory.id;
 
     data.value = await useGamesStore().getWordForConstellatonGame(categoryId);
 

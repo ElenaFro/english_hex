@@ -56,11 +56,11 @@ const currentUser = useUserStore().getCurrentUser();
 const emit = defineEmits(['update:lives', 'update:earnedStars', 'switch-component']);
 const lives = ref(5);
 const earnedStars = ref(currentUser.rating);
-const chosedCategory = computed(() => useCategoriesStore().chosedCategory);
+const selectedCategory = computed(() => useCategoriesStore().selectedCategory);
 const maxStarsForGame = ref(50);
 const meteorWidth = ref('min(18dvw, 74px)');
 
-const categoryId = computed(() => chosedCategory.value.id || route.query.id);
+const categoryId = computed(() => selectedCategory.value.id || route.query.id);
 
 const isQuestionPlayed = ref(false);
 
@@ -171,12 +171,12 @@ const meteorTop = ref('-25px');
 const meteorRight = ref('-4px');
 
 onMounted(async () => {
-    if (!chosedCategory.value.id) useCategoriesStore().getChosedCategory(route.query.id);
+    if (!selectedCategory.value.id) useCategoriesStore().getselectedCategory(route.query.id);
     try {
         if (soundRef.value) {
             soundRef.value.addEventListener('ended', onAudioEnded);
         }
-        if (!chosedCategory.value) return;
+        if (!selectedCategory.value) return;
         const response = await useGamesStore().fetchDataForPlanetAttack(categoryId.value);
 
         questions.value = response.map((question) => ({

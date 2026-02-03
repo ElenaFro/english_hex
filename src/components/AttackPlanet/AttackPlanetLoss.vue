@@ -39,7 +39,7 @@ import { useCategoriesStore } from '@/stores/categories';
 
 const router = useRouter();
 const goToGamesPage = () => {
-    router.push({ name: 'games', query: { id: useCategoriesStore().chosedCategory?.id } });
+    router.push({ name: 'games', query: { id: useCategoriesStore().selectedCategory?.id } });
 };
 const goToGamePage = () => {
     window.location.reload();

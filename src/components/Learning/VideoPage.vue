@@ -32,7 +32,7 @@ const props = defineProps({
     videoUrl: String,
 });
 
-const emit = defineEmits(['showHintLike', 'showRetryHint', 'showPreviousHint']);
+const emit = defineEmits(['showHintLike', 'showRetryHint', 'showPreviousHint', 'videoEnded']);
 
 const isOnboardingShoved = ref(false);
 const isSoundHintShow = ref(false);
@@ -91,6 +91,7 @@ const onVideoEnded = () => {
         emit('showRetryHint');
         emit('showPreviousHint');
     }
+    emit('videoEnded');
 };
 
 defineExpose({ replayVideo, pauseVideo });

@@ -15,7 +15,8 @@
                         class="context-card__gap"
                         :class="{ 'context-card__gap--placeholder': isGapPlaceholder }"
                     >
-                        __<span class="context-card__gap-value">{{ gapValue }}</span>__
+                        __<span class="context-card__gap-value">{{ gapValue }}</span
+                        >__
                     </p>
                 </div>
 
@@ -95,7 +96,9 @@ onBeforeUnmount(() => {
     if (timerId) window.clearInterval(timerId);
 });
 
-const current = computed(() => questions.value[currentIndex.value] || { ru: '', en: '', options: [] });
+const current = computed(
+    () => questions.value[currentIndex.value] || { ru: '', en: '', options: [] }
+);
 
 const isCorrectAnswered = computed(
     () => selectedOption.value && selectedOption.value === current.value.correct
@@ -121,7 +124,7 @@ const next = () => {
     buttonsLocked.value = false;
 };
 
-const categoryId = computed(() => route.query.id || useCategoriesStore().chosedCategory?.id);
+const categoryId = computed(() => route.query.id || useCategoriesStore().selectedCategory?.id);
 
 const goToResult = () => {
     router.push({

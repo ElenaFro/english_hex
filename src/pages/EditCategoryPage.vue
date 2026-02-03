@@ -16,14 +16,14 @@ import { useCategoriesStore } from '@/stores/categories';
 const route = useRoute();
 const userStore = useUserStore();
 const categoryStore = useCategoriesStore();
-const currentCategory = computed(() => categoryStore.chosedCategory);
+const currentCategory = computed(() => categoryStore.selectedCategory);
 
 const isAdmin = computed(() => userStore.isAdmin);
 
 onMounted(async () => {
     try {
         if (!currentCategory.value?.id) {
-            await categoryStore.getChosedCategory(route.params.id);
+            await categoryStore.getselectedCategory(route.params.id);
         }
     } catch (error) {
         console.error(error);

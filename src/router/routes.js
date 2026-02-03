@@ -50,22 +50,36 @@ const routes = [
                     {
                         path: 'profileEdit',
                         name: 'profileEdit',
-                        component: () => import('@/pages/ProfilePage/EditProfile/ProfileEditPage.vue'),
+                        component: () =>
+                            import('@/pages/ProfilePage/EditProfile/ProfileEditPage.vue'),
                     },
                     {
                         path: 'profileAchievements',
                         name: 'profileAchievements',
-                        component: () => import('@/pages/ProfilePage/AchievementsPage/ProfileAchievementsPage.vue'),
+                        component: () =>
+                            import(
+                                '@/pages/ProfilePage/AchievementsPage/ProfileAchievementsPage.vue'
+                            ),
                     },
                     {
                         path: 'dictionaryPage',
                         name: 'dictionary',
-                        component: () => import('@/pages/ProfilePage/DictionaryPage/DictionaryPage.vue'),
+                        component: () =>
+                            import('@/pages/ProfilePage/DictionaryPage/DictionaryPage.vue'),
+                        children: [
+                            {
+                                path: 'cardPreview/:id',
+                                name: 'cardPreview',
+                                component: () =>
+                                    import('@/pages/ProfilePage/DictionaryPage/CardPreview.vue'),
+                            },
+                        ],
                     },
                     {
                         path: 'subscriptions',
                         name: 'profileSubscriptions',
-                        component: () => import('@/pages/ProfilePage/SubscriptionsPage/SubscriptionsPage.vue'),
+                        component: () =>
+                            import('@/pages/ProfilePage/SubscriptionsPage/SubscriptionsPage.vue'),
                     },
                 ],
             },

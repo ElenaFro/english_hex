@@ -4,7 +4,7 @@ import apiClient from '../api/axios';
 
 export const useCategoriesStore = defineStore('categories', () => {
     const categories = ref([]);
-    const chosedCategory = ref({});
+    const selectedCategory = ref({});
 
     async function getCategories() {
         try {
@@ -16,7 +16,7 @@ export const useCategoriesStore = defineStore('categories', () => {
         }
     }
 
-    async function getChosedCategory(id) {
+    async function getselectedCategory(id) {
         try {
             const response = await apiClient.get(`/category/${id}`);
             setChosedCategories(response.data);
@@ -36,7 +36,7 @@ export const useCategoriesStore = defineStore('categories', () => {
     }
 
     function setChosedCategories(category) {
-        chosedCategory.value = category;
+        selectedCategory.value = category;
     }
 
     async function getCategoryStars(id) {
@@ -105,6 +105,16 @@ export const useCategoriesStore = defineStore('categories', () => {
         }
     }
 
+    async function getCardById(id) {
+        try {
+            const response = await apiClient.get(`/card/${id}`);
+            return response.data;
+        } catch (error) {
+            console.error(error);
+            throw error;
+        }
+    }
+
     async function createCard(categoryId, card) {
         try {
             const response = await apiClient.post(
@@ -165,15 +175,16 @@ export const useCategoriesStore = defineStore('categories', () => {
 
     return {
         categories,
-        chosedCategory,
+        selectedCategory,
         getCategories,
         setChosedCategories,
-        getChosedCategory,
+        getselectedCategory,
         updateComplateCategory,
         getCategoryStars,
         createCategory,
         updateCategory,
         deleteCategory,
+        getCardById,
         createCard,
         updateCard,
         deleteCard,

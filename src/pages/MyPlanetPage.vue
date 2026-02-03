@@ -45,7 +45,7 @@ const dataLoaded = ref(false);
 const animateStars = ref(false);
 const currentUser = useUserStore().user;
 const userStore = useUserStore();
-const chosedCategory = useCategoriesStore().chosedCategory;
+const selectedCategory = useCategoriesStore().selectedCategory;
 const localStorageStars = Number(localStorage.getItem('earnedStars') ?? 0);
 const gameSource = ref(route.query.gameSource);
 const earnedStars = ref(0);
@@ -69,13 +69,13 @@ onMounted(async () => {
         animateStars.value = true;
         if (gameSource.value) {
             await userStore.addRatingToGame(
-                chosedCategory.id ?? route.query.id,
+                selectedCategory.id ?? route.query.id,
                 gameSource.value,
                 localStorageStars ? earnedStars.value - localStorageStars : earnedStars.value
             );
         }
         if (localStorageStars) {
-            await userStore.addRatingToCategory(chosedCategory.id);
+            await userStore.addRatingToCategory(selectedCategory.id);
             if (localStorageStars) localStorage.removeItem('earnedStars');
         }
     }

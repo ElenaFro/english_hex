@@ -47,20 +47,17 @@ const currentIndex = ref(0);
 const selectedOption = ref(null);
 const wrongCount = ref(0);
 const everPlayedGame = ref(currentUser.ever_played_game);
-const chosedCategoryId = computed(() => useCategoriesStore().chosedCategory?.id || route.query.id);
+const selectedCategoryId = computed(
+    () => useCategoriesStore().selectedCategory?.id || route.query.id
+);
 
-const emit = defineEmits([
-    'wrong-answer',
-    'game-finished',
-    'question-opened',
-    'image-opened',
-]);
+const emit = defineEmits(['wrong-answer', 'game-finished', 'question-opened', 'image-opened']);
 
 const currentQuestion = computed(() => {
     const question = answerList.value[currentIndex.value] || {};
     return {
         id: question.id || null,
-        image: `${import.meta.env.VITE_STORAGE_URI}/${chosedCategoryId.value}/cards/${question.id}/word_image/${question.card_photo}`,
+        image: `${import.meta.env.VITE_STORAGE_URI}/${selectedCategoryId.value}/cards/${question.id}/word_image/${question.card_photo}`,
         correctAnswer: question.correctAnswer || '',
         options: question.options || [],
     };
@@ -68,7 +65,7 @@ const currentQuestion = computed(() => {
 
 onMounted(async () => {
     try {
-        answerList.value = await useGamesStore().getWordForTwinkleGame(chosedCategoryId.value);
+        answerList.value = await useGamesStore().getWordForTwinkleGame(selectedCategoryId.value);
     } catch (error) {
         console.error('Error fetching game data:', error);
     }
@@ -125,7 +122,7 @@ const goToResult = () => {
             wrong: wrongCount.value,
             from: 'wordTwinkle',
             gameSource: 'flickering_words',
-            id: route.query.id || useCategoriesStore().chosedCategory.id,
+            id: route.query.id || useCategoriesStore().selectedCategory.id,
         },
     });
 };

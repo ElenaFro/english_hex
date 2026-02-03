@@ -77,8 +77,8 @@ const popupMessage =
     'Для получения дополнительных звёзд пройди остальные три игры. Повторное прохождение пройденных игр звёзды не приносит.';
 
 onMounted(async () => {
-    await useCategoriesStore().getChosedCategory(route.params.id);
-    currentCategory.value = useCategoriesStore().chosedCategory;
+    await useCategoriesStore().getselectedCategory(route.params.id);
+    currentCategory.value = useCategoriesStore().selectedCategory;
 });
 
 const previewImages = computed(() => {
@@ -91,7 +91,7 @@ const previewImages = computed(() => {
 });
 
 const title = computed(() => currentCategory.value.name);
-const description = computed(() => useCategoriesStore().chosedCategory.description);
+const description = computed(() => useCategoriesStore().selectedCategory.description);
 const categoryComplite = computed(() => currentCategory.value.completed_category);
 const isAdmin = computed(() => userStore.isAdmin);
 const goToGames = () => {

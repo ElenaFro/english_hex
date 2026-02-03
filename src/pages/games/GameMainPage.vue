@@ -43,11 +43,11 @@ const router = useRouter();
 const route = useRoute();
 const loading = ref(true);
 const hasEarnedStars = localStorage.getItem('earnedStars');
-const category = ref(useCategoriesStore().chosedCategory);
+const category = ref(useCategoriesStore().selectedCategory);
 onMounted(async () => {
     if (!category.value?.name) {
-        await useCategoriesStore().getChosedCategory(route.query.id);
-        category.value = useCategoriesStore().chosedCategory;
+        await useCategoriesStore().getselectedCategory(route.query.id);
+        category.value = useCategoriesStore().selectedCategory;
     }
     loading.value = false;
 });
