@@ -25,17 +25,22 @@ import { ref, onMounted, computed } from 'vue';
 import { useRoute } from 'vue-router';
 import likeDisabled from '@/assets/icons/like_disabled.svg';
 import likeEnabled from '@/assets/icons/like_enabled.svg';
+import { useUserStore } from '@/stores/user';
 
 const route = useRoute();
+const categoryStore = useCategoriesStore();
 const cardFlipRef = ref(null);
 const isLikeEnabled = ref(false);
 const cards = ref([]);
 const currentCardIndex = ref(0);
 const activeComponent = ref('VideoPage');
+const selectedCategory = computed(() => categoryStore.selectedCategory);
 
 onMounted(async () => {
-    const currentCard = await useCategoriesStore().getCardById(route.params.id);
+    await categoryStore.getCategoryById(route.query.categoryId);
+    const currentCard = await categoryStore.getCardById(route.params.id);
     cards.value.push(currentCard);
+    useUserStore().setHeaderTitle(selectedCategory.value?.name);
 });
 
 const currentLikeIcon = computed(() => {
@@ -66,12 +71,12 @@ const switchLike = () => {
 
 const getVideoUrl = (card) => {
     if (!card || !card.id || !card.video) return '';
-    return `${import.meta.env.VITE_STORAGE_URI}/${route.query.categoryId}/cards/${card.id}/video/${card.video}`;
+    return `${import.meta.env.VITE_STORAGE_URI}/${selectedCategory.value.id}/cards/${card.id}/video/${card.video}`;
 };
 
 const getAudioUrl = (card) => {
     if (!card || !card.id || !card.audio) return '';
-    return `${import.meta.env.VITE_STORAGE_URI}/${route.query.categoryId}/cards/${card.id}/audio/${card.audio}`;
+    return `${import.meta.env.VITE_STORAGE_URI}/${selectedCategory.value.id}/cards/${card.id}/audio/${card.audio}`;
 };
 </script>
 

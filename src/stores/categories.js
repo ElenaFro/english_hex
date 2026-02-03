@@ -16,7 +16,7 @@ export const useCategoriesStore = defineStore('categories', () => {
         }
     }
 
-    async function getselectedCategory(id) {
+    async function getCategoryById(id) {
         try {
             const response = await apiClient.get(`/category/${id}`);
             setChosedCategories(response.data);
@@ -178,7 +178,7 @@ export const useCategoriesStore = defineStore('categories', () => {
         selectedCategory,
         getCategories,
         setChosedCategories,
-        getselectedCategory,
+        getCategoryById,
         updateComplateCategory,
         getCategoryStars,
         createCategory,

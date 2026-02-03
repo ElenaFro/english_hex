@@ -171,7 +171,7 @@ const meteorTop = ref('-25px');
 const meteorRight = ref('-4px');
 
 onMounted(async () => {
-    if (!selectedCategory.value.id) useCategoriesStore().getselectedCategory(route.query.id);
+    if (!selectedCategory.value.id) useCategoriesStore().getCategoryById(route.query.id);
     try {
         if (soundRef.value) {
             soundRef.value.addEventListener('ended', onAudioEnded);

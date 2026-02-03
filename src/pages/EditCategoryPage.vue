@@ -23,7 +23,7 @@ const isAdmin = computed(() => userStore.isAdmin);
 onMounted(async () => {
     try {
         if (!currentCategory.value?.id) {
-            await categoryStore.getselectedCategory(route.params.id);
+            await categoryStore.getCategoryById(route.params.id);
         }
     } catch (error) {
         console.error(error);
