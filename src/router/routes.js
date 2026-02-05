@@ -38,9 +38,26 @@ const routes = [
                 component: () => import('@/pages/EditCategoryPage.vue'),
             },
             {
-                path: 'rating',
-                name: 'rating',
-                component: () => import('@/pages/RatingPage.vue'),
+                path: 'users',
+                name: 'users',
+                component: () => import('@/pages/UsersPage/UsersPage.vue'),
+                children: [
+                    {
+                        path: '',
+                        name: 'usersMenu',
+                        component: () => import('@/pages/UsersPage/UsersMenuPage.vue'),
+                    },
+                    {
+                        path: 'rating',
+                        name: 'rating',
+                        component: () => import('@/pages/RatingPage/RatingPage.vue'),
+                    },
+                    {
+                        path: 'friends',
+                        name: 'friends',
+                        component: () => import('@/pages/FriendsPage/FriendsPage.vue'),
+                    },
+                ],
             },
             {
                 path: 'profile',
@@ -149,7 +166,7 @@ const routes = [
                 component: () => import('@/pages/DailyRewardPage.vue'),
             },
         ],
-        meta: { requiresAuth: true },
+        meta: { requiresAuth: false },
     },
     {
         path: '/error/:code',

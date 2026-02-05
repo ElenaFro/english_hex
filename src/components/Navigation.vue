@@ -34,8 +34,8 @@ const navItems = [
         icon: GameIcon,
     },
     {
-        name: 'rating',
-        path: '/rating',
+        name: 'users',
+        path: '/users',
         icon: RatingIcon,
     },
     {
@@ -48,7 +48,7 @@ const navItems = [
 const isActive = (item) => {
     if (route.path.startsWith('/profile')) return item.path === '/profile';
     if (route.path.startsWith('/allGames')) return item.path === '/allGames';
-    if (route.path.startsWith('/rating')) return item.path === '/rating';
+    if (route.path.startsWith('/users')) return item.path === '/users';
     if (route.path === '/') return item.path === '/';
     return item.path === '/';
 };
