@@ -71,7 +71,7 @@ const routes = [
                             import('@/pages/ProfilePage/EditProfile/ProfileEditPage.vue'),
                     },
                     {
-                        path: 'profileAchievements',
+                        path: 'profileAchievements/:id',
                         name: 'profileAchievements',
                         component: () =>
                             import(
@@ -166,7 +166,7 @@ const routes = [
                 component: () => import('@/pages/DailyRewardPage.vue'),
             },
         ],
-        meta: { requiresAuth: false },
+        meta: { requiresAuth: true },
     },
     {
         path: '/error/:code',

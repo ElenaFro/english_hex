@@ -13,7 +13,6 @@
                         :name="userName"
                         :rating="userStars"
                         :gender="currentUser?.gender"
-                        :profile-id="currentUser?.id"
                     />
 
                     <section class="profile-tiles">
@@ -80,7 +79,8 @@ const currentUser = computed(() => userStore.getCurrentUser());
 const userName = computed(() => currentUser.value?.name || '—');
 const userStars = computed(() => currentUser.value?.rating ?? 0);
 const goToDictionary = () => router.push({ name: 'dictionary' });
-const goToAchievements = () => router.push({ name: 'profileAchievements' });
+const goToAchievements = () =>
+    router.push({ name: 'profileAchievements', params: { id: currentUser.value.id } });
 const goToProfileEdit = () => router.push({ name: 'profileEdit' });
 const goToSubscriptions = () => router.push({ name: 'profileSubscriptions' });
 </script>
@@ -108,10 +108,10 @@ const goToSubscriptions = () => router.push({ name: 'profileSubscriptions' });
 
 .profile-hero {
     position: absolute;
-    top: -6px;
-    left: 50%;
+    top: -16px;
+    left: 52%;
     transform: translateX(-50%);
-    width: 210px;
+    width: 200px;
     pointer-events: none;
     z-index: 1;
 

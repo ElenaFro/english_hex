@@ -84,7 +84,7 @@
 
 <script setup>
 import { RouterLink } from 'vue-router';
-import { ref, watch, computed } from 'vue';
+import { ref, watch, computed, onMounted, nextTick } from 'vue';
 import { useRoute } from 'vue-router';
 import { useRouter } from 'vue-router';
 import { defineProps } from 'vue';
@@ -102,6 +102,13 @@ const totalStars = computed(() => currentUser.value.rating);
 const props = defineProps(['lives']);
 const starRef = ref(null);
 const isShowStarHint = ref(false);
+
+onMounted(() => {
+    nextTick(() => {
+        updateTitleFromRoute();
+    });
+});
+
 const currentHeaderTitle = computed(() => userStore.currentHeaderTitle);
 
 const { calculatePositionDelayed, getPositionStyle } = useElementPosition(starRef, {
@@ -162,72 +169,80 @@ const gameRoutes = [
 
 const isDailyRewardPage = computed(() => route.name === 'DailyReward');
 
+const updateTitleFromRoute = () => {
+    if (userStore.currentHeaderTitle) {
+        currentTitle.value = userStore.currentHeaderTitle;
+        return;
+    }
+
+    if (gameRoutes.includes(route.name)) {
+        currentTitle.value = 'Игры';
+    } else {
+        switch (route.name) {
+            case 'profile':
+                currentTitle.value = 'Профиль';
+                break;
+            case 'profileEdit':
+                currentTitle.value = 'Настройки';
+                break;
+            case 'dictionary':
+                currentTitle.value = 'Избранное';
+                break;
+            case 'profileSubscriptions':
+                currentTitle.value = 'Моя подписка';
+                break;
+            case 'friends':
+                currentTitle.value = 'Друзья';
+                break;
+            case 'rating':
+                currentTitle.value = 'Рейтинг';
+                break;
+            case 'notifications':
+                currentTitle.value = 'Уведомления';
+                break;
+            case 'createNotification':
+                currentTitle.value = 'Уведомления';
+                break;
+            case 'addCategories':
+                currentTitle.value = 'Редактирование';
+                break;
+            case 'editCategory':
+                currentTitle.value = 'Редактирование';
+                break;
+            case 'learning':
+                currentTitle.value = route.query.name || '';
+                break;
+            case 'planetAttackPage':
+                currentTitle.value = '';
+                break;
+            default:
+                currentTitle.value = ' ';
+                break;
+        }
+    }
+};
+
 watch(
-    () => route.path,
-    () => {
-        if (gameRoutes.includes(route.name)) {
-            currentTitle.value = 'Игры';
-        } else {
-            switch (route.name) {
-                case 'profile':
-                    currentTitle.value = 'Профиль';
-                    break;
-                case 'profileEdit':
-                    currentTitle.value = 'Настройки';
-                    break;
-                case 'profileAchievements':
-                    currentTitle.value = 'Достижения';
-                    break;
-                case 'dictionary':
-                    currentTitle.value = 'Избранное';
-                    break;
-                case 'profileSubscriptions':
-                    currentTitle.value = 'Моя подписка';
-                    break;
-                case 'rating':
-                    currentTitle.value = 'Рейтинг';
-                    break;
-                case 'notifications':
-                    currentTitle.value = 'Уведомления';
-                    break;
-                case 'createNotification':
-                    currentTitle.value = 'Уведомления';
-                    break;
-                case 'addCategories':
-                    currentTitle.value = 'Редактирование';
-                    break;
-                case 'editCategory':
-                    currentTitle.value = 'Редактирование';
-                    break;
-                case 'learning':
-                    currentTitle.value = route.query.name;
-                    break;
-                case 'planetAttackPage':
-                    currentTitle.value = '';
-                    break;
-                default:
-                    currentTitle.value = ' ';
-                    break;
-            }
+    () => route.name,
+    (newName) => {
+        updateTitleFromRoute();
+
+        if (isShowStarOverview.value && newName === 'myPlanet') {
+            isShowStarHint.value = true;
+            calculatePositionDelayed();
         }
     },
     { immediate: true }
 );
 
 watch(
-    () => route.name,
-    (newVal) => {
-        if (isShowStarOverview.value && newVal === 'myPlanet') {
-            isShowStarHint.value = true;
-            calculatePositionDelayed();
-        }
-    }
-);
+    () => userStore.currentHeaderTitle,
+    (newTitle) => {
+        console.log('Store title changed:', newTitle);
 
-watch(
-    currentHeaderTitle,
-    () => {
-        if (currentHeaderTitle.value !== null) currentTitle.value = currentHeaderTitle.value;
+        if (newTitle && newTitle.trim() !== '') {
+            currentTitle.value = newTitle;
+        }
     },
     { immediate: true }
 );

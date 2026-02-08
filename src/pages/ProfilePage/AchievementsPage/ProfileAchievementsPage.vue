@@ -5,8 +5,8 @@
                 :name="displayName"
                 :rating="displayRating"
                 :gender="displayGender"
-                :profile-id="profileId"
                 avatar-size="lg"
+                :is-can-add-to-friends="isCanAddToFriends"
             />
 
             <section class="achievement-list">
@@ -33,7 +33,7 @@
 </template>
 
 <script setup>
-import { computed } from 'vue';
+import { computed, onMounted, ref, watch } from 'vue';
 import { useRoute } from 'vue-router';
 import { useUserStore } from '@/stores/user';
 
@@ -44,25 +44,21 @@ import GirlThinking from '@/assets/Di_avatar/girl_thinking.webp';
 import GirlKeychain from '@/assets/Di_avatar/girl_with_keychain.webp';
 import GirlFlag from '@/assets/Di_avatar/girl_with_flag.svg';
 
-const props = defineProps({
-    userId: { type: [String, Number], default: null },
-    userName: { type: String, default: '' },
-    userRating: { type: Number, default: null },
-    userGender: { type: String, default: '' },
-    achievements: { type: Array, default: () => [] },
-});
-
 const route = useRoute();
 const userStore = useUserStore();
 const currentUser = computed(() => userStore.getCurrentUser());
+const userProfile = ref({});
 
-const profileId = computed(
-    () => props.userId ?? route.params.id ?? route.query.id ?? currentUser.value?.id ?? null
-);
+onMounted(async () => {
+    if (route.params.id) {
+        userProfile.value = (await userStore.getUserById?.(route.params.id)) ?? currentUser.value;
+    }
+    updateHeaderTitle();
+});
 
-const displayName = computed(() => props.userName || currentUser.value?.name || 'Пользователь');
-const displayRating = computed(() => props.userRating ?? currentUser.value?.rating ?? 0);
-const displayGender = computed(() => props.userGender || currentUser.value?.gender || '');
+const displayName = computed(() => userProfile.value.name || currentUser.value?.name);
+const displayRating = computed(() => userProfile.value.rating || currentUser.value?.rating || 0);
+const displayGender = computed(() => userProfile.value.gender || currentUser.value?.gender || '');
 
 const fallbackAchievements = [
     {
@@ -95,8 +91,29 @@ const fallbackAchievements = [
     },
 ];
 
-const achievementsList = computed(() =>
-    props.achievements?.length ? props.achievements : fallbackAchievements
+const achievementsList = computed(() => userProfile.value.achievements || fallbackAchievements);
+
+const isCanAddToFriends = computed(() => route.params.id != currentUser.value.id); // поменять на норм вычисление
+
+const updateHeaderTitle = () => {
+    const profileId = route.params.id?.toString();
+    const currentUserId = currentUser.value?.id?.toString();
+
+    if (profileId && currentUserId && profileId === currentUserId) {
+        userStore.setHeaderTitle('Достижения');
+    } else if (isCanAddToFriends.value) {
+        userStore.setHeaderTitle('Пользователи');
+    } else {
+        userStore.setHeaderTitle('Друзья');
+    }
+};
+
+watch(
+    () => [route.params.id, currentUser.value?.id],
+    () => {
+        updateHeaderTitle();
+    },
+    { immediate: true }
 );
 </script>
 

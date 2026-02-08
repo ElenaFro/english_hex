@@ -1,5 +1,5 @@
 <template>
-    <section class="profile-user-card" :class="avatarClass" :data-profile-id="profileId || null">
+    <section class="profile-user-card" :class="avatarClass">
         <div class="profile-user-card__avatar">
             <img :src="avatarIcon" alt="" class="profile-user-card__avatar-img" />
         </div>
@@ -10,6 +10,13 @@
                 <span class="profile-user-card__stars-value">{{ displayRating }}</span>
                 <img class="profile-user-card__stars-icon" :src="yellowStarIcon" alt="" />
             </div>
+            <button
+                v-if="isCanAddToFriends"
+                @click="$emit('addFriend')"
+                class="button button--blue d-mt-6"
+            >
+                Добавить в друзья
+            </button>
         </div>
     </section>
 </template>
@@ -25,9 +32,11 @@ const props = defineProps({
     rating: { type: Number, default: null },
     gender: { type: String, default: '' },
     avatarSrc: { type: String, default: '' },
-    profileId: { type: [String, Number], default: null },
     avatarSize: { type: String, default: '' },
+    isCanAddToFriends: { type: Boolean, default: false },
 });
+
+defineEmits(['addFriend']);
 
 const displayName = computed(() => props.name || 'Пользователь');
 const displayRating = computed(() => props.rating ?? 0);
