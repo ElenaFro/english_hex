@@ -24,14 +24,7 @@
                 :class="{ 'active-user': user.id === currentUser?.id }"
             >
                 <div class="user-rank">{{ user.place }}</div>
-                <section class="user-item-section">
-                    <img :src="userImg(user.gender)" class="user-avatar-small" :alt="user.name" />
-                    <span class="user-name">{{ user.name }}</span>
-                    <div class="user-info">
-                        <span class="user-stars">{{ user.rating }}</span>
-                        <img src="@/assets/icons/yelow_star.svg" class="star_class" />
-                    </div>
-                </section>
+                <user-card-with-star :user="user" />
             </section>
         </section>
     </div>
@@ -42,6 +35,7 @@ import { ref, computed, onMounted } from 'vue';
 import { useUserStore } from '@/stores/user';
 import maleAvatar from '@/assets/img/DefaultUserAvatar/male.webp';
 import femaleAvatar from '@/assets/img/DefaultUserAvatar/female.svg';
+import UserCardWithStar from '@/shared/ui/UserCardWithStar.vue';
 
 const raitingData = ref([]);
 const currentUser = ref(null);
@@ -159,28 +153,6 @@ const userImg = (gender) => {
     padding: 4px;
 }
 
-.user-info {
-    text-align: center;
-    display: flex;
-    justify-content: flex-end;
-    column-gap: 10px;
-}
-
-.user-name {
-    display: flex;
-    flex-direction: row;
-    white-space: nowrap;
-    max-width: 130px;
-    width: 130px;
-    text-align: start;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    font-size: 16px;
-    font-weight: 600;
-    align-items: start;
-    color: #4700b580;
-}
-
 .user-rating {
     font-size: 14px;
     color: #a3bffa;
@@ -204,18 +176,6 @@ const userImg = (gender) => {
     box-sizing: border-box;
 }
 
-.user-item-section {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 10px;
-    border: 2px solid #4700b580;
-    background: #fff;
-    border-radius: 20px;
-    gap: 17px;
-    width: 100%;
-}
-
 .user-item {
     display: flex;
     justify-content: space-between;
@@ -234,27 +194,6 @@ const userImg = (gender) => {
     color: #00000080;
     width: 30px;
     text-align: center;
-}
-
-.user-avatar-small {
-    width: 38px;
-    height: 38px;
-    border-radius: 50%;
-    object-fit: cover;
-}
-
-.user-stars {
-    display: flex;
-    align-items: center;
-    font-size: 14px;
-    color: #4700b580;
-}
-
-.star_class img {
-    display: flex !important;
-    justify-content: end !important;
-    width: 25px;
-    height: 25px;
 }
 
 .active-user .user-item-section {

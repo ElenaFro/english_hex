@@ -2,10 +2,7 @@
     <RouterView v-if="!isRootDictionary" />
 
     <div v-else class="page-content">
-        <div class="search-container">
-            <input type="text" placeholder="Введи слово" class="search-input" />
-            <img src="@/assets/icons/profile/search.svg" alt="search" class="search-icon" />
-        </div>
+        <search-input placeholder="Введи слово" @search="console.log($event)" enable-auto-search />
 
         <div v-if="words.length === 0" class="empty-state">
             <img src="@/assets/Di_avatar/girl-img2.webp" alt="girl" class="empty-state__img" />
@@ -36,6 +33,7 @@
 <script setup>
 import { computed, ref } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
+import SearchInput from '@/shared/ui/SearchInput.vue';
 
 const router = useRouter();
 const route = useRoute();
@@ -63,31 +61,6 @@ const goToWord = (id) => {
 };
 </script>
 <style scoped>
-.search-container {
-    position: relative;
-    margin-bottom: 20px;
-}
-
-.search-input {
-    width: 100%;
-    margin-top: 10px;
-    padding: 12px 40px 12px 30px;
-    border: 1px solid #262060;
-    border-radius: 12px;
-    font-size: 16px;
-    outline: none;
-}
-
-.search-icon {
-    position: absolute;
-    right: 15px;
-    top: 58%;
-    transform: translateY(-50%);
-    width: 22px;
-    height: 22px;
-    pointer-events: none;
-}
-
 .empty-state {
     text-align: center;
     margin-top: 60px;
@@ -158,13 +131,5 @@ const goToWord = (id) => {
 
 .dictionary-item__delete-btn:hover .dictionary-item__delete-icon {
     transform: scale(1.2);
-}
-</style>
-
-<style>
-.search-input::placeholder {
-    font-size: 16px;
-    font-weight: 600;
-    color: #311d5d;
 }
 </style>
