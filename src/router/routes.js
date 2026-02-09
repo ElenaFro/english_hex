@@ -57,6 +57,11 @@ const routes = [
                         name: 'friends',
                         component: () => import('@/pages/FriendsPage/FriendsPage.vue'),
                     },
+                    {
+                        path: 'classes',
+                        name: 'classes',
+                        component: () => import('@/pages/ClassesPage/ClassesPage.vue'),
+                    },
                 ],
             },
             {

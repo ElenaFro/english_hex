@@ -10,6 +10,7 @@ export const useUserStore = defineStore('user', () => {
     const notifications = ref([]);
     const unsubscribed_at = ref(null);
     const isAdmin = ref(null);
+    const isTeacher = ref(true);
     const isShowStarOverview = ref(false);
     const currentHeaderTitle = ref(null);
 
@@ -204,6 +205,7 @@ export const useUserStore = defineStore('user', () => {
         isAdmin,
         isShowStarOverview,
         currentHeaderTitle,
+        isTeacher,
         register,
         login,
         logout,

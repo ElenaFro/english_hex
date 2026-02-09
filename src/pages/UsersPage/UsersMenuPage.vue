@@ -17,14 +17,14 @@
             <button class="users-card users-card--friends" type="button" @click="goToFriends">
                 <img class="users-card__friends-img" :src="friendsAvatar" alt="" />
 
-                <p class="users-card__friends-text">Посмотри что нового у&nbsp;твоих друзей</p>
+                <p class="users-card__friends-text">{{ friendsText }}</p>
             </button>
         </div>
     </div>
 </template>
 
 <script setup>
-import { onBeforeUnmount, onMounted } from 'vue';
+import { computed, onBeforeUnmount, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import { useUserStore } from '@/stores/user';
 
@@ -35,7 +35,15 @@ const router = useRouter();
 const userStore = useUserStore();
 
 const goToRating = () => router.push({ name: 'rating' });
-const goToFriends = () => router.push({ name: 'friends' });
+const goToFriends = () => {
+    const pageName = userStore.isTeacher ? 'classes' : 'friends';
+    router.push({ name: pageName });
+};
+const friendsText = computed(() =>
+    userStore.isTeacher
+        ? 'Посмотри что нового у\u00A0твоих учеников'
+        : 'Посмотри что нового у\u00A0твоих друзей'
+);
 
 onMounted(() => {
     userStore.setHeaderTitle('Пользователи');

@@ -1,7 +1,7 @@
 <template>
     <div>
         <RouterView />
-        <Notivue v-slot="item">
+        <Notivue v-slot="item" style="z-index: 1000 !important">
             <Notification :item="item" />
         </Notivue>
     </div>

@@ -69,7 +69,7 @@ const isDailyRewardPage = computed(() => route.name === 'DailyReward');
     border-radius: 30px;
     padding: 6px;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
-    z-index: 500;
+    z-index: 299;
     width: 90%;
     max-width: 315px;
 }
