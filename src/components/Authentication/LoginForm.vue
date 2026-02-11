@@ -90,7 +90,7 @@ import { useRouter } from 'vue-router';
 import { useUserStore } from '../../stores/user';
 import visibilityIcon from '@/assets/img/visibility_icon.svg';
 import visibilityOffIcon from '@/assets/img/visibility_off_icon.svg';
-import loader from '../Loader.vue';
+import loader from '../../shared/components/Loader.vue';
 import defaultPopup from '../popups/defaultPopup.vue';
 import SubscribePushNotify from '@/components/popups/SubscribePushNotify.vue';
 

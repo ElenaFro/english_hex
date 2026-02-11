@@ -57,7 +57,7 @@
 import { useCategoriesStore } from '@/stores/categories';
 import { computed, onMounted, ref } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
-import Loader from '../Loader.vue';
+import Loader from '../../shared/components/Loader.vue';
 import defaultPopup from '../popups/defaultPopup.vue';
 import animalsImg from '@/assets/categoryLessonImg/animals.svg';
 import clothesImg from '@/assets/categoryLessonImg/clothes.svg';

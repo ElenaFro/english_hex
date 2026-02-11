@@ -26,7 +26,7 @@
 <script setup>
 import { useUserStore } from '../../stores/user';
 import { ref } from 'vue';
-import loader from '../Loader.vue';
+import loader from '../../shared/components/Loader.vue';
 
 const emit = defineEmits(['change-component']);
 const email = ref();

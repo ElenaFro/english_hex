@@ -42,7 +42,7 @@
 //vue
 import { ref, computed, onMounted } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
-import Loader from '@/components/Loader.vue';
+import Loader from '@/shared/components/Loader.vue';
 //stores
 import { useUserStore } from '@/stores/user';
 import { useCategoriesStore } from '@/stores/categories';

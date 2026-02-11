@@ -47,7 +47,7 @@ import { useUserStore } from '@/stores/user';
 import { useCategoriesStore } from '@/stores/categories';
 import { useGamesStore } from '@/stores/games';
 import { useRoute } from 'vue-router';
-import Loader from '../Loader.vue';
+import Loader from '../../shared/components/Loader.vue';
 import AnswerOptionButton from '@/components/ui/AnswerOptionButton.vue';
 
 const soundRef = ref(null);

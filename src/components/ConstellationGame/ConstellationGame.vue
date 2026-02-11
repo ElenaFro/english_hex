@@ -32,7 +32,7 @@ import { ref, onMounted, onUnmounted, computed, watch } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 //component
 import CongratulationPopup from '../myPlanetPopup/CongratulationPopup.vue';
-import Loader from '../Loader.vue';
+import Loader from '../../shared/components/Loader.vue';
 import ConstellationGameGrid from '@/shared/ui/ConstellationGameGrid.vue';
 //stores
 import { useGamesStore } from '@/stores/games';

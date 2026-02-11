@@ -48,7 +48,7 @@
 import { ref, onMounted, computed, watch, nextTick } from 'vue';
 //components
 import CategoryChoice from '@/components/MainPage/CategoryChoice.vue';
-import loader from '@/components/Loader.vue';
+import loader from '@/shared/components/Loader.vue';
 import HelloPopupWithSound from '@/components/popups/HelloPopupWithSound.vue';
 import watchStarsPopup from '@/components/popups/watchStarsPopup.vue';
 import InstallAppPopup from '@/components/popups/InstallAppPopup.vue';

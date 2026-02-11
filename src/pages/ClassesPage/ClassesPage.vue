@@ -1,55 +1,78 @@
 <template>
     <div class="page-content">
-        <search-input
-            placeholder="Введи название группы"
-            @search="console.log($event)"
-            enable-auto-search
-        />
+        <Loader v-if="loading" />
+        <div v-else>
+            <search-input
+                placeholder="Введи название группы"
+                @search="searchClass"
+                enable-auto-search
+            />
 
-        <div v-if="classes.length === 0" class="empty-state">
-            <p class="empty-state__text">У тебя пока нет групп с учениками, создайте их скорее</p>
-            <div class="add-block" @click="openClassForm">+</div>
-            <img src="@/assets/img/empty-friends.webp" alt="girl" class="empty-state__img" />
-        </div>
-
-        <section v-else>
-            <div class="add-block" @click="openClassForm">+</div>
-            <div class="classes-list">
-                <div v-for="classItem in classes" :key="classItem.id" class="class-item"></div>
+            <div v-if="classes?.length === 0" class="empty-state">
+                <p class="empty-state__text">{{ emptyText }}</p>
+                <div v-if="!isHasSearch" class="add-block" @click="openClassForm">+</div>
+                <img src="@/assets/img/empty-friends.webp" alt="girl" class="empty-state__img" />
             </div>
-        </section>
-        <create-class-form v-if="isFormOpen" @close="closeClassForm" />
+
+            <section v-else>
+                <div class="add-block" @click="openClassForm">+</div>
+                <div class="classes-list">
+                    <div v-for="classItem in classes" :key="classItem.id" class="class-item">
+                        <p class="class-item__title">{{ classItem.title }}</p>
+                        <div class="class-item__meta">
+                            <span class="class-item__grade">{{ classItem.grade }} класс</span>
+                            <span class="class-item__students">
+                                <span class="class-item__count">{{
+                                    classItem.students?.length
+                                }}</span>
+                                <svg
+                                    class="class-item__students-icon"
+                                    viewBox="0 0 24 24"
+                                    aria-hidden="true"
+                                >
+                                    <path
+                                        d="M12 12.5a4 4 0 1 0-3.999-4 4.003 4.003 0 0 0 4 4Zm0 2c-3.314 0-6 2.015-6 4.5V20h12v-1c0-2.485-2.686-4.5-6-4.5Z"
+                                        fill="currentColor"
+                                    />
+                                </svg>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            <create-class-form v-if="isFormOpen" @close="closeClassForm" />
+        </div>
     </div>
 </template>
 
 <script setup>
 import { computed, ref, onMounted } from 'vue';
-import { useRoute, useRouter } from 'vue-router';
+import Loader from '@/shared/components/Loader.vue';
 import SearchInput from '@/shared/ui/SearchInput.vue';
-import UserCardWithStar from '@/shared/ui/UserCardWithStar.vue';
 import createClassForm from '@/pages/ClassesPage/components/CreateClassForm.vue';
 import { useUserStore } from '@/stores/user';
-import { push } from 'notivue';
+import { useTeacherStore } from '@/stores/teacher';
 
-const router = useRouter();
-const route = useRoute();
 const userStore = useUserStore();
+const teacherStore = useTeacherStore();
 const isFormOpen = ref(false);
-const classes = ref([
-    // { id: 8, name: 'odilbek_arziev', rating: 145, gender: 'male', place: 1 },
-    // { id: 2, name: 'fdgbvbhgf', rating: 0, gender: 'male', place: 2 },
-    // { id: 3, name: 'gfhfghsfgh', rating: 0, gender: 'male', place: 3 },
-    // { id: 4, name: 'dfgsdfg', rating: 0, gender: 'male', place: 4 },
-    // { id: 5, name: 'TestAndrew', rating: 0, gender: 'male', place: 5 },
-    // { id: 6, name: 'Марина', rating: 0, gender: 'female', place: 6 },
-    // { id: 7, name: 'odilbek', rating: 0, gender: 'male', place: 7 },
-    // { id: 9, name: 'Ovrono', rating: 0, gender: 'male', place: 8 },
-    // { id: 12, name: 'Mark_lebovski', rating: 0, gender: 'male', place: 11 },
-]);
+const loading = ref(false);
+const classes = computed(() => teacherStore.allClasses);
+const searchValue = ref('');
+const isHasSearch = computed(() => searchValue.value.trim().length > 0);
 
-onMounted(() => {
-    userStore.setHeaderTitle('Ученики');
+onMounted(async () => {
+    loading.value = true;
+    userStore.setHeaderTitle('Классы');
+    await teacherStore.getAllClasses();
+    loading.value = false;
 });
+
+const emptyText = computed(() =>
+    isHasSearch.value
+        ? 'К сожалению не нашла такой класс'
+        : 'У тебя пока нет групп с учениками, создайте их скорее'
+);
 
 const openClassForm = (value) => {
     isFormOpen.value = true;
@@ -57,6 +80,11 @@ const openClassForm = (value) => {
 
 const closeClassForm = (value) => {
     isFormOpen.value = false;
+};
+
+const searchClass = async (event) => {
+    searchValue.value = event ?? '';
+    await teacherStore.searchClass(event);
 };
 </script>
 <style scoped lang="scss">
@@ -77,13 +105,14 @@ const closeClassForm = (value) => {
         line-height: normal;
         max-width: 305px;
         margin: 0 auto;
+        margin-bottom: 3dvh;
     }
 }
 
 .add-block {
     display: flex;
     width: 100%;
-    height: 10dvh;
+    height: 9dvh;
     border: 2px dashed #262060;
     border-spacing: 10px;
     border-radius: 20px;
@@ -91,64 +120,56 @@ const closeClassForm = (value) => {
     align-items: center;
     font-size: 32px;
     cursor: pointer;
-    margin-top: 3dvh;
 }
 
-.friends-menu {
-    &__section-title {
-        margin: 5px 0 19px;
-        font-size: 22px;
-        font-weight: 800;
-        color: #311d5d;
-    }
-}
-
-.friends-list {
-    max-height: 78dvh;
-    overflow-y: auto;
-    scroll-behavior: smooth;
-    scrollbar-width: none;
-    padding-bottom: 60px;
-}
-
-.friends-item {
+.classes-list {
     display: flex;
-    align-items: center;
+    flex-direction: column;
+    gap: 12px;
+    margin-top: 2dvh;
+}
+
+.class-item {
+    display: flex;
+    flex-direction: column;
     justify-content: space-between;
-    margin-bottom: 10px;
-    border-radius: 12px;
-}
-
-.friends-item__delete-btn {
-    background: none;
-    border: none;
-    cursor: pointer;
-    padding: 5px;
-    margin-left: 7px;
-    border: 2px solid #262060;
+    background: #f6b390;
     border-radius: 20px;
-    padding: 15px 19px;
-}
+    padding: 14px 16px 12px;
+    height: 92px;
 
-.friends-item__delete-icon {
-    width: 25px;
-    height: 25px;
-    transition: transform 0.2s;
-}
-
-.friends-item__delete-btn:hover .dictionary-item__delete-icon {
-    transform: scale(1.2);
-}
-
-:deep(.user-item-section) {
-    border-color: #311d5d;
-
-    .user-name {
+    &__title {
+        font-size: 18px;
+        font-weight: 800;
+        margin: 0 0 10px;
         color: #311d5d;
     }
 
-    .user-stars {
-        color: #311d5d;
+    &__meta {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        font-size: 14px;
+        font-weight: 500;
+        color: #262060;
+    }
+
+    &__grade,
+    &__count {
+        color: #262060;
+    }
+
+    &__students {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        margin-right: 12px;
+    }
+
+    &__students-icon {
+        width: 16px;
+        height: 16px;
+        display: block;
     }
 }
 </style>

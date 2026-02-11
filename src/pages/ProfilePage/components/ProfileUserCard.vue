@@ -10,13 +10,18 @@
                 <span class="profile-user-card__stars-value">{{ displayRating }}</span>
                 <img class="profile-user-card__stars-icon" :src="yellowStarIcon" alt="" />
             </div>
-            <button
-                v-if="isCanAddToFriends"
-                @click="$emit('addFriend')"
-                class="button button--blue d-mt-6"
-            >
-                Добавить в друзья
-            </button>
+            <div v-if="!isSelfProfile">
+                <button
+                    v-if="isCanAddToFriends && !isTeacher"
+                    @click="$emit('addFriend')"
+                    class="button button--blue d-mt-6"
+                >
+                    Добавить в друзья
+                </button>
+                <button v-if="isTeacher" @click="addToClass" class="button button--blue d-mt-6">
+                    Добавить в класс
+                </button>
+            </div>
         </div>
     </section>
 </template>
@@ -26,8 +31,12 @@ import { computed } from 'vue';
 import BoyIcon from '@/assets/img/DefaultUserAvatar/male.webp';
 import GirlIcon from '@/assets/img/DefaultUserAvatar/female.svg';
 import yellowStarIcon from '@/assets/icons/yelow_star.svg';
+import { useUserStore } from '@/stores/user';
+import { useTeacherStore } from '@/stores/teacher';
+import { useRoute } from 'vue-router';
 
 const props = defineProps({
+    userId: { type: Number, required: true },
     name: { type: String, default: '' },
     rating: { type: Number, default: null },
     gender: { type: String, default: '' },
@@ -37,14 +46,27 @@ const props = defineProps({
 });
 
 defineEmits(['addFriend']);
+const route = useRoute();
+const userStore = useUserStore();
+const teacherStore = useTeacherStore();
+
+const isTeacher = computed(() => userStore.isTeacher);
 
 const displayName = computed(() => props.name || 'Пользователь');
+
 const displayRating = computed(() => props.rating ?? 0);
+
 const avatarIcon = computed(() =>
     props.avatarSrc ? props.avatarSrc : props.gender === 'male' ? BoyIcon : GirlIcon
 );
 
+const isSelfProfile = computed(() => route.params.id == userStore.user.id);
+
 const avatarClass = computed(() => ({ lg: props.avatarSize }));
+
+const addToClass = async () => {
+    await teacherStore.addStudentToClass(route.query.classId, route.params.id);
+};
 </script>
 
 <style scoped lang="scss">

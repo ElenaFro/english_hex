@@ -2,6 +2,7 @@
     <div class="page-content">
         <div class="scroll-container achievements-scroll">
             <ProfileUserCard
+                :user-id="userProfile.id"
                 :name="displayName"
                 :rating="displayRating"
                 :gender="displayGender"

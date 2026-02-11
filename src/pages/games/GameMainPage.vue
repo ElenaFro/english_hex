@@ -36,7 +36,7 @@
 import { computed, onMounted, ref } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import defaultPopup from '@/components/popups/defaultPopup.vue';
-import Loader from '@/components/Loader.vue';
+import Loader from '@/shared/components/Loader.vue';
 import { useCategoriesStore } from '@/stores/categories';
 
 const router = useRouter();

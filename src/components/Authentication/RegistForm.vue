@@ -130,7 +130,7 @@ import { ref, computed, watch } from 'vue';
 import visibilityIcon from '@/assets/img/visibility_icon.svg';
 import visibilityOffIcon from '@/assets/img/visibility_off_icon.svg';
 import { useUserStore } from '../../stores/user';
-import loader from '@/components/Loader.vue';
+import loader from '@/shared/components/Loader.vue';
 import defaultPopup from '../popups/defaultPopup.vue';
 import { useTeacherStore } from '@/stores/teacher';
 

@@ -26,7 +26,7 @@
 
 <script setup>
 import { computed, ref, watch } from 'vue';
-import loader from '@/components/Loader.vue';
+import loader from '@/shared/components/Loader.vue';
 
 const props = defineProps({
     isVisible: {
