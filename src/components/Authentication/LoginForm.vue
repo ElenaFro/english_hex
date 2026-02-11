@@ -65,7 +65,7 @@
                 </div>
                 <button class="button button--purple button--big" @click="login">
                     <loader v-if="loading" :size="20" />
-                    <p v-else>Продолжить</p>
+                    <p class="text-white" v-else>Продолжить</p>
                 </button>
             </div>
         </div>

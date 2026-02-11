@@ -45,7 +45,7 @@
 
 <script setup>
 //vue
-import { ref, onMounted, computed, watch } from 'vue';
+import { ref, onMounted, computed, watch, nextTick } from 'vue';
 //components
 import CategoryChoice from '@/components/MainPage/CategoryChoice.vue';
 import loader from '@/components/Loader.vue';
@@ -71,13 +71,15 @@ const subscribePopup = ref(false);
 const userStore = useUserStore();
 const isShowInstallPopup = ref(false);
 const isAdmin = computed(() => userStore.isAdmin);
+const isTeacher = computed(() => userStore.isTeacher);
 
 const router = useRouter();
 
 onMounted(async () => {
+    await nextTick();
     await useCategoriesStore().getCategories();
     userStore.getUserNotifications();
-    if (isAdmin.value === null) await userStore.getUserRole();
+    if (isAdmin.value === null || isTeacher.value == null) await userStore.getUserRole();
 
     if (localStorage.getItem('markFirstGame')) {
         popupShowed.value = false;

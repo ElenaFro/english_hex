@@ -132,7 +132,9 @@ import visibilityOffIcon from '@/assets/img/visibility_off_icon.svg';
 import { useUserStore } from '../../stores/user';
 import loader from '@/components/Loader.vue';
 import defaultPopup from '../popups/defaultPopup.vue';
+import { useTeacherStore } from '@/stores/teacher';
 
+const teacherStore = useTeacherStore();
 const nick = ref('');
 const email = ref('');
 const password = ref('');
@@ -152,6 +154,7 @@ const loading = ref(false);
 const showPopup = ref(false);
 const errorMessage = ref(null);
 const passwordFocused = ref(false);
+const isTeacherReg = ref(localStorage.getItem('isTeacherReg'));
 
 const mode = ref('register');
 const emit = defineEmits(['change-component']);
@@ -304,12 +307,22 @@ const formValidator = () => {
 async function login() {
     loading.value = true;
     try {
-        const response = await useUserStore().register(
-            nick.value,
-            email.value,
-            password.value,
-            agreementCheckbox.value
-        );
+        let response;
+        if (isTeacherReg.value) {
+            response = await teacherStore.registerTeacher(
+                nick.value,
+                email.value,
+                password.value,
+                agreementCheckbox.value
+            );
+        } else {
+            response = await useUserStore().register(
+                nick.value,
+                email.value,
+                password.value,
+                agreementCheckbox.value
+            );
+        }
         if (response?.message?.includes('Success registration')) {
             confirmEmailSend.value = true;
         } else {

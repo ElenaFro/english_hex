@@ -161,6 +161,7 @@ const confirmAction = () => {
     font-size: 18px;
     font-weight: 600;
     cursor: pointer;
+    color: #fff;
     transition: background-color 0.2s;
     min-width: 161px;
 }

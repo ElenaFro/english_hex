@@ -59,6 +59,7 @@ const handleOptionClick = (index) => {
     selectedIndex.value = index;
 
     if (index === options.length - 1) {
+        localStorage.setItem('isTeacherReg', 'true');
         emit('change-component', 'RegistForm');
     } else {
         emit('change-component', 'OnboardingStartSolutionGame');

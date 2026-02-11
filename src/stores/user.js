@@ -10,7 +10,7 @@ export const useUserStore = defineStore('user', () => {
     const notifications = ref([]);
     const unsubscribed_at = ref(null);
     const isAdmin = ref(null);
-    const isTeacher = ref(true);
+    const isTeacher = ref(null);
     const isShowStarOverview = ref(false);
     const currentHeaderTitle = ref(null);
 
@@ -77,6 +77,7 @@ export const useUserStore = defineStore('user', () => {
         try {
             const response = await apiClient.get('/is-role');
             isAdmin.value = response.data?.role === 'admin' ? true : false;
+            isTeacher.value = response.data?.role === 'teacher' ? true : false;
         } catch (error) {
             console.error('Fetch role error:', error);
             logout();
