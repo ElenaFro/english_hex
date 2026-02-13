@@ -1,5 +1,11 @@
 const routes = [
     {
+        path: '/service',
+        name: 'Service',
+        component: () => import('@/pages/ServicePage.vue'),
+        meta: { requiresAuth: false },
+    },
+    {
         path: '/auth',
         name: 'Auth',
         component: () => import('@/layouts/GuestLayout.vue'),
