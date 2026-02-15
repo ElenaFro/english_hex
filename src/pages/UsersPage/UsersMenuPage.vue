@@ -36,7 +36,7 @@ const userStore = useUserStore();
 
 const goToRating = () => router.push({ name: 'rating' });
 const goToFriends = () => {
-    const pageName = userStore.isTeacher ? 'classes' : 'friends';
+    const pageName = userStore.isTeacher ? 'allClasses' : 'friends';
     router.push({ name: pageName });
 };
 const friendsText = computed(() =>

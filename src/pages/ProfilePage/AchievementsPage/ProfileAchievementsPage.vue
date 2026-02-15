@@ -2,7 +2,7 @@
     <div class="page-content">
         <div class="scroll-container achievements-scroll">
             <ProfileUserCard
-                :user-id="userProfile.id"
+                :user-id="userProfile?.id"
                 :name="displayName"
                 :rating="displayRating"
                 :gender="displayGender"
@@ -38,7 +38,7 @@ import { computed, onMounted, ref, watch } from 'vue';
 import { useRoute } from 'vue-router';
 import { useUserStore } from '@/stores/user';
 
-import ProfileUserCard from '@/pages/ProfilePage/components/ProfileUserCard.vue';
+import ProfileUserCard from '@/shared/ui/ProfileUserCard.vue';
 
 import GirlPlanet from '@/assets/Di_avatar/girl_with_planet.svg';
 import GirlThinking from '@/assets/Di_avatar/girl_thinking.webp';
@@ -51,15 +51,17 @@ const currentUser = computed(() => userStore.getCurrentUser());
 const userProfile = ref({});
 
 onMounted(async () => {
+    console.log(route.params.id);
+
     if (route.params.id) {
         userProfile.value = (await userStore.getUserById?.(route.params.id)) ?? currentUser.value;
     }
     updateHeaderTitle();
 });
 
-const displayName = computed(() => userProfile.value.name || currentUser.value?.name);
-const displayRating = computed(() => userProfile.value.rating || currentUser.value?.rating || 0);
-const displayGender = computed(() => userProfile.value.gender || currentUser.value?.gender || '');
+const displayName = computed(() => userProfile.value?.name || currentUser.value?.name);
+const displayRating = computed(() => userProfile.value?.rating || currentUser.value?.rating || 0);
+const displayGender = computed(() => userProfile.value?.gender || currentUser.value?.gender || '');
 
 const fallbackAchievements = [
     {
@@ -92,7 +94,7 @@ const fallbackAchievements = [
     },
 ];
 
-const achievementsList = computed(() => userProfile.value.achievements || fallbackAchievements);
+const achievementsList = computed(() => userProfile.value?.achievements || fallbackAchievements);
 
 const isCanAddToFriends = computed(() => route.params.id != currentUser.value.id); // поменять на норм вычисление
 

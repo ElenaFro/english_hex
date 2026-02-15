@@ -18,7 +18,11 @@
                 >
                     Добавить в друзья
                 </button>
-                <button v-if="isTeacher" @click="addToClass" class="button button--blue d-mt-6">
+                <button
+                    v-if="isTeacher && !isSelfProfile"
+                    @click="addToClass"
+                    class="button button--blue d-mt-6"
+                >
                     Добавить в класс
                 </button>
             </div>
@@ -56,16 +60,18 @@ const displayName = computed(() => props.name || 'Пользователь');
 
 const displayRating = computed(() => props.rating ?? 0);
 
+const selectedClassId = computed(() => teacherStore.currentClass.id ?? route.query.classId);
+
 const avatarIcon = computed(() =>
     props.avatarSrc ? props.avatarSrc : props.gender === 'male' ? BoyIcon : GirlIcon
 );
 
-const isSelfProfile = computed(() => route.params.id == userStore.user.id);
+const isSelfProfile = computed(() => (route.params.id || props.userId) == userStore.user.id);
 
 const avatarClass = computed(() => ({ lg: props.avatarSize }));
 
 const addToClass = async () => {
-    await teacherStore.addStudentToClass(route.query.classId, route.params.id);
+    await teacherStore.addStudentToClass(selectedClassId.value, route.params.id);
 };
 </script>
 

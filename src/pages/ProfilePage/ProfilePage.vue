@@ -10,6 +10,7 @@
             <div class="page-content profile-page__content">
                 <div class="scroll-container profile-scroll">
                     <ProfileUserCard
+                        :user-id="currentUser?.id"
                         :name="userName"
                         :rating="userStars"
                         :gender="currentUser?.gender"
@@ -67,7 +68,7 @@ import { useUserStore } from '@/stores/user';
 import dictionaryImg from '@/assets/Di_avatar/girl-with-cart.webp';
 import profileHeroImg from '@/assets/Di_avatar/girl-img2.webp';
 import achievementsIcon from '@/assets/icons/achievement.svg';
-import ProfileUserCard from '@/pages/ProfilePage/components/ProfileUserCard.vue';
+import ProfileUserCard from '@/shared/ui/ProfileUserCard.vue';
 
 const route = useRoute();
 const router = useRouter();
