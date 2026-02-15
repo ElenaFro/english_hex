@@ -5,7 +5,7 @@ const isAuthenticated = () => {
     return !!localStorage.getItem('access_token');
 };
 
-const MAINTENANCE_MODE = true;
+const MAINTENANCE_MODE = false;
 const MAINTENANCE_ROUTE = '/service';
 
 const router = createRouter({
