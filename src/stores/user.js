@@ -1,11 +1,12 @@
 import { defineStore } from 'pinia';
-import { ref } from 'vue';
+import { computed, ref } from 'vue';
 import apiClient from '../api/axios';
 
 export const useUserStore = defineStore('user', () => {
     const user = ref(JSON.parse(localStorage.getItem('user')) || null);
     const token = ref(localStorage.getItem('access_token') || null);
     const isAuthenticated = ref(!!localStorage.getItem('access_token'));
+    const isLoggingIn = ref(false);
     const isSubscribed = ref(null);
     const notifications = ref([]);
     const unsubscribed_at = ref(null);
@@ -13,6 +14,8 @@ export const useUserStore = defineStore('user', () => {
     const isTeacher = ref(null);
     const isShowStarOverview = ref(false);
     const currentHeaderTitle = ref(null);
+    const searchUsersPaginator = ref(null);
+    const currentSearchedUsers = computed(() => searchUsersPaginator.value.data);
 
     const getCurrentUser = () => {
         return user.value;
@@ -29,6 +32,7 @@ export const useUserStore = defineStore('user', () => {
     }
 
     async function login(email, password) {
+        isLoggingIn.value = true;
         try {
             const response = await apiClient.post('/login', {
                 email: email,
@@ -41,6 +45,8 @@ export const useUserStore = defineStore('user', () => {
             return response.data;
         } catch (error) {
             throw error;
+        } finally {
+            isLoggingIn.value = false;
         }
     }
 
@@ -61,6 +67,7 @@ export const useUserStore = defineStore('user', () => {
 
     async function fetchUser() {
         if (!token.value) return;
+        const requestToken = token.value;
         try {
             const response = await apiClient.get('/profile/get');
             user.value = response.data;
@@ -68,7 +75,13 @@ export const useUserStore = defineStore('user', () => {
             isAuthenticated.value = true;
         } catch (error) {
             console.error('Fetch user error:', error);
-            logout();
+            const status = error?.response?.status;
+            const tokenChanged = token.value !== requestToken;
+            const shouldLogout = (status === 401 || status === 403) && !tokenChanged && !isLoggingIn.value;
+
+            if (shouldLogout) {
+                logout();
+            }
         }
     }
 
@@ -188,6 +201,19 @@ export const useUserStore = defineStore('user', () => {
         }
     }
 
+    async function searchUsers(name, page) {
+        if (!token.value) return;
+        try {
+            const response = await apiClient.get('/users/search', {
+                params: { q: name, page: page },
+            });
+
+            searchUsersPaginator.value = response.data;
+        } catch (error) {
+            console.error('Fetch users error:', error);
+        }
+    }
+
     const switchStarOverview = (value) => {
         isShowStarOverview.value = value;
     };
@@ -200,6 +226,7 @@ export const useUserStore = defineStore('user', () => {
         user,
         token,
         isAuthenticated,
+        isLoggingIn,
         isSubscribed,
         notifications,
         unsubscribed_at,
@@ -207,6 +234,7 @@ export const useUserStore = defineStore('user', () => {
         isShowStarOverview,
         currentHeaderTitle,
         isTeacher,
+        currentSearchedUsers,
         register,
         login,
         logout,
@@ -225,5 +253,6 @@ export const useUserStore = defineStore('user', () => {
         sendNotification,
         switchStarOverview,
         setHeaderTitle,
+        searchUsers,
     };
 });

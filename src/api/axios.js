@@ -21,6 +21,7 @@ export function setupInterceptors(pinia) {
             const token = authStore.token || localStorage.getItem('access_token');
             if (token) {
                 config.headers.Authorization = `Bearer ${token}`;
+                config._authTokenUsed = token;
             }
             return config;
         },
@@ -31,8 +32,11 @@ export function setupInterceptors(pinia) {
         (response) => response,
         (error) => {
             const status = error.response?.status;
+            const requestToken = error.config?._authTokenUsed;
+            const currentToken = authStore.token || localStorage.getItem('access_token');
+            const tokenChanged = requestToken && currentToken && requestToken !== currentToken;
 
-            if (status === 401) {
+            if ((status === 401 || status === 403) && !tokenChanged && !authStore.isLoggingIn) {
                 authStore.logout();
             }
 

@@ -315,6 +315,7 @@ async function login() {
                 password.value,
                 agreementCheckbox.value
             );
+            localStorage.removeItem('isTeacherReg');
         } else {
             response = await useUserStore().register(
                 nick.value,
