@@ -129,6 +129,7 @@
                         id="password"
                         v-model="form.password"
                         type="password"
+                        autocomplete="new-password"
                         maxlength="30"
                         placeholder="Ваш пароль"
                         class="form-input"
@@ -441,6 +442,16 @@ const confirmSave = async () => {
 
 .form-input::placeholder {
     color: #a3bffa;
+}
+
+.form-input:-webkit-autofill,
+.form-input:-webkit-autofill:hover,
+.form-input:-webkit-autofill:focus,
+.form-input:-webkit-autofill:active {
+    -webkit-text-fill-color: #ffffff;
+    -webkit-box-shadow: 0 0 0 1000px #262060 inset;
+    box-shadow: 0 0 0 1000px #262060 inset;
+    transition: background-color 9999s ease-in-out 0s;
 }
 
 .form-input.error {

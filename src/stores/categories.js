@@ -173,6 +173,26 @@ export const useCategoriesStore = defineStore('categories', () => {
         }
     }
 
+    async function addCardInFavorite(cardId) {
+        try {
+            const response = await apiClient.post('/favorite/add', { card_id: cardId });
+            return response.data;
+        } catch (error) {
+            console.error(error);
+            throw error;
+        }
+    }
+
+    async function deleteCardFromFavorite(id) {
+        try {
+            const response = await apiClient.delete(`/favorite/delete/${id}`);
+            return response.data;
+        } catch (error) {
+            console.error(error);
+            throw error;
+        }
+    }
+
     return {
         categories,
         selectedCategory,
@@ -188,5 +208,7 @@ export const useCategoriesStore = defineStore('categories', () => {
         createCard,
         updateCard,
         deleteCard,
+        addCardInFavorite,
+        deleteCardFromFavorite,
     };
 });

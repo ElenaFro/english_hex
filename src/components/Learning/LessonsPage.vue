@@ -114,6 +114,7 @@ const isTransitioning = ref(false);
 const isNotEndedLearn = ref(false);
 const navigationNext = ref(null);
 const router = useRouter();
+const categoriesStore = useCategoriesStore();
 const beforLeaveMessage = 'Чтобы не потерять текущий прогресс заверши изучение раздела';
 
 const isRetryHintShowed = ref(!!localStorage.getItem('retry_hint_shown'));
@@ -273,10 +274,20 @@ watch(
 );
 
 const updateLike = (liked) => {
-    if (cards.value[currentCardIndex.value]) {
-        cards.value[currentCardIndex.value].isLiked = liked;
-        // mutation/action
-    }
+    const card = cards.value[currentCardIndex.value];
+    if (!card?.id) return;
+
+    const previousLike = !!card.isLiked;
+    card.isLiked = liked;
+
+    const request = liked
+        ? categoriesStore.addCardInFavorite(card.id)
+        : categoriesStore.deleteCardFromFavorite(card.id);
+
+    request.catch((error) => {
+        card.isLiked = previousLike;
+        console.error('Like update error:', error);
+    });
 };
 
 defineExpose({
