@@ -1,4 +1,4 @@
-<template>
+﻿<template>
     <div class="create-form-overlay">
         <div class="create-form">
             <button class="close-button" @click="emit('close')">×</button>
@@ -9,28 +9,51 @@
             <div class="create-form__wrapper">
                 <label>Класс</label>
                 <input v-model="form.grade" type="text" placeholder="Введите название" />
+                <p v-if="gradeError" class="create-form__error">{{ gradeError }}</p>
             </div>
-
-            <button class="create-form__btn" @click="createClass">Создать класс</button>
+            <button class="create-form__btn" :disabled="!isValid || loading" @click="createClass">
+                <Loader v-if="loading" :size="20" />
+                <span v-else>Создать класс</span>
+            </button>
         </div>
     </div>
 </template>
 
 <script setup>
-import { ref, watch, computed } from 'vue';
+import { ref, computed } from 'vue';
 import { useTeacherStore } from '@/stores/teacher';
 import { push } from 'notivue';
+import Loader from '@/shared/components/Loader.vue';
 
 const emit = defineEmits(['close']);
 const teacherStore = useTeacherStore();
+const loading = ref(false);
 
 const form = ref({
     title: '',
     grade: '',
 });
 
+const gradeError = computed(() => {
+    const raw = form.value.grade.trim();
+    if (!raw) return '';
+
+    const numberValue = Number(raw);
+    if (!Number.isInteger(numberValue)) {
+        return 'Класс должен быть целым числом';
+    }
+
+    if (numberValue < 1 || numberValue > 11) {
+        return 'Класс должен быть от 1 до 11';
+    }
+
+    return '';
+});
+
 const isValid = computed(() => {
-    return form.value.title.trim() && form.value.grade.trim();
+    return (
+        Boolean(form.value.title.trim()) && Boolean(form.value.grade.trim()) && !gradeError.value
+    );
 });
 
 const handleClose = () => {
@@ -39,15 +62,18 @@ const handleClose = () => {
 };
 
 const createClass = async () => {
-    if (isValid.value) {
-        try {
-            await teacherStore.createClass(form.value);
-            handleClose();
-            push.success({ message: 'Класс успешно создан' });
-        } catch (error) {
-            console.error(error);
-            push.error({ message: 'Ошибка создания класса' });
-        }
+    if (!isValid.value || loading.value) return;
+    loading.value = true;
+    try {
+        await teacherStore.createClass(form.value);
+        await teacherStore.getAllClasses();
+        handleClose();
+        push.success({ message: 'Класс успешно создан' });
+    } catch (error) {
+        console.error(error);
+        push.error({ message: 'Ошибка создания класса' });
+    } finally {
+        loading.value = false;
     }
 };
 </script>
@@ -80,6 +106,20 @@ const createClass = async () => {
         font-weight: 600;
         line-height: 120%;
         margin-top: 32px;
+        cursor: pointer;
+        transition: opacity 0.2s ease;
+        min-width: 162px;
+    }
+
+    &__btn:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+    }
+
+    &__error {
+        margin-top: 6px;
+        font-size: 12px;
+        color: #ffb4b4;
     }
 }
 

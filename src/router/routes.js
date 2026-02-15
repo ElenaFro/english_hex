@@ -67,6 +67,22 @@ const routes = [
                         path: 'classes',
                         name: 'classes',
                         component: () => import('@/pages/ClassesPage/ClassesPage.vue'),
+                        children: [
+                            {
+                                path: '',
+                                name: 'allClasses',
+                                component: () =>
+                                    import('@/pages/ClassesPage/AllClassesPage/AllClassesPage.vue'),
+                            },
+                            {
+                                path: 'profile/:id',
+                                name: 'classProfile',
+                                component: () =>
+                                    import(
+                                        '@/pages/ClassesPage/ClassProfilePage/ClassProfilePage.vue'
+                                    ),
+                            },
+                        ],
                     },
                 ],
             },

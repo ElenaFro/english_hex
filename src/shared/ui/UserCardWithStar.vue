@@ -34,6 +34,7 @@ const userImg = (gender) => {
     border-radius: 20px;
     gap: 17px;
     width: 100%;
+    cursor: pointer;
 }
 
 .user-avatar-small {

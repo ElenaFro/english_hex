@@ -70,6 +70,20 @@ export const useTeacherStore = defineStore('teacher', () => {
         }
     }
 
+    async function searchStudents(id, name) {
+        if (!userStore.token) return;
+        try {
+            const response = await apiClient.get('/classes/search_students', {
+                params: { class_id: id, search: name },
+            });
+
+            allClasses.value = response.data.data;
+        } catch (error) {
+            console.error('Fetch role error:', error);
+            userStore.logout();
+        }
+    }
+
     async function addStudentToClass(classId, userId) {
         if (!userStore.token) return;
         try {
@@ -92,6 +106,7 @@ export const useTeacherStore = defineStore('teacher', () => {
 
     return {
         allClasses,
+        currentClass,
         registerTeacher,
         createClass,
         getAllClasses,
@@ -99,5 +114,6 @@ export const useTeacherStore = defineStore('teacher', () => {
         addStudentToClass,
         deleteStudentFromClass,
         searchClass,
+        searchStudents,
     };
 });
