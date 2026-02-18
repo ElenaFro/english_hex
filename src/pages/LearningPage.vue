@@ -60,12 +60,12 @@ import likeWhite from '@/assets/icons/like_white.svg';
 import { useElementPosition } from '@/shared/composables/useElementPosition';
 
 const activeComponentName = ref('start-learning');
-const isLikeEnabled = ref(false);
 const isLikeHintShowed = ref(!!localStorage.getItem('like_hint_shown'));
 const isShowLikeHint = ref(false);
 const likeRef = ref(null);
 const componentRef = ref(null);
 
+const isLikeEnabled = computed(() => componentRef.value?.currentCardLike ?? false);
 const activeComponent = computed(() => components[activeComponentName.value]);
 
 const components = {

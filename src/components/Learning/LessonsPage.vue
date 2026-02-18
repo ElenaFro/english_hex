@@ -135,6 +135,8 @@ const { calculatePositionDelayed: calculatePrevious, getPositionStyle: getPrevio
 
 const currentCard = computed(() => cards.value[currentCardIndex.value] || {});
 
+const currentCardLike = computed(() => currentCard.value.addedFavorite);
+
 const isLastCard = computed(
     () => currentCardIndex.value === cards.value.length - 1 && activeComponent.value === 'WordPage'
 );
@@ -277,20 +279,21 @@ const updateLike = (liked) => {
     const card = cards.value[currentCardIndex.value];
     if (!card?.id) return;
 
-    const previousLike = !!card.isLiked;
-    card.isLiked = liked;
+    const previousLike = !!card.addedFavorite;
+    card.addedFavorite = liked;
 
     const request = liked
         ? categoriesStore.addCardInFavorite(card.id)
         : categoriesStore.deleteCardFromFavorite(card.id);
 
     request.catch((error) => {
-        card.isLiked = previousLike;
+        card.addedFavorite = previousLike;
         console.error('Like update error:', error);
     });
 };
 
 defineExpose({
+    currentCardLike,
     updateLike,
 });
 </script>

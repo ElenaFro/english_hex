@@ -1,10 +1,12 @@
 import { defineStore } from 'pinia';
 import { ref } from 'vue';
 import apiClient from '../api/axios';
+import { push } from 'notivue';
 
 export const useCategoriesStore = defineStore('categories', () => {
     const categories = ref([]);
     const selectedCategory = ref({});
+    const favoriteCards = ref([]);
 
     async function getCategories() {
         try {
@@ -173,9 +175,20 @@ export const useCategoriesStore = defineStore('categories', () => {
         }
     }
 
+    async function getFavoriteCards() {
+        try {
+            const response = await apiClient.get('/favorite/show');
+
+            favoriteCards.value = response.data.data;
+        } catch (error) {
+            console.error('Fetch notifications error:', error);
+        }
+    }
+
     async function addCardInFavorite(cardId) {
         try {
             const response = await apiClient.post('/favorite/add', { card_id: cardId });
+            push.success({ message: 'Карточка добавлена в избранные' });
             return response.data;
         } catch (error) {
             console.error(error);
@@ -186,6 +199,8 @@ export const useCategoriesStore = defineStore('categories', () => {
     async function deleteCardFromFavorite(id) {
         try {
             const response = await apiClient.delete(`/favorite/delete/${id}`);
+            await getFavoriteCards();
+            push.success({ message: 'Карточка удалена из избранных' });
             return response.data;
         } catch (error) {
             console.error(error);
@@ -193,12 +208,26 @@ export const useCategoriesStore = defineStore('categories', () => {
         }
     }
 
+    async function searchFavorite(name) {
+        try {
+            const response = await apiClient.get('/favorite/search', {
+                params: { s: name },
+            });
+
+            favoriteCards.value = response.data.data;
+        } catch (error) {
+            console.error('Fetch role error:', error);
+        }
+    }
+
     return {
         categories,
         selectedCategory,
+        favoriteCards,
         getCategories,
         setChosedCategories,
         getCategoryById,
+        getFavoriteCards,
         updateComplateCategory,
         getCategoryStars,
         createCategory,
@@ -210,5 +239,6 @@ export const useCategoriesStore = defineStore('categories', () => {
         deleteCard,
         addCardInFavorite,
         deleteCardFromFavorite,
+        searchFavorite,
     };
 });

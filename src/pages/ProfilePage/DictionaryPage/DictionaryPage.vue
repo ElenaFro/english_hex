@@ -2,63 +2,83 @@
     <RouterView v-if="!isRootDictionary" />
 
     <div v-else class="page-content">
-        <search-input placeholder="Введи слово" @search="console.log($event)" enable-auto-search />
-
-        <div v-if="words.length === 0" class="empty-state">
-            <img src="@/assets/Di_avatar/girl-img2.webp" alt="girl" class="empty-state__img" />
-            <p class="empty-state__text">У тебя пока нет избранных слов</p>
-        </div>
-
+        <Loader v-if="loading" />
         <section v-else>
-            <div class="dictionary-list">
-                <div v-for="word in words" :key="word.id" class="dictionary-item">
-                    <div class="dictionary-item__content" @click="goToWord">
-                        <span class="dictionary-item__category"
-                            >Категория {{ word.category }}: {{ word.translation_word }}</span
-                        >
-                    </div>
-                    <button class="dictionary-item__delete-btn" @click="removeWord(word.id)">
-                        <img
-                            src="@/assets/icons/delete_icon.svg"
-                            alt="Удалить"
-                            class="dictionary-item__delete-icon"
-                        />
-                    </button>
-                </div>
+            <search-input placeholder="Введи слово" @search="searchFavorite" enable-auto-search />
+
+            <div v-if="words.length === 0" class="empty-state">
+                <img src="@/assets/Di_avatar/girl-img2.webp" alt="girl" class="empty-state__img" />
+                <p class="empty-state__text">У тебя пока нет избранных слов</p>
             </div>
+
+            <section v-else>
+                <div class="dictionary-list">
+                    <div v-for="word in words" :key="word.id" class="dictionary-item">
+                        <div
+                            class="dictionary-item__content"
+                            @click="goToWord(word.card.id, word.card.category_id)"
+                        >
+                            <span class="dictionary-item__category"
+                                >Категория {{ word.card.category }}:
+                                {{ word.card.word }}</span
+                            >
+                        </div>
+                        <button class="dictionary-item__delete-btn" @click="removeWord(word.id)">
+                            <img
+                                src="@/assets/icons/delete_icon.svg"
+                                alt="Удалить"
+                                class="dictionary-item__delete-icon"
+                            />
+                        </button>
+                    </div>
+                </div>
+            </section>
         </section>
     </div>
 </template>
 
 <script setup>
-import { computed, ref } from 'vue';
+import { computed, onMounted, ref, watch } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import SearchInput from '@/shared/ui/SearchInput.vue';
+import Loader from '@/shared/components/Loader.vue';
+import { useCategoriesStore } from '@/stores/categories';
 
 const router = useRouter();
 const route = useRoute();
-const words = ref([
-    { id: 1, category: 'Животные', translation_word: 'Собака' },
-    { id: 2, category: 'Еда', translation_word: 'Пицца' },
-    { id: 3, category: 'Технологии', translation_word: 'Компьютер' },
-    { id: 4, category: 'Природа', translation_word: 'Дерево' },
-    { id: 5, category: 'Спорт', translation_word: 'Футбол' },
-    { id: 6, category: 'Музыка', translation_word: 'Гитара' },
-    { id: 7, category: 'Искусство', translation_word: 'Картина' },
-    { id: 8, category: 'Наука', translation_word: 'Физика' },
-    { id: 9, category: 'География', translation_word: 'Река' },
-    { id: 10, category: 'Литература', translation_word: 'Роман' },
-]);
+
+const categoryStore = useCategoriesStore();
+
+const loading = ref(false);
+const words = ref([]);
+
+onMounted(async () => {
+    loading.value = true;
+    await categoryStore.getFavoriteCards();
+    loading.value = false;
+});
 
 const isRootDictionary = computed(() => route.name === 'dictionary');
 
-const removeWord = (id) => {
-    words.value = words.value.filter((word) => word.id !== id);
+const removeWord = async (id) => {
+    await categoryStore.deleteCardFromFavorite(id);
 };
 
-const goToWord = (id) => {
-    router.push({ name: 'cardPreview', params: { id: 1 }, query: { categoryId: 1 } });
+const goToWord = (id, category_id) => {
+    router.push({ name: 'cardPreview', params: { id: id }, query: { categoryId: category_id } });
 };
+
+const searchFavorite = async (event) => {
+    if (event !== '') return await categoryStore.searchFavorite(event);
+    await categoryStore.getFavoriteCards();
+};
+
+watch(
+    () => categoryStore.favoriteCards,
+    (newVal) => {
+        words.value = newVal;
+    }
+);
 </script>
 <style scoped>
 .empty-state {
