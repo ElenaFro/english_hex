@@ -19,7 +19,7 @@
                     Добавить в друзья
                 </button>
                 <button
-                    v-if="isTeacher && !isSelfProfile"
+                    v-if="isCanAddToClass"
                     @click="addToClass"
                     class="button button--blue d-mt-6"
                 >
@@ -40,10 +40,7 @@ import { useTeacherStore } from '@/stores/teacher';
 import { useRoute } from 'vue-router';
 
 const props = defineProps({
-    userId: { type: Number, required: true },
-    name: { type: String, default: '' },
-    rating: { type: Number, default: null },
-    gender: { type: String, default: '' },
+    user: { type: Object, required: true },
     avatarSrc: { type: String, default: '' },
     avatarSize: { type: String, default: '' },
     isCanAddToFriends: { type: Boolean, default: false },
@@ -56,19 +53,21 @@ const teacherStore = useTeacherStore();
 
 const isTeacher = computed(() => userStore.isTeacher);
 
-const displayName = computed(() => props.name || 'Пользователь');
-
-const displayRating = computed(() => props.rating ?? 0);
-
 const selectedClassId = computed(() => teacherStore.currentClass.id ?? route.query.classId);
 
+const displayName = computed(() => props.user.name || 'Пользователь');
+const displayRating = computed(() => props.user.rating ?? 0);
 const avatarIcon = computed(() =>
-    props.avatarSrc ? props.avatarSrc : props.gender === 'male' ? BoyIcon : GirlIcon
+    props.avatarSrc ? props.avatarSrc : props.user.gender === 'male' ? BoyIcon : GirlIcon
 );
 
-const isSelfProfile = computed(() => (route.params.id || props.userId) == userStore.user.id);
+const isSelfProfile = computed(() => (route.params.id || props.user.id) == userStore.user.id);
 
 const avatarClass = computed(() => ({ lg: props.avatarSize }));
+
+const isCanAddToClass = computed(
+    () => isTeacher.value && !isSelfProfile.value && !props.user?.is_in_class
+);
 
 const addToClass = async () => {
     await teacherStore.addStudentToClass(selectedClassId.value, route.params.id);

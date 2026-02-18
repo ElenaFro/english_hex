@@ -8,17 +8,30 @@
                 enable-auto-search
             />
 
-            <div v-if="students.length === 0" class="empty-state">
-                <img src="@/assets/img/empty-friends.webp" alt="girl" class="empty-state__img" />
-                <p class="empty-state__text">В этом классе еще нет учеников, добавь их скорее</p>
-            </div>
-
-            <section v-else>
+            <section v-if="students.length > 0 || users.length > 0">
                 <div class="title-wrapper">
                     <p class="students-menu__section-title">{{ classTitle }}</p>
                     <p class="students-menu__section-garde">{{ classGrade }} класс</p>
                 </div>
                 <div class="students-list">
+                    <div v-if="users.length > 0">
+                        <div v-for="user in users" :key="user.id" class="students-item">
+                            <user-card-with-star :user="user" @click="goToUserProfile(user.id)" />
+                            <!-- <button
+                            class="students-item__delete-btn"
+                            @click="removeStudentFromClass(user.id)"
+                        >
+                            <img
+                                src="@/assets/icons/delete_icon.svg"
+                                alt="Удалить"
+                                class="students-item__delete-icon"
+                            />
+                        </button> -->
+                        </div>
+                        <p v-if="students.length > 0" class="students-menu__section-title d-mb-12">
+                            Ученики класса
+                        </p>
+                    </div>
                     <div v-for="student in students" :key="student.id" class="students-item">
                         <user-card-with-star :user="student" @click="goToUserProfile(student.id)" />
                         <button
@@ -34,12 +47,17 @@
                     </div>
                 </div>
             </section>
+
+            <div v-else class="empty-state">
+                <img src="@/assets/img/empty-friends.webp" alt="girl" class="empty-state__img" />
+                <p class="empty-state__text">В этом классе еще нет учеников, добавь их скорее</p>
+            </div>
         </div>
     </div>
 </template>
 
 <script setup>
-import { computed, onMounted, ref } from 'vue';
+import { computed, onMounted, ref, watch } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import Loader from '@/shared/components/Loader.vue';
 import SearchInput from '@/shared/ui/SearchInput.vue';
@@ -56,18 +74,20 @@ const teacherStore = useTeacherStore();
 
 const loading = ref(false);
 const students = ref([]);
+const users = ref([]);
 
 onMounted(async () => {
     userStore.setHeaderTitle('Ученики');
     loading.value = true;
     if (currentClass.value === null) await teacherStore.getClassById(currentClassId.value);
     await userStore.searchUsers('', 1);
-    students.value = userStore.currentSearchedUsers;
+    students.value = currentClassStudents.value;
     loading.value = false;
 });
 
 const currentClass = computed(() => teacherStore.currentClass);
 const currentClassId = computed(() => currentClass.value?.id || route.params?.id);
+const currentClassStudents = computed(() => currentClass.value.students);
 
 const classTitle = computed(() => currentClass.value?.title);
 
@@ -76,6 +96,7 @@ const classGrade = computed(() => currentClass.value?.grade);
 const removeStudentFromClass = async (id) => {
     try {
         await teacherStore.deleteStudentFromClass(currentClassId.value, id);
+        await teacherStore.getClassById(currentClassId.value);
         push.success({
             message: 'Ученик успешно удален',
         });
@@ -86,9 +107,42 @@ const removeStudentFromClass = async (id) => {
     }
 };
 
+const searchStudent = (event) => {
+    if (event !== '') return teacherStore.searchStudents(currentClassId.value, event);
+    users.value = [];
+    students.value = currentClassStudents.value;
+};
+
 const goToUserProfile = (userId) => {
     router.push({ name: 'profileAchievements', params: { id: userId } });
 };
+
+watch(
+    () => teacherStore.searchedStudents,
+    (newArray) => {
+        if (!newArray) return;
+
+        const usersToAdd = newArray.filter((student) => student.is_in_class === false);
+        if (usersToAdd.length > 0) {
+            users.value = usersToAdd;
+        }
+
+        const studentsToAdd = newArray.filter((student) => student.is_in_class === true);
+        if (studentsToAdd.length > 0) {
+            students.value = studentsToAdd;
+        }
+    },
+    { deep: true }
+);
+
+watch(
+    () => currentClass.value,
+    (newData) => {
+        console.log(newData);
+        students.value = newData?.students ?? [];
+    },
+    { immediate: true }
+);
 </script>
 <style scoped lang="scss">
 .empty-state {

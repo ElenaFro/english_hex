@@ -10,10 +10,7 @@
             <div class="page-content profile-page__content">
                 <div class="scroll-container profile-scroll">
                     <ProfileUserCard
-                        :user-id="currentUser?.id"
-                        :name="userName"
-                        :rating="userStars"
-                        :gender="currentUser?.gender"
+                        :user="currentUser"
                     />
 
                     <section class="profile-tiles">

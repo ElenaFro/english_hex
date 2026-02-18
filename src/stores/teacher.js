@@ -8,6 +8,7 @@ export const useTeacherStore = defineStore('teacher', () => {
     const isTeacher = computed(() => userStore.isTeacher);
     const allClasses = ref(null);
     const currentClass = ref(null);
+    const searchedStudents = ref([]);
 
     async function registerTeacher(name, email, password, confirm_agreement) {
         const response = await apiClient.post('/registration-teacher', {
@@ -41,7 +42,6 @@ export const useTeacherStore = defineStore('teacher', () => {
             allClasses.value = response.data.data;
         } catch (error) {
             console.error('Fetch role error:', error);
-            logout();
         }
     }
 
@@ -52,7 +52,6 @@ export const useTeacherStore = defineStore('teacher', () => {
             currentClass.value = response.data;
         } catch (error) {
             console.error('Fetch role error:', error);
-            logout();
         }
     }
 
@@ -66,7 +65,6 @@ export const useTeacherStore = defineStore('teacher', () => {
             allClasses.value = response.data.data;
         } catch (error) {
             console.error('Fetch role error:', error);
-            userStore.logout();
         }
     }
 
@@ -77,10 +75,9 @@ export const useTeacherStore = defineStore('teacher', () => {
                 params: { class_id: id, search: name },
             });
 
-            allClasses.value = response.data.data;
+            searchedStudents.value = response.data.data;
         } catch (error) {
             console.error('Fetch role error:', error);
-            userStore.logout();
         }
     }
 
@@ -89,6 +86,10 @@ export const useTeacherStore = defineStore('teacher', () => {
         try {
             await apiClient.patch(`/classes/add_student/${classId}/${userId}`);
             await getAllClasses();
+
+            if (currentClass.value && currentClass.value.id === classId) {
+                await getClassById(classId);
+            }
         } catch (error) {
             console.error(error);
         }
@@ -99,6 +100,10 @@ export const useTeacherStore = defineStore('teacher', () => {
         try {
             await apiClient.delete(`/classes/delete_student/${classId}/${userId}`);
             await getAllClasses();
+
+            if (currentClass.value && currentClass.value.id === classId) {
+                await getClassById(classId);
+            }
         } catch (error) {
             console.error(error);
         }
@@ -107,6 +112,7 @@ export const useTeacherStore = defineStore('teacher', () => {
     return {
         allClasses,
         currentClass,
+        searchedStudents,
         registerTeacher,
         createClass,
         getAllClasses,

@@ -5,16 +5,21 @@ import apiClient from '../api/axios';
 export const useUserStore = defineStore('user', () => {
     const user = ref(JSON.parse(localStorage.getItem('user')) || null);
     const token = ref(localStorage.getItem('access_token') || null);
+    const unsubscribed_at = ref(null);
+
+    const isAdmin = ref(null);
+    const isTeacher = ref(null);
+
     const isAuthenticated = ref(!!localStorage.getItem('access_token'));
     const isLoggingIn = ref(false);
     const isSubscribed = ref(null);
-    const notifications = ref([]);
-    const unsubscribed_at = ref(null);
-    const isAdmin = ref(null);
-    const isTeacher = ref(null);
     const isShowStarOverview = ref(false);
-    const currentHeaderTitle = ref(null);
+
+    const notifications = ref([]);
     const searchUsersPaginator = ref(null);
+
+    const currentHeaderTitle = ref(null);
+
     const currentSearchedUsers = computed(() => searchUsersPaginator.value.data);
 
     const getCurrentUser = () => {
