@@ -17,6 +17,7 @@ export const useUserStore = defineStore('user', () => {
 
     const notifications = ref([]);
     const searchUsersPaginator = ref(null);
+    const searchedFriends = ref([]);
 
     const currentHeaderTitle = ref(null);
 
@@ -229,6 +230,34 @@ export const useUserStore = defineStore('user', () => {
         }
     }
 
+    async function searchFriends(name) {
+        try {
+            const response = await apiClient.get('/friends/get', {
+                params: { search: name },
+            });
+
+            searchedFriends.value = response.data.data;
+        } catch (error) {
+            console.error('Fetch users error:', error);
+        }
+    }
+
+    async function addToFriend(id) {
+        try {
+            await apiClient.post(`/friends/add/${id}`);
+        } catch (error) {
+            console.error('Ошибка добавления в друзья', error);
+        }
+    }
+
+    async function deleteFriend(id) {
+        try {
+            await apiClient.delete(`/friends/remove/${id}`);
+        } catch (error) {
+            console.error(error);
+        }
+    }
+
     const switchStarOverview = (value) => {
         isShowStarOverview.value = value;
     };
@@ -250,6 +279,7 @@ export const useUserStore = defineStore('user', () => {
         currentHeaderTitle,
         isTeacher,
         currentSearchedUsers,
+        searchedFriends,
         register,
         login,
         logout,
@@ -263,6 +293,7 @@ export const useUserStore = defineStore('user', () => {
         markFirstGame,
         addRatingToGame,
         addRatingToCategory,
+        addToFriend,
         markReadNotifications,
         checkUserSubscribe,
         unSubscribeUser,
@@ -270,5 +301,7 @@ export const useUserStore = defineStore('user', () => {
         switchStarOverview,
         setHeaderTitle,
         searchUsers,
+        searchFriends,
+        deleteFriend,
     };
 });

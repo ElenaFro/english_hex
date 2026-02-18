@@ -13,7 +13,7 @@
             <div v-if="!isSelfProfile">
                 <button
                     v-if="isCanAddToFriends && !isTeacher"
-                    @click="$emit('addFriend')"
+                    @click="addToFriend"
                     class="button button--blue d-mt-6"
                 >
                     Добавить в друзья
@@ -46,7 +46,7 @@ const props = defineProps({
     isCanAddToFriends: { type: Boolean, default: false },
 });
 
-defineEmits(['addFriend']);
+const emit = defineEmits(['update:user']);
 const route = useRoute();
 const userStore = useUserStore();
 const teacherStore = useTeacherStore();
@@ -71,6 +71,11 @@ const isCanAddToClass = computed(
 
 const addToClass = async () => {
     await teacherStore.addStudentToClass(selectedClassId.value, route.params.id);
+};
+
+const addToFriend = async () => {
+    await userStore.addToFriend(props.user.id);
+    emit('update:user');
 };
 </script>
 

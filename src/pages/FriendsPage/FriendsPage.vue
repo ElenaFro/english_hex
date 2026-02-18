@@ -2,7 +2,7 @@
     <div class="page-content">
         <search-input
             placeholder="Введи имя пользователя"
-            @search="console.log($event)"
+            @search="searchFriend"
             enable-auto-search
         />
 
@@ -30,7 +30,7 @@
 </template>
 
 <script setup>
-import { computed, ref } from 'vue';
+import { computed, onMounted, ref, watch } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import SearchInput from '@/shared/ui/SearchInput.vue';
 import UserCardWithStar from '@/shared/ui/UserCardWithStar.vue';
@@ -40,21 +40,16 @@ import { push } from 'notivue';
 const router = useRouter();
 const route = useRoute();
 const userStore = useUserStore();
-const friends = ref([
-    { id: 8, name: 'odilbek_arziev', rating: 145, gender: 'male', place: 1 },
-    { id: 2, name: 'fdgbvbhgf', rating: 0, gender: 'male', place: 2 },
-    { id: 3, name: 'gfhfghsfgh', rating: 0, gender: 'male', place: 3 },
-    { id: 4, name: 'dfgsdfg', rating: 0, gender: 'male', place: 4 },
-    { id: 5, name: 'TestAndrew', rating: 0, gender: 'male', place: 5 },
-    { id: 6, name: 'Марина', rating: 0, gender: 'female', place: 6 },
-    { id: 7, name: 'odilbek', rating: 0, gender: 'male', place: 7 },
-    { id: 9, name: 'Ovrono', rating: 0, gender: 'male', place: 8 },
-    { id: 12, name: 'Mark_lebovski', rating: 0, gender: 'male', place: 11 },
-]);
+const friends = ref([]);
+
+onMounted(async () => {
+    searchFriend('');
+});
 
 const removeFriend = async (id) => {
     try {
-        // await userStore.removeFriendById(id);
+        await userStore.deleteFriend(id);
+        searchFriend('');
         push.success({
             message: 'Друг успешно удален',
         });
@@ -68,6 +63,17 @@ const removeFriend = async (id) => {
 const goToUserProfile = (userId) => {
     router.push({ name: 'profileAchievements', params: { id: userId } });
 };
+
+const searchFriend = async (event) => {
+    await userStore.searchFriends(event);
+};
+
+watch(
+    () => userStore.searchedFriends,
+    (newVal) => {
+        friends.value = newVal;
+    }
+);
 </script>
 <style scoped lang="scss">
 .empty-state {

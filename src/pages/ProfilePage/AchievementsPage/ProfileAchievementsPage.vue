@@ -3,8 +3,9 @@
         <div class="scroll-container achievements-scroll">
             <ProfileUserCard
                 :user="userProfile"
-                avatar-size="lg"
                 :is-can-add-to-friends="isCanAddToFriends"
+                avatar-size="lg"
+                @update:user="refetchUser"
             />
 
             <section class="achievement-list">
@@ -48,17 +49,13 @@ const currentUser = computed(() => userStore.getCurrentUser());
 const userProfile = ref({});
 
 onMounted(async () => {
-    console.log(route.params.id);
-
     if (route.params.id) {
-        userProfile.value = (await userStore.getUserById?.(route.params.id)) ?? currentUser.value;
+        refetchUser();
     }
     updateHeaderTitle();
 });
 
-const displayName = computed(() => userProfile.value?.name || currentUser.value?.name);
-const displayRating = computed(() => userProfile.value?.rating || currentUser.value?.rating || 0);
-const displayGender = computed(() => userProfile.value?.gender || currentUser.value?.gender || '');
+const isCanAddToFriends = computed(() => !userProfile.value.is_friend);
 
 const fallbackAchievements = [
     {
@@ -93,8 +90,6 @@ const fallbackAchievements = [
 
 const achievementsList = computed(() => userProfile.value?.achievements || fallbackAchievements);
 
-const isCanAddToFriends = computed(() => route.params.id != currentUser.value.id); // поменять на норм вычисление
-
 const updateHeaderTitle = () => {
     const profileId = route.params.id?.toString();
     const currentUserId = currentUser.value?.id?.toString();
@@ -106,6 +101,10 @@ const updateHeaderTitle = () => {
     } else {
         userStore.setHeaderTitle('Друзья');
     }
+};
+
+const refetchUser = async () => {
+    userProfile.value = await userStore.getUserById(route.params.id);
 };
 
 watch(

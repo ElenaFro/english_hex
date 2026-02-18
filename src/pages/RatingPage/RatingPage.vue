@@ -7,6 +7,7 @@
                     :key="user.id"
                     class="podium-item"
                     :class="`rank-${index + 1} ${user.id === currentUser?.id ? 'active-user' : ''}`"
+                    @click="goToProfile(user.id)"
                 >
                     <img :src="userImg(user.gender)" class="user-avatar" :alt="user.name" />
                     <div>
@@ -22,6 +23,7 @@
                 :key="user.id"
                 class="user-item"
                 :class="{ 'active-user': user.id === currentUser?.id }"
+                @click="goToProfile(user.id)"
             >
                 <div class="user-rank">{{ user.place }}</div>
                 <user-card-with-star :user="user" />
@@ -36,6 +38,9 @@ import { useUserStore } from '@/stores/user';
 import maleAvatar from '@/assets/img/DefaultUserAvatar/male.webp';
 import femaleAvatar from '@/assets/img/DefaultUserAvatar/female.svg';
 import UserCardWithStar from '@/shared/ui/UserCardWithStar.vue';
+import { useRouter } from 'vue-router';
+
+const router = useRouter();
 
 const raitingData = ref([]);
 const currentUser = ref(null);
@@ -63,6 +68,10 @@ const userImg = (gender) => {
     const normalizedGender = gender ? gender.toLowerCase() : '';
     if (normalizedGender === 'male') return maleAvatar;
     else return femaleAvatar;
+};
+
+const goToProfile = (userId) => {
+    router.push({ name: 'profileAchievements', params: { id: userId } });
 };
 </script>
 
@@ -110,6 +119,7 @@ const userImg = (gender) => {
     align-items: center;
     gap: 4px;
     position: absolute;
+    cursor: pointer;
 }
 
 .podium-item.rank-1 {
@@ -181,6 +191,7 @@ const userImg = (gender) => {
     justify-content: space-between;
     align-items: center;
     column-gap: 20px;
+    cursor: pointer;
 }
 
 .user-item:last-child {
