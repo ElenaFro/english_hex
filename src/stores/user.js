@@ -77,7 +77,8 @@ export const useUserStore = defineStore('user', () => {
             console.error('Fetch user error:', error);
             const status = error?.response?.status;
             const tokenChanged = token.value !== requestToken;
-            const shouldLogout = (status === 401 || status === 403) && !tokenChanged && !isLoggingIn.value;
+            const shouldLogout =
+                (status === 401 || status === 403) && !tokenChanged && !isLoggingIn.value;
 
             if (shouldLogout) {
                 logout();
@@ -93,7 +94,6 @@ export const useUserStore = defineStore('user', () => {
             isTeacher.value = response.data?.role === 'teacher' ? true : false;
         } catch (error) {
             console.error('Fetch role error:', error);
-            logout();
         }
     }
 
@@ -214,6 +214,16 @@ export const useUserStore = defineStore('user', () => {
         }
     }
 
+    async function getUserById(id) {
+        try {
+            const response = await apiClient.get(`users/show/${id}`);
+
+            return response.data;
+        } catch (error) {
+            console.error('Fetch users error:', error);
+        }
+    }
+
     const switchStarOverview = (value) => {
         isShowStarOverview.value = value;
     };
@@ -239,17 +249,18 @@ export const useUserStore = defineStore('user', () => {
         login,
         logout,
         getCurrentUser,
+        getUserById,
+        getRaiting,
+        getUserNotifications,
+        getUserRole,
         recoverPassword,
         fetchUser,
-        getRaiting,
         markFirstGame,
         addRatingToGame,
         addRatingToCategory,
-        getUserNotifications,
         markReadNotifications,
         checkUserSubscribe,
         unSubscribeUser,
-        getUserRole,
         sendNotification,
         switchStarOverview,
         setHeaderTitle,

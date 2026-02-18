@@ -45,7 +45,7 @@
 
 <script setup>
 //vue
-import { ref, onMounted, computed, watch, nextTick } from 'vue';
+import { ref, onMounted, computed, watch } from 'vue';
 //components
 import CategoryChoice from '@/components/MainPage/CategoryChoice.vue';
 import loader from '@/shared/components/Loader.vue';
@@ -76,7 +76,6 @@ const isTeacher = computed(() => userStore.isTeacher);
 const router = useRouter();
 
 onMounted(async () => {
-    await nextTick();
     await useCategoriesStore().getCategories();
     userStore.getUserNotifications();
     if (isAdmin.value === null || isTeacher.value == null) await userStore.getUserRole();

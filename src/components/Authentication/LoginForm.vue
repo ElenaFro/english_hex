@@ -128,6 +128,7 @@ const login = async () => {
         await userStore.login(email.value, password.value);
         await userStore.fetchUser();
         await userStore.checkUserSubscribe();
+        await userStore.getUserRole();
         subscribePopup.value =
             userStore.isSubscribed === 'unsubscribe' ? true : !userStore.isSubscribed;
         await router.push({ name: 'mainPage' });
