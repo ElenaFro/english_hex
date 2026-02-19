@@ -44,6 +44,7 @@ const friends = ref([]);
 
 onMounted(async () => {
     searchFriend('');
+    userStore.setHeaderTitle('Друзья');
 });
 
 const removeFriend = async (id) => {

@@ -32,7 +32,7 @@
 </template>
 
 <script setup>
-import { computed, onMounted, ref, watch } from 'vue';
+import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue';
 import { useRoute } from 'vue-router';
 import { useUserStore } from '@/stores/user';
 
@@ -50,9 +50,13 @@ const userProfile = ref({});
 
 onMounted(async () => {
     if (route.params.id) {
-        refetchUser();
+        await refetchUser();
     }
     updateHeaderTitle();
+});
+
+onBeforeUnmount(() => {
+    userStore.setHeaderTitle(null);
 });
 
 const isCanAddToFriends = computed(() => !userProfile.value.is_friend);
@@ -104,7 +108,10 @@ const updateHeaderTitle = () => {
 };
 
 const refetchUser = async () => {
-    userProfile.value = await userStore.getUserById(route.params.id);
+    userProfile.value =
+        currentUser.value.id == route.params.id
+            ? currentUser.value
+            : await userStore.getUserById(route.params.id);
 };
 
 watch(

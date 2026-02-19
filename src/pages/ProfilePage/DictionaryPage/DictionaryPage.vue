@@ -16,10 +16,10 @@
                     <div v-for="word in words" :key="word.id" class="dictionary-item">
                         <div
                             class="dictionary-item__content"
-                            @click="goToWord(word.card.id, word.card.category_id)"
+                            @click="goToWord(word.card.id, word.card.category_id, word.id)"
                         >
                             <span class="dictionary-item__category"
-                                >Категория {{ word.card.category }}:
+                                >Категория {{ word.card.categorie.name }}:
                                 {{ word.card.word }}</span
                             >
                         </div>
@@ -64,8 +64,12 @@ const removeWord = async (id) => {
     await categoryStore.deleteCardFromFavorite(id);
 };
 
-const goToWord = (id, category_id) => {
-    router.push({ name: 'cardPreview', params: { id: id }, query: { categoryId: category_id } });
+const goToWord = (id, category_id, favoriteId) => {
+    router.push({
+        name: 'cardPreview',
+        params: { id: id },
+        query: { categoryId: category_id, favoriteId: favoriteId },
+    });
 };
 
 const searchFavorite = async (event) => {

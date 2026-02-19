@@ -238,10 +238,10 @@ watch(
 watch(
     () => userStore.currentHeaderTitle,
     (newTitle) => {
-        console.log('Store title changed:', newTitle);
-
         if (newTitle && newTitle.trim() !== '') {
             currentTitle.value = newTitle;
+        } else {
+            updateTitleFromRoute();
         }
     },
     { immediate: true }

@@ -22,7 +22,6 @@ const updateEarnedStars = (newStars) => {
 };
 </script>
 
-import { ref } from 'vue';
 <style lang="scss">
 html,
 body {

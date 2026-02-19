@@ -189,6 +189,7 @@ export const useCategoriesStore = defineStore('categories', () => {
         try {
             const response = await apiClient.post('/favorite/add', { card_id: cardId });
             push.success({ message: 'Карточка добавлена в избранные' });
+            getFavoriteCards();
             return response.data;
         } catch (error) {
             console.error(error);

@@ -9,9 +9,7 @@
 
             <div class="page-content profile-page__content">
                 <div class="scroll-container profile-scroll">
-                    <ProfileUserCard
-                        :user="currentUser"
-                    />
+                    <ProfileUserCard :user="currentUser" />
 
                     <section class="profile-tiles">
                         <button
@@ -58,7 +56,7 @@
 </template>
 
 <script setup>
-import { computed } from 'vue';
+import { computed, onMounted } from 'vue';
 import { RouterView, useRoute, useRouter } from 'vue-router';
 import { useUserStore } from '@/stores/user';
 
@@ -72,6 +70,10 @@ const router = useRouter();
 const userStore = useUserStore();
 
 const isRootProfile = computed(() => route.name === 'profile');
+
+onMounted(() => {
+    userStore.setHeaderTitle('Профиль');
+});
 
 const currentUser = computed(() => userStore.getCurrentUser());
 const userName = computed(() => currentUser.value?.name || '—');

@@ -30,18 +30,19 @@ import { useUserStore } from '@/stores/user';
 const route = useRoute();
 const categoryStore = useCategoriesStore();
 const cardFlipRef = ref(null);
-const isLikeEnabled = ref(false);
 const cards = ref([]);
+const currentCard = ref(null);
 const currentCardIndex = ref(0);
 const activeComponent = ref('VideoPage');
 const selectedCategory = computed(() => categoryStore.selectedCategory);
 
 onMounted(async () => {
     await categoryStore.getCategoryById(route.query.categoryId);
-    const currentCard = await categoryStore.getCardById(route.params.id);
-    cards.value.push(currentCard);
+    await fetchCard();
+    cards.value.push(currentCard.value);
     useUserStore().setHeaderTitle(selectedCategory.value?.name);
 });
+const isLikeEnabled = computed(() => currentCard.value?.added_to_favorite);
 
 const currentLikeIcon = computed(() => {
     if (isLikeEnabled.value) return likeEnabled;
@@ -65,8 +66,15 @@ const onVideoEnded = () => {
     // }
 };
 
-const switchLike = () => {
-    isLikeEnabled.value = !isLikeEnabled.value;
+const switchLike = async () => {
+    isLikeEnabled.value
+        ? await categoryStore.deleteCardFromFavorite(Number(route.query.favoriteId))
+        : await categoryStore.addCardInFavorite(Number(currentCard.value.id));
+    await fetchCard();
+};
+
+const fetchCard = async () => {
+    currentCard.value = await categoryStore.getCardById(route.params.id);
 };
 
 const getVideoUrl = (card) => {
