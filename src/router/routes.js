@@ -185,7 +185,12 @@ const routes = [
             {
                 path: 'myPlanet',
                 name: 'myPlanet',
-                component: () => import('@/pages/MyPlanetPage.vue'),
+                component: () => import('@/pages/PlanetPage/MyPlanetPage.vue'),
+            },
+            {
+                path: 'editPlanet',
+                name: 'editPlanet',
+                component: () => import('@/pages/PlanetPage/EditPlanet/EditPlanet.vue'),
             },
             {
                 path: 'DailyReward',

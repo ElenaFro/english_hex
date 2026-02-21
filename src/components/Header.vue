@@ -59,7 +59,7 @@
                 :alt="item.name"
             />
         </RouterLink>
-        <template v-if="isGamePlanetPage">
+        <template v-if="isGamePlanetPage || isEditPlanetPage">
             <span class="header-star">
                 {{ totalStars }}
                 <img
@@ -121,6 +121,7 @@ const overlayClass = computed(() => ({ 'index-up': isShowStarHint.value }));
 const highlightStyle = computed(() => getPositionStyle({ top: 58, width: 110, left: 77 }));
 
 const isGamePlanetPage = computed(() => route.path === '/planetAttackPage');
+const isEditPlanetPage = computed(() => route.path === '/editPlanet');
 
 const isGameWordTwinkle = computed(() => route.path === '/wordTwinkleResult');
 
@@ -132,13 +133,17 @@ const hasUnreadNotify = computed(() =>
     currentNotifications.value?.find((notify) => notify.was_read === false)
 );
 
-const headerItemsRight = computed(() => [
-    {
-        name: 'notifications',
-        path: '/notifications',
-        icon: hasUnreadNotify.value ? BellUnread : Bell,
-    },
-]);
+const headerItemsRight = computed(() => {
+    if (isEditPlanetPage.value) return [];
+
+    return [
+        {
+            name: 'notifications',
+            path: '/notifications',
+            icon: hasUnreadNotify.value ? BellUnread : Bell,
+        },
+    ];
+});
 
 const currentTitle = ref(' ');
 const route = useRoute();
@@ -215,6 +220,9 @@ const updateTitleFromRoute = () => {
             case 'planetAttackPage':
                 currentTitle.value = '';
                 break;
+            case 'editPlanet':
+                currentTitle.value = 'Планета';
+                break;
             default:
                 currentTitle.value = ' ';
                 break;
@@ -278,7 +286,7 @@ watch(
     padding-bottom: 0px;
     align-items: center;
     cursor: pointer;
-    z-index: 502;
+    z-index: 500;
 }
 
 .header-live {

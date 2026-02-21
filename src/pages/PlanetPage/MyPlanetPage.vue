@@ -4,7 +4,7 @@
     <goToMainPopup v-if="showGoToMain" />
     <div class="page-content">
         <div v-if="myPlanet" class="content-container">
-            <div class="img-container">
+            <div class="img-container" @click="goToEditPlanet">
                 <img :src="planetImg" alt="" class="img-container__planet-img" />
             </div>
             <div
@@ -36,6 +36,7 @@ import { useCategoriesStore } from '@/stores/categories';
 
 const router = useRouter();
 const route = useRoute();
+
 const popupShowed = ref(false);
 const myPlanet = ref(false);
 const showNewPlanet = ref(false);
@@ -121,6 +122,10 @@ const planetImg = computed(() => {
         return planet4;
     }
 });
+
+const goToEditPlanet = () => {
+    router.push({ name: 'editPlanet' });
+};
 </script>
 
 <style scoped lang="scss">
@@ -134,6 +139,7 @@ const planetImg = computed(() => {
 
         .img-container {
             margin-bottom: 15px;
+            cursor: pointer;
         }
 
         .stars-container {
