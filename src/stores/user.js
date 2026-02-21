@@ -14,6 +14,7 @@ export const useUserStore = defineStore('user', () => {
     const isLoggingIn = ref(false);
     const isSubscribed = ref(null);
     const isShowStarOverview = ref(false);
+    const installPopupClosed = ref(false);
 
     const notifications = ref([]);
     const searchUsersPaginator = ref(null);
@@ -266,6 +267,10 @@ export const useUserStore = defineStore('user', () => {
         currentHeaderTitle.value = value;
     };
 
+    const setInstallPopupClosed = (value) => {
+        installPopupClosed.value = value;
+    };
+
     return {
         user,
         token,
@@ -278,6 +283,7 @@ export const useUserStore = defineStore('user', () => {
         isShowStarOverview,
         currentHeaderTitle,
         isTeacher,
+        installPopupClosed,
         currentSearchedUsers,
         searchedFriends,
         register,
@@ -300,6 +306,7 @@ export const useUserStore = defineStore('user', () => {
         sendNotification,
         switchStarOverview,
         setHeaderTitle,
+        setInstallPopupClosed,
         searchUsers,
         searchFriends,
         deleteFriend,

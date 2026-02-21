@@ -60,13 +60,24 @@
 </template>
 
 <script setup>
-import { onMounted, onUnmounted, ref } from 'vue';
+import { onMounted, ref } from 'vue';
+import { useUserStore } from '@/stores/user';
 
 const showPopup = ref(false);
 const canInstall = ref(false);
 const isIos = ref(false);
 const isInStandalone = ref(false);
+const emit = defineEmits(['close']);
+const userStore = useUserStore();
 let deferredPrompt = null;
+
+function hidePopup(hasSeenValue) {
+    showPopup.value = false;
+    userStore.setInstallPopupClosed(true);
+    if (typeof hasSeenValue === 'string') {
+        localStorage.setItem('hasSeenInstallPopup', hasSeenValue);
+    }
+}
 
 onMounted(() => {
     isIos.value = /iPhone|iPad|iPod/i.test(navigator.userAgent) && !navigator.standalone;
@@ -90,14 +101,13 @@ onMounted(() => {
     }
 
     window.addEventListener('appinstalled', () => {
-        showPopup.value = false;
-        localStorage.setItem('hasSeenInstallPopup', 'true');
+        hidePopup('true');
     });
 });
 
 async function installPWA() {
     if (!deferredPrompt) return;
-    showPopup.value = false;
+    hidePopup();
     deferredPrompt.prompt();
     const { outcome } = await deferredPrompt.userChoice;
     if (outcome === 'accepted') {
@@ -109,8 +119,7 @@ async function installPWA() {
 }
 
 function closePopup() {
-    showPopup.value = false;
-    localStorage.setItem('hasSeenInstallPopup', 'false');
+    hidePopup('false');
 }
 </script>
 
@@ -169,8 +178,8 @@ function closePopup() {
 
 .close-button {
     position: absolute;
-    top: -14px;
-    right: 0;
+    top: -10px;
+    right: 4px;
     background: none;
     border: none;
     font-size: 38px;

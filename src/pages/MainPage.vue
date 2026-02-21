@@ -174,7 +174,6 @@ const goToMyPlanet = () => {
 watch(
     () => currentUser.value,
     () => {
-        console.log('isWork');
         if (currentUser.value.ever_played_game) return (isShowInstallPopup.value = true);
     }
 );
