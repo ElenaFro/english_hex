@@ -199,7 +199,11 @@ export const useCategoriesStore = defineStore('categories', () => {
 
     async function deleteCardFromFavorite(id) {
         try {
-            const response = await apiClient.delete(`/favorite/delete/${id}`);
+            const response = await apiClient.delete('/favorite/delete/', {
+                params: {
+                    card_id: id,
+                },
+            });
             await getFavoriteCards();
             push.success({ message: 'Карточка удалена из избранных' });
             return response.data;
@@ -212,7 +216,7 @@ export const useCategoriesStore = defineStore('categories', () => {
     async function searchFavorite(name) {
         try {
             const response = await apiClient.get('/favorite/search', {
-                params: { s: name },
+                params: { request: name },
             });
 
             favoriteCards.value = response.data.data;

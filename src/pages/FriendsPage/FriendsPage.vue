@@ -1,50 +1,56 @@
 <template>
     <div class="page-content">
-        <search-input
-            placeholder="Введи имя пользователя"
-            @search="searchFriend"
-            enable-auto-search
-        />
-
-        <div v-if="friends.length === 0" class="empty-state">
-            <img src="@/assets/img/empty-friends.webp" alt="girl" class="empty-state__img" />
-            <p class="empty-state__text">У тебя пока нет друзей, найдите же их скорее</p>
-        </div>
-
+        <loader v-if="loading" />
         <section v-else>
-            <p class="friends-menu__section-title">Мои друзья</p>
-            <div class="friends-list">
-                <div v-for="friend in friends" :key="friend.id" class="friends-item">
-                    <user-card-with-star :user="friend" @click="goToUserProfile(friend.id)" />
-                    <button class="friends-item__delete-btn" @click="removeFriend(friend.id)">
-                        <img
-                            src="@/assets/icons/delete_icon.svg"
-                            alt="Удалить"
-                            class="friends-item__delete-icon"
-                        />
-                    </button>
-                </div>
+            <search-input
+                placeholder="Введи имя пользователя"
+                @search="searchFriend"
+                enable-auto-search
+            />
+
+            <div v-if="friends.length === 0" class="empty-state">
+                <img src="@/assets/img/empty-friends.webp" alt="girl" class="empty-state__img" />
+                <p class="empty-state__text">У тебя пока нет друзей, найдите же их скорее</p>
             </div>
+
+            <section v-else>
+                <p class="friends-menu__section-title">Мои друзья</p>
+                <div class="friends-list">
+                    <div v-for="friend in friends" :key="friend.id" class="friends-item">
+                        <user-card-with-star :user="friend" @click="goToUserProfile(friend.id)" />
+                        <button class="friends-item__delete-btn" @click="removeFriend(friend.id)">
+                            <img
+                                src="@/assets/icons/delete_icon.svg"
+                                alt="Удалить"
+                                class="friends-item__delete-icon"
+                            />
+                        </button>
+                    </div>
+                </div>
+            </section>
         </section>
     </div>
 </template>
 
 <script setup>
-import { computed, onMounted, ref, watch } from 'vue';
-import { useRoute, useRouter } from 'vue-router';
+import { onMounted, ref, watch } from 'vue';
+import { useRouter } from 'vue-router';
+import Loader from '@/shared/components/Loader.vue';
 import SearchInput from '@/shared/ui/SearchInput.vue';
 import UserCardWithStar from '@/shared/ui/UserCardWithStar.vue';
 import { useUserStore } from '@/stores/user';
 import { push } from 'notivue';
 
 const router = useRouter();
-const route = useRoute();
 const userStore = useUserStore();
 const friends = ref([]);
+const loading = ref(false);
 
 onMounted(async () => {
-    searchFriend('');
+    loading.value = true;
+    await searchFriend('');
     userStore.setHeaderTitle('Друзья');
+    loading.value = false;
 });
 
 const removeFriend = async (id) => {

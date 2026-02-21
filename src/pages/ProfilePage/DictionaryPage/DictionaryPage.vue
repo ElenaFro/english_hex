@@ -19,7 +19,7 @@
                             @click="goToWord(word.card.id, word.card.category_id, word.id)"
                         >
                             <span class="dictionary-item__category"
-                                >Категория {{ word.card.categorie.name }}:
+                                >Категория {{ word.card.categorie?.name }}:
                                 {{ word.card.word }}</span
                             >
                         </div>
@@ -81,7 +81,8 @@ watch(
     () => categoryStore.favoriteCards,
     (newVal) => {
         words.value = newVal;
-    }
+    },
+    { deep: true }
 );
 </script>
 <style scoped>

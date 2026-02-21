@@ -1,33 +1,36 @@
 <template>
     <div class="page-content">
-        <div class="scroll-container achievements-scroll">
-            <ProfileUserCard
-                :user="userProfile"
-                :is-can-add-to-friends="isCanAddToFriends"
-                avatar-size="lg"
-                @update:user="refetchUser"
-            />
+        <loader v-if="loading" />
+        <section v-else>
+            <div class="scroll-container achievements-scroll">
+                <ProfileUserCard
+                    :user="userProfile"
+                    :is-can-add-to-friends="isCanAddToFriends"
+                    avatar-size="lg"
+                    @update:user="refetchUser"
+                />
 
-            <section class="achievement-list">
-                <article
-                    v-for="item in achievementsList"
-                    :key="item.id"
-                    class="achievement-card"
-                    :class="`achievement-card--${item.tone}`"
-                >
-                    <div class="achievement-card__content">
-                        <h3 class="achievement-card__title">{{ item.title }}</h3>
-                        <p class="achievement-card__date">{{ item.date }}</p>
-                    </div>
-                    <img
-                        class="achievement-card__image"
-                        :src="item.image"
-                        alt=""
-                        aria-hidden="true"
-                    />
-                </article>
-            </section>
-        </div>
+                <section class="achievement-list">
+                    <article
+                        v-for="item in achievementsList"
+                        :key="item.id"
+                        class="achievement-card"
+                        :class="`achievement-card--${item.tone}`"
+                    >
+                        <div class="achievement-card__content">
+                            <h3 class="achievement-card__title">{{ item.title }}</h3>
+                            <p class="achievement-card__date">{{ item.date }}</p>
+                        </div>
+                        <img
+                            class="achievement-card__image"
+                            :src="item.image"
+                            alt=""
+                            aria-hidden="true"
+                        />
+                    </article>
+                </section>
+            </div>
+        </section>
     </div>
 </template>
 
@@ -37,6 +40,7 @@ import { useRoute } from 'vue-router';
 import { useUserStore } from '@/stores/user';
 
 import ProfileUserCard from '@/shared/ui/ProfileUserCard.vue';
+import Loader from '@/shared/components/Loader.vue';
 
 import GirlPlanet from '@/assets/Di_avatar/girl_with_planet.svg';
 import GirlThinking from '@/assets/Di_avatar/girl_thinking.webp';
@@ -44,20 +48,26 @@ import GirlKeychain from '@/assets/Di_avatar/girl_with_keychain.webp';
 import GirlFlag from '@/assets/Di_avatar/girl_with_flag.svg';
 
 const route = useRoute();
+
 const userStore = useUserStore();
-const currentUser = computed(() => userStore.getCurrentUser());
+
 const userProfile = ref({});
+const loading = ref(false);
 
 onMounted(async () => {
+    loading.value = true;
     if (route.params.id) {
         await refetchUser();
     }
     updateHeaderTitle();
+    loading.value = false;
 });
 
 onBeforeUnmount(() => {
     userStore.setHeaderTitle(null);
 });
+
+const currentUser = computed(() => userStore.getCurrentUser());
 
 const isCanAddToFriends = computed(() => !userProfile.value.is_friend);
 

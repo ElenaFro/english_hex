@@ -68,7 +68,7 @@ const onVideoEnded = () => {
 
 const switchLike = async () => {
     isLikeEnabled.value
-        ? await categoryStore.deleteCardFromFavorite(Number(route.query.favoriteId))
+        ? await categoryStore.deleteCardFromFavorite(Number(currentCard.value.id))
         : await categoryStore.addCardInFavorite(Number(currentCard.value.id));
     await fetchCard();
 };
