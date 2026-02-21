@@ -63,10 +63,13 @@
                         />
                     </button>
                 </div>
-                <button class="button button--purple button--big" @click="login">
-                    <loader v-if="loading" :size="20" />
-                    <p class="text-white" v-else>Продолжить</p>
-                </button>
+                <b-button
+                    class="button button--purple button--big"
+                    :loading="loading"
+                    label="Продолжить"
+                    label-class="text-white"
+                    @click="login"
+                />
             </div>
         </div>
     </div>
@@ -90,7 +93,7 @@ import { useRouter } from 'vue-router';
 import { useUserStore } from '../../stores/user';
 import visibilityIcon from '@/assets/img/visibility_icon.svg';
 import visibilityOffIcon from '@/assets/img/visibility_off_icon.svg';
-import loader from '../../shared/components/Loader.vue';
+import BButton from '@/shared/components/BaseButton.vue';
 import defaultPopup from '../popups/defaultPopup.vue';
 import SubscribePushNotify from '@/components/popups/SubscribePushNotify.vue';
 

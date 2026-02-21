@@ -11,10 +11,13 @@
                 <input v-model="form.grade" type="text" placeholder="Введите название" />
                 <p v-if="gradeError" class="create-form__error">{{ gradeError }}</p>
             </div>
-            <button class="create-form__btn" :disabled="!isValid || loading" @click="createClass">
-                <Loader v-if="loading" :size="20" />
-                <span v-else>Создать класс</span>
-            </button>
+            <b-button
+                class="create-form__btn"
+                label="Создать класс"
+                :disabled="!isValid || loading"
+                :loading="loading"
+                @click="createClass"
+            />
         </div>
     </div>
 </template>
@@ -23,7 +26,7 @@
 import { ref, computed } from 'vue';
 import { useTeacherStore } from '@/stores/teacher';
 import { push } from 'notivue';
-import Loader from '@/shared/components/Loader.vue';
+import BButton from '@/shared/components/BaseButton.vue';
 
 const emit = defineEmits(['close']);
 const teacherStore = useTeacherStore();

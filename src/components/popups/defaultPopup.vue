@@ -8,15 +8,14 @@
                 <slot name="content"></slot>
                 <div class="popup-actions">
                     <slot name="actions">
-                        <button
+                        <b-button
                             v-if="confirmText"
                             :loading="loading"
+                            :label="confirmText"
                             class="confirm-button"
+                            label-class="text-white"
                             @click="confirmAction"
-                        >
-                            <loader v-if="loading" size="20" />
-                            <span class="text-white" v-else>{{ confirmText }}</span>
-                        </button>
+                        />
                     </slot>
                 </div>
             </div>
@@ -26,7 +25,7 @@
 
 <script setup>
 import { computed, ref, watch } from 'vue';
-import loader from '@/shared/components/Loader.vue';
+import BButton from '@/shared/components/BaseButton.vue';
 
 const props = defineProps({
     isVisible: {

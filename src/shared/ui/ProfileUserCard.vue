@@ -11,30 +11,34 @@
                 <img class="profile-user-card__stars-icon" :src="yellowStarIcon" alt="" />
             </div>
             <div v-if="!isSelfProfile">
-                <button
+                <b-button
                     v-if="isCanAddToFriends && !isTeacher"
-                    @click="addToFriend"
-                    class="button button--blue d-mt-6"
-                >
-                    Добавить в друзья
-                </button>
-                <button
+                    label="Добавить в друзья"
+                    :loading="loading"
+                    label-class="text-white"
+                    class="button button--blue d-mt-6 full_width"
+                    @click.once="addToFriend"
+                />
+
+                <b-button
                     v-if="isCanAddToClass"
-                    @click="addToClass"
-                    class="button button--blue d-mt-6"
-                >
-                    Добавить в класс
-                </button>
+                    label="Добавить в класс"
+                    :loading="loading"
+                    label-class="text-white"
+                    class="button button--blue d-mt-6 full_width"
+                    @click.once="addToClass"
+                />
             </div>
         </div>
     </section>
 </template>
 
 <script setup>
-import { computed } from 'vue';
+import { computed, ref } from 'vue';
 import BoyIcon from '@/assets/img/DefaultUserAvatar/male.webp';
 import GirlIcon from '@/assets/img/DefaultUserAvatar/female.svg';
 import yellowStarIcon from '@/assets/icons/yelow_star.svg';
+import BButton from '../components/BaseButton.vue';
 import { useUserStore } from '@/stores/user';
 import { useTeacherStore } from '@/stores/teacher';
 import { useRoute } from 'vue-router';
@@ -51,9 +55,11 @@ const route = useRoute();
 const userStore = useUserStore();
 const teacherStore = useTeacherStore();
 
+const loading = ref(false);
+
 const isTeacher = computed(() => userStore.isTeacher);
 
-const selectedClassId = computed(() => teacherStore.currentClass.id ?? route.query.classId);
+const selectedClassId = computed(() => teacherStore.currentClass?.id ?? route.query?.classId);
 
 const displayName = computed(() => props.user.name || 'Пользователь');
 const displayRating = computed(() => props.user.rating ?? 0);
@@ -66,16 +72,25 @@ const isSelfProfile = computed(() => (route.params.id || props.user.id) == userS
 const avatarClass = computed(() => ({ lg: props.avatarSize }));
 
 const isCanAddToClass = computed(
-    () => isTeacher.value && !isSelfProfile.value && !props.user?.is_in_class
+    () =>
+        isTeacher.value &&
+        !isSelfProfile.value &&
+        props.user?.classes?.length === 0 &&
+        selectedClassId.value
 );
 
 const addToClass = async () => {
+    loading.value = true;
     await teacherStore.addStudentToClass(selectedClassId.value, route.params.id);
+    emit('update:user');
+    loading.value = false;
 };
 
 const addToFriend = async () => {
+    loading.value = true;
     await userStore.addToFriend(props.user.id);
     emit('update:user');
+    loading.value = false;
 };
 </script>
 
