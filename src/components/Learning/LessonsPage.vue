@@ -135,7 +135,7 @@ const { calculatePositionDelayed: calculatePrevious, getPositionStyle: getPrevio
 
 const currentCard = computed(() => cards.value[currentCardIndex.value] || {});
 
-const currentCardLike = computed(() => currentCard.value.addedFavorite);
+const currentCardLike = computed(() => currentCard.value.added_to_favorite);
 
 const isLastCard = computed(
     () => currentCardIndex.value === cards.value.length - 1 && activeComponent.value === 'WordPage'
@@ -279,15 +279,15 @@ const updateLike = (liked) => {
     const card = cards.value[currentCardIndex.value];
     if (!card?.id) return;
 
-    const previousLike = !!card.addedFavorite;
-    card.addedFavorite = liked;
+    const previousLike = !!card.added_to_favorite;
+    card.added_to_favorite = liked;
 
     const request = liked
         ? categoriesStore.addCardInFavorite(card.id)
         : categoriesStore.deleteCardFromFavorite(card.id);
 
     request.catch((error) => {
-        card.addedFavorite = previousLike;
+        card.added_to_favorite = previousLike;
         console.error('Like update error:', error);
     });
 };
