@@ -51,7 +51,7 @@
 </template>
 
 <script setup>
-import { computed, ref, onMounted } from 'vue';
+import { computed, ref, onMounted, onUnmounted } from 'vue';
 import Loader from '@/shared/components/Loader.vue';
 import SearchInput from '@/shared/ui/SearchInput.vue';
 import createClassForm from '@/pages/ClassesPage/components/CreateClassForm.vue';
@@ -99,6 +99,10 @@ const goToClass = async (id) => {
     await teacherStore.getClassById(id);
     router.push({ name: 'classProfile', params: { id: id } });
 };
+
+onUnmounted(() => {
+    userStore.setHeaderTitle(null);
+});
 </script>
 <style scoped lang="scss">
 .empty-state {

@@ -166,7 +166,7 @@ import GirlIcon from '@/assets/img/DefaultUserAvatar/female.svg';
 import { useUserStore } from '@/stores/user';
 import apiClient from '@/api/axios';
 import { compareObjects } from '@/shared/compareObject';
-import defaultPopup from '@/components/popups/defaultPopup.vue';
+import defaultPopup from '@/shared/components/popups/defaultPopup.vue';
 import { useRouter } from 'vue-router';
 
 const router = useRouter();

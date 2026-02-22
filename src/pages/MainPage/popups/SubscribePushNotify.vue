@@ -18,7 +18,7 @@
 </template>
 
 <script setup>
-import defaultPopup from './defaultPopup.vue';
+import defaultPopup from '@/shared/components/popups/defaultPopup.vue';
 import { useUserStore } from '@/stores/user';
 import apiClient from '@/api/axios';
 

@@ -53,7 +53,7 @@
 import { computed, ref } from 'vue';
 import StartLearning from '../components/Learning/StartLearning.vue';
 import LessonsPage from '../components/Learning/LessonsPage.vue';
-import Popup from '../components/popups/defaultPopup.vue';
+import Popup from '@/shared/components/popups/defaultPopup.vue';
 import likeDisabled from '@/assets/icons/like_disabled.svg';
 import likeEnabled from '@/assets/icons/like_enabled.svg';
 import likeWhite from '@/assets/icons/like_white.svg';

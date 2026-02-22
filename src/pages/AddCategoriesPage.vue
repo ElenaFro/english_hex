@@ -10,7 +10,7 @@
 //vue
 import { ref, onMounted, computed } from 'vue';
 //components
-import AddCategoriesPopup from '@/components/popups/AddCategoriesPopup.vue';
+import AddCategoriesPopup from '@/shared/components/popups/AddCategoriesPopup.vue';
 import AddCategories from '@/components/CreateCategory/AddCategories.vue';
 //stores
 import { useUserStore } from '@/stores/user';

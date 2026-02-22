@@ -47,12 +47,12 @@
 //vue
 import { ref, onMounted, computed, watch } from 'vue';
 //components
-import CategoryChoice from '@/components/MainPage/CategoryChoice.vue';
+import CategoryChoice from '@/pages/MainPage/components/CategoryChoice.vue';
 import loader from '@/shared/components/Loader.vue';
-import HelloPopupWithSound from '@/components/popups/HelloPopupWithSound.vue';
-import watchStarsPopup from '@/components/popups/watchStarsPopup.vue';
-import InstallAppPopup from '@/components/popups/InstallAppPopup.vue';
-import SubscribePushNotify from '@/components/popups/SubscribePushNotify.vue';
+import HelloPopupWithSound from '@/pages/MainPage/popups/HelloPopupWithSound.vue';
+import watchStarsPopup from '@/pages/MainPage//popups/watchStarsPopup.vue';
+import InstallAppPopup from '@/pages/MainPage/popups/InstallAppPopup.vue';
+import SubscribePushNotify from '@/pages/MainPage/popups/SubscribePushNotify.vue';
 import AddCategoriesCard from '@/components/categories/AddCategoriesCard.vue';
 //source
 import BoyIcon from '@/assets/img/DefaultUserAvatar/male.webp';
@@ -82,7 +82,7 @@ onMounted(async () => {
 
     if (localStorage.getItem('markFirstGame')) {
         popupShowed.value = false;
-        userStore.switchStarOverview(true);
+        userStore.switchPlanetOverview(true);
         localStorage.removeItem('markFirstGame');
     }
 

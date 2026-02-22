@@ -1,47 +1,55 @@
 <template>
-    <section class="page-content">
-        <div class="edit-planet-page">
-            <b-button
-                label="Ссылка приглашение"
-                label-class="text-white"
-                class="button button--purple button--big edit-planet-page__invite"
-            />
+    <section>
+        <default-popup v-if="isAddFriendLink">
+            
+        </default-popup>
+        <section v-else class="page-content">
+            <div class="edit-planet-page">
+                <b-button
+                    label="Ссылка приглашение"
+                    label-class="text-white"
+                    class="button button--purple button--big edit-planet-page__invite"
+                />
 
-            <div class="edit-planet-page__content">
-                <div class="edit-planet-page__grid-scroll">
-                    <div class="edit-planet-page__matrix">
-                        <div
-                            v-for="row in rows"
-                            :key="`row-${row.level}`"
-                            class="edit-planet-page__row"
-                        >
-                            <div class="edit-planet-page__level-item">
-                                {{ row.level }}
-                                <img src="@/assets/icons/yelow_star.svg" alt="star" />
-                            </div>
-                            <button
-                                v-for="col in 3"
-                                :key="`${row.level}-${col}`"
-                                type="button"
-                                class="edit-planet-page__planet-slot"
-                                :aria-label="`slot-${row.level}-${col}`"
+                <div class="edit-planet-page__content">
+                    <div class="edit-planet-page__grid-scroll">
+                        <div class="edit-planet-page__matrix">
+                            <div
+                                v-for="row in rows"
+                                :key="`row-${row.level}`"
+                                class="edit-planet-page__row"
                             >
-                                <img
-                                    src="@/assets/planets_icon/green_planet_1.svg"
-                                    class="edit-planet-page__planet-placeholder"
-                                />
-                            </button>
+                                <div class="edit-planet-page__level-item">
+                                    {{ row.level }}
+                                    <img src="@/assets/icons/yelow_star.svg" alt="star" />
+                                </div>
+                                <button
+                                    v-for="col in 3"
+                                    :key="`${row.level}-${col}`"
+                                    type="button"
+                                    class="edit-planet-page__planet-slot"
+                                    :aria-label="`slot-${row.level}-${col}`"
+                                >
+                                    <img
+                                        src="@/assets/planets_icon/green_planet_1.svg"
+                                        class="edit-planet-page__planet-placeholder"
+                                    />
+                                </button>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
+        </section>
     </section>
 </template>
 
 <script setup>
+import { ref } from 'vue';
 import BButton from '@/shared/components/BaseButton.vue';
+import defaultPopup from '@/shared/components/popups/defaultPopup.vue';
 
+const isAddFriendLink = ref(true);
 const rows = [
     { level: 100 },
     { level: 200 },

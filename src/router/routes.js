@@ -31,7 +31,7 @@ const routes = [
             {
                 path: '',
                 name: 'mainPage',
-                component: () => import('@/pages/MainPage.vue'),
+                component: () => import('@/pages/MainPage/MainPage.vue'),
             },
             {
                 path: 'addCategories',

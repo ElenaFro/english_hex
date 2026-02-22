@@ -32,7 +32,7 @@ import { reactive, ref, computed } from 'vue';
 //composables
 import { useFormValidation } from '@/composables/useFormValidation';
 import { Notivue, Notification, push } from 'notivue';
-import defaultPopup from '@/components/popups/defaultPopup.vue';
+import defaultPopup from '@/shared/components/popups/defaultPopup.vue';
 import { useRouter } from 'vue-router';
 import { useUserStore } from '@/stores/user';
 

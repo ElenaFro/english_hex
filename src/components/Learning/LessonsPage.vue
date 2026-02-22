@@ -92,7 +92,7 @@
 import { ref, onMounted, computed, watch, nextTick } from 'vue';
 import { useRouter, onBeforeRouteLeave } from 'vue-router';
 import CardFlip from '@/shared/components/CardFlip.vue';
-import defaultPopup from '../popups/defaultPopup.vue';
+import defaultPopup from '@/shared/components/popups/defaultPopup.vue';
 import { useCategoriesStore } from '@/stores/categories';
 import { useElementPosition } from '@/shared/composables/useElementPosition';
 

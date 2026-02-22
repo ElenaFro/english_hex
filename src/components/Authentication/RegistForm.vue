@@ -131,7 +131,7 @@ import visibilityIcon from '@/assets/img/visibility_icon.svg';
 import visibilityOffIcon from '@/assets/img/visibility_off_icon.svg';
 import { useUserStore } from '../../stores/user';
 import loader from '@/shared/components/Loader.vue';
-import defaultPopup from '../popups/defaultPopup.vue';
+import defaultPopup from '@/shared/components/popups/defaultPopup.vue';
 import { useTeacherStore } from '@/stores/teacher';
 
 const teacherStore = useTeacherStore();
