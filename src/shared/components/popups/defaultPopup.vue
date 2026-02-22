@@ -77,7 +77,9 @@ const titleClasses = computed(() => {
 
 const messageClass = computed(() => (props.messageLeft ? 'textLeft' : ''));
 
-const popupPaddings = computed(() => (!props.paddingClass ? 'defaultPaddings' : ''));
+const popupPaddings = computed(() =>
+    !props.paddingClass ? 'defaultPaddings' : props.paddingClass
+);
 
 watch(
     () => props.isVisible,
@@ -131,6 +133,7 @@ const confirmAction = () => {
 .popup-title {
     font-size: 22px;
     font-weight: 700;
+    white-space: pre-line;
 }
 
 .popup-message {
@@ -139,6 +142,7 @@ const confirmAction = () => {
     line-height: 120%;
     text-align: center;
     margin-bottom: 30px;
+    white-space: pre-line;
 }
 
 .close-button {
