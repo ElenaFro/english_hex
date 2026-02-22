@@ -1,7 +1,7 @@
 <template>
     <div v-if="!isDailyRewardPage" class="header-bar">
         <template v-if="isHomePage || isGameWordTwinkle || myPlanet">
-            <div ref="starRef" class="header-star" :class="overlayClass" @click="goToMyPlanet">
+            <div class="header-star" @click="goToMyPlanet">
                 <span>{{ totalStars }}</span>
                 <img
                     src="@/assets/icons/navBarIcon/star.svg"
@@ -70,16 +70,6 @@
             </span>
         </template>
     </div>
-
-    <teleport to="body">
-        <div v-if="isShowStarHint" class="hint-overlay" @click="closeStarHint">
-            <div class="previous-container" :style="highlightStyle">
-                <span class="previous-container_text"
-                    >Получай больше звезд и развивай свою планету!</span
-                >
-            </div>
-        </div>
-    </teleport>
 </template>
 
 <script setup>
@@ -91,7 +81,6 @@ import { defineProps } from 'vue';
 import { useUserStore } from '@/stores/user';
 import Bell from '@/assets/icons/navBarIcon/Bell.svg';
 import BellUnread from '@/assets/icons/navBarIcon/Bell_unread.svg';
-import { useElementPosition } from '@/shared/composables/useElementPosition';
 
 const router = useRouter();
 const userStore = useUserStore();
@@ -100,8 +89,6 @@ const currentNotifications = computed(() => userStore.notifications);
 const currentUser = computed(() => userStore.getCurrentUser());
 const totalStars = computed(() => currentUser.value.rating);
 const props = defineProps(['lives']);
-const starRef = ref(null);
-const isShowStarHint = ref(false);
 
 onMounted(() => {
     nextTick(() => {
@@ -111,23 +98,12 @@ onMounted(() => {
 
 const currentHeaderTitle = computed(() => userStore.currentHeaderTitle);
 
-const { calculatePositionDelayed, getPositionStyle } = useElementPosition(starRef, {
-    autoUpdate: true,
-    watchResize: true,
-});
-
-const overlayClass = computed(() => ({ 'index-up': isShowStarHint.value }));
-
-const highlightStyle = computed(() => getPositionStyle({ top: 58, width: 110, left: 77 }));
-
 const isGamePlanetPage = computed(() => route.path === '/planetAttackPage');
 const isEditPlanetPage = computed(() => route.path === '/editPlanet');
 
 const isGameWordTwinkle = computed(() => route.path === '/wordTwinkleResult');
 
 const myPlanet = computed(() => route.path === '/myPlanet');
-
-const isShowStarOverview = computed(() => userStore.isShowStarOverview);
 
 const hasUnreadNotify = computed(() =>
     currentNotifications.value?.find((notify) => notify.was_read === false)
@@ -157,11 +133,6 @@ const goToMyPlanet = () => {
     router.push({ path: '/myPlanet' });
 };
 const isHomePage = computed(() => route.fullPath === '/');
-
-const closeStarHint = () => {
-    isShowStarHint.value = false;
-    userStore.switchStarOverview(false);
-};
 
 const gameRoutes = [
     'games',
@@ -232,13 +203,8 @@ const updateTitleFromRoute = () => {
 
 watch(
     () => route.name,
-    (newName) => {
+    () => {
         updateTitleFromRoute();
-
-        if (isShowStarOverview.value && newName === 'myPlanet') {
-            isShowStarHint.value = true;
-            calculatePositionDelayed();
-        }
     },
     { immediate: true }
 );
@@ -367,27 +333,5 @@ watch(
 .live-icon {
     width: 23.8px;
     height: 22.2px;
-}
-
-.previous-container {
-    position: absolute;
-    z-index: 104;
-    display: flex;
-    flex-direction: column;
-    align-items: start;
-    justify-content: center;
-    cursor: pointer;
-    width: 300px;
-
-    &_text {
-        color: #fff;
-        text-align: center;
-        margin-top: 22px;
-        max-width: 300px;
-    }
-
-    &_icon {
-        width: 30px;
-    }
 }
 </style>

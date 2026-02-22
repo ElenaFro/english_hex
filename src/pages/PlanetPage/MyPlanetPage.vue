@@ -5,7 +5,13 @@
     <div class="page-content">
         <div v-if="myPlanet" class="content-container">
             <div class="img-container" @click="goToEditPlanet">
-                <img :src="planetImg" alt="" class="img-container__planet-img" />
+                <img
+                    ref="planetRef"
+                    :src="planetImg"
+                    alt=""
+                    class="img-container__planet-img"
+                    :class="overlayClass"
+                />
             </div>
             <div
                 v-if="earnedStars"
@@ -18,10 +24,18 @@
             </div>
         </div>
     </div>
+
+    <teleport to="body">
+        <div v-if="isShowPlanetHint" class="hint-overlay" @click="closePlanetHint">
+            <div class="planet-hint-text" :style="highlightStyle">
+                Получай больше звезд и развивай свою планету!
+            </div>
+        </div>
+    </teleport>
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue';
+import { ref, computed, onMounted, nextTick, watch } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import CongratulationPopup from '@/components/myPlanetPopup/CongratulationPopup.vue';
 import myNewPlanetPopup from '@/components/myPlanetPopup/myNewPlanetPopup.vue';
@@ -33,6 +47,7 @@ import planet3 from '@/assets/img/planets/planet-img 3.png';
 import planet4 from '@/assets/img/planets/planet-img 4.png';
 import { useUserStore } from '@/stores/user';
 import { useCategoriesStore } from '@/stores/categories';
+import { useElementPosition } from '@/shared/composables/useElementPosition';
 
 const router = useRouter();
 const route = useRoute();
@@ -52,6 +67,25 @@ const gameSource = ref(route.query.gameSource);
 const earnedStars = ref(0);
 const totalStars = ref(currentUser.rating);
 const queryStars = ref(0);
+
+const planetRef = ref(null);
+const isShowPlanetHint = ref(false);
+const isShowPlanetOverview = computed(() => userStore.isShowPlanetOverview);
+
+const { getPositionStyle, calculatePositionDelayed } = useElementPosition(planetRef, {
+    autoUpdate: true,
+    watchResize: true,
+    watchScroll: true,
+});
+
+const highlightStyle = computed(() => getPositionStyle({ top: 250, width: 240 }));
+
+const overlayClass = computed(() => ({ 'index-up': isShowPlanetHint.value }));
+
+const closePlanetHint = () => {
+    isShowPlanetHint.value = false;
+    userStore.switchStarOverview(false);
+};
 
 onMounted(async () => {
     try {
@@ -80,7 +114,24 @@ onMounted(async () => {
             if (localStorageStars) localStorage.removeItem('earnedStars');
         }
     }
+
+    if (isShowPlanetOverview.value && route.name === 'myPlanet') {
+        isShowPlanetHint.value = true;
+        await nextTick();
+        calculatePositionDelayed();
+    }
 });
+
+watch(
+    () => route.name,
+    async (newName) => {
+        if (isShowPlanetOverview.value && newName === 'myPlanet') {
+            isShowPlanetHint.value = true;
+            await nextTick();
+            calculatePositionDelayed();
+        }
+    }
+);
 
 const handlePopup = (action) => {
     if (action === 'toPlanet') {
@@ -142,6 +193,13 @@ const goToEditPlanet = () => {
             cursor: pointer;
         }
 
+        .img-container__planet-img {
+            border-radius: 50%;
+            object-fit: cover;
+            display: block;
+            position: relative;
+        }
+
         .stars-container {
             display: flex;
             align-items: center;
@@ -164,6 +222,16 @@ const goToEditPlanet = () => {
             }
         }
     }
+}
+
+.planet-hint-text {
+    position: fixed;
+    z-index: 503;
+    color: #fff;
+    text-align: center;
+    width: 300px;
+    transform: translateX(-50%);
+    pointer-events: none;
 }
 
 @keyframes flyUp {

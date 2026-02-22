@@ -13,7 +13,7 @@ export const useUserStore = defineStore('user', () => {
     const isAuthenticated = ref(!!localStorage.getItem('access_token'));
     const isLoggingIn = ref(false);
     const isSubscribed = ref(null);
-    const isShowStarOverview = ref(false);
+    const isShowPlanetOverview = ref(false);
     const installPopupClosed = ref(false);
 
     const notifications = ref([]);
@@ -259,8 +259,8 @@ export const useUserStore = defineStore('user', () => {
         }
     }
 
-    const switchStarOverview = (value) => {
-        isShowStarOverview.value = value;
+    const switchPlanetOverview = (value) => {
+        isShowPlanetOverview.value = value;
     };
 
     const setHeaderTitle = (value) => {
@@ -280,7 +280,7 @@ export const useUserStore = defineStore('user', () => {
         notifications,
         unsubscribed_at,
         isAdmin,
-        isShowStarOverview,
+        isShowPlanetOverview,
         currentHeaderTitle,
         isTeacher,
         installPopupClosed,
@@ -304,7 +304,7 @@ export const useUserStore = defineStore('user', () => {
         checkUserSubscribe,
         unSubscribeUser,
         sendNotification,
-        switchStarOverview,
+        switchPlanetOverview,
         setHeaderTitle,
         setInstallPopupClosed,
         searchUsers,
