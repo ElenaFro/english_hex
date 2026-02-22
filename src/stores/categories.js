@@ -9,6 +9,9 @@ export const useCategoriesStore = defineStore('categories', () => {
     const favoriteCards = ref([]);
 
     async function getCategories() {
+        const token = localStorage.getItem('access_token');
+        if (!token) return;
+
         try {
             const response = await apiClient.get('/categories');
             categories.value = response.data.data;
