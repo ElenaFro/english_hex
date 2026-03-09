@@ -155,7 +155,7 @@ const arrowBtnPositionClass = computed(() => getPreviousPosition());
 
 onMounted(async () => {
     if (props.propsCards.length > 0) return;
-    selectedCategory.value = useCategoriesStore().selectedCategory;
+    selectedCategory.value = categoriesStore.selectedCategory;
     cards.value = selectedCategory.value.cards || [];
 });
 
@@ -166,12 +166,18 @@ const replayAgain = () => {
     cardFlipRef.value.replayVideo();
 };
 
+const finishCard = async () => {
+    if (currentCard.value.is_completed) return;
+    await categoriesStore.finishCard(currentCard.value.id);
+};
+
 const handleNextOrFinish = async () => {
     if (isTransitioning.value) return;
     if (isLastCard.value) {
         if (props.propsCards.length > 0) return emit('closePreview');
         if (!selectedCategory.value.completed_category) localStorage.setItem('earnedStars', 20);
-        await useCategoriesStore().updateComplateCategory(selectedCategory.value.id);
+        await categoriesStore.updateComplateCategory(selectedCategory.value.id);
+        finishCard();
         router.push({ name: 'games', query: { id: selectedCategory.value.id } });
         return;
     }
@@ -181,6 +187,7 @@ const handleNextOrFinish = async () => {
     } else {
         isTransitioning.value = true;
         activeComponent.value = 'VideoPage';
+        finishCard();
     }
 };
 

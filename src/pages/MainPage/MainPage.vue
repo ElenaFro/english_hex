@@ -21,6 +21,7 @@
                 :backgroundColor="randomColor(section.id)"
                 :progress="section.completed_category"
                 :locked="true"
+                :category_completion_percentage="section.category_completion_percentage"
             />
         </div>
     </div>

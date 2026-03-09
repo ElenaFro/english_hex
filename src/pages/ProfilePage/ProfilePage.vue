@@ -60,7 +60,7 @@ import { computed, onMounted } from 'vue';
 import { RouterView, useRoute, useRouter } from 'vue-router';
 import { useUserStore } from '@/stores/user';
 
-import dictionaryImg from '@/assets/Di_avatar/girl-with-cart.webp';
+import dictionaryImg from '@/assets/Di_avatar/girl-with-cards.webp';
 import profileHeroImg from '@/assets/Di_avatar/girl-img2.webp';
 import achievementsIcon from '@/assets/icons/achievement.svg';
 import ProfileUserCard from '@/shared/ui/ProfileUserCard.vue';

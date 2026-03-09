@@ -178,6 +178,15 @@ export const useCategoriesStore = defineStore('categories', () => {
         }
     }
 
+    async function finishCard(id) {
+        try {
+            await apiClient.patch(`/card/finish`, { cardId: id });
+        } catch (error) {
+            console.error(error);
+            throw error;
+        }
+    }
+
     async function getFavoriteCards() {
         try {
             const response = await apiClient.get('/favorite/show');
@@ -245,6 +254,7 @@ export const useCategoriesStore = defineStore('categories', () => {
         createCard,
         updateCard,
         deleteCard,
+        finishCard,
         addCardInFavorite,
         deleteCardFromFavorite,
         searchFavorite,

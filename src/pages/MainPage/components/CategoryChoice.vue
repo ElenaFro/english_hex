@@ -11,7 +11,7 @@
             <div class="statusa-bar__active">
                 <img :src="locked ? closedLockIcon : openLockIcon" alt="" />
                 <div class="status-circle">
-                    <StatusCircle :percent="3" />
+                    <StatusCircle :percent="category_completion_percentage" />
                 </div>
             </div>
         </div>
@@ -35,6 +35,7 @@ const props = defineProps({
     imgUrl: String,
     progress: Boolean,
     locked: Boolean,
+    category_completion_percentage: Number,
 });
 
 const router = useRouter();

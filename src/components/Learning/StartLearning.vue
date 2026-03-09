@@ -121,7 +121,7 @@ const goToEditCategory = () => {
     position: relative;
     padding-bottom: 24px;
     align-self: center;
-    max-height: 34dvh;
+    max-height: 44dvh;
 }
 
 .learning-img {
@@ -171,7 +171,7 @@ const goToEditCategory = () => {
 .stack-img {
     position: absolute;
     width: 180px;
-    height: 260px;
+    height: auto;
     border-radius: 20px;
     object-fit: cover;
     box-shadow: 0 12px 30px rgba(0, 0, 0, 0.15);

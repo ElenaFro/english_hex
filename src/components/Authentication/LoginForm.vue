@@ -95,7 +95,7 @@ import visibilityIcon from '@/assets/img/visibility_icon.svg';
 import visibilityOffIcon from '@/assets/img/visibility_off_icon.svg';
 import BButton from '@/shared/components/BaseButton.vue';
 import defaultPopup from '@/shared/components/popups/defaultPopup.vue';
-import SubscribePushNotify from '@/components/popups/SubscribePushNotify.vue';
+import SubscribePushNotify from '@/pages/MainPage/popups/SubscribePushNotify.vue';
 
 const router = useRouter();
 
