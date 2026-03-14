@@ -23,27 +23,30 @@
                     <div class="edit-planet-page__matrix">
                         <div
                             v-for="row in rows"
-                            :key="`row-${row.level}`"
+                            :key="`row-${row.min_rating}`"
                             class="edit-planet-page__row"
                         >
                             <div class="edit-planet-page__level-item">
-                                {{ row.level }}
+                                {{ row.min_rating }}
                                 <img src="@/assets/icons/yelow_star.svg" alt="star" />
                             </div>
                             <button
                                 v-for="col in 3"
-                                :key="`${row.level}-${col}`"
+                                :key="`${row.min_rating}-${col}`"
                                 type="button"
                                 class="edit-planet-page__planet-slot"
                                 :class="{
                                     'edit-planet-page__planet-slot--selected':
-                                        selectedSlotByRow[row.level] === col - 1,
+                                        selectedSlotByRow[row.min_rating] === col - 1,
+                                    'edit-planet-page__planet-slot--not-available':
+                                        !row.skins[col - 1]?.is_available &&
+                                        selectedSlotByRow[row.min_rating] !== col - 1,
                                 }"
-                                :aria-label="`slot-${row.level}-${col}`"
+                                :aria-label="`slot-${row.min_rating}-${col}`"
                                 @click="openChoosePlanetPopup(row, col - 1)"
                             >
                                 <img
-                                    :src="row.planets[col - 1]"
+                                    :src="row.skinImages[col - 1]"
                                     class="edit-planet-page__planet-placeholder"
                                 />
                             </button>
@@ -56,36 +59,62 @@
 </template>
 
 <script setup>
-import { computed, ref } from 'vue';
+import { computed, onMounted, ref, watch } from 'vue';
 import BButton from '@/shared/components/BaseButton.vue';
 import InviteUsersPopup from './popups/InviteUsersPopup.vue';
 import ChoosePlanetPopup from './popups/ChoosePlanetPopup.vue';
-import planet1 from '@/assets/img/planets/planet-img 1.png';
-import planet2 from '@/assets/img/planets/planet-img 2.png';
-import planet3 from '@/assets/img/planets/planet-img 3.png';
-import planet4 from '@/assets/img/planets/planet-img 4.png';
+import { usePlanetStore } from '@/stores/planet';
+import { push } from 'notivue';
 
 const isAddFriendLink = ref(false);
 const isChoosePlanetPopupVisible = ref(false);
 const selectedRowCost = ref(0);
 const selectedRowPlanets = ref([]);
+const selectedRowSkins = ref([]);
 const selectedPlanetIndex = ref(0);
 const selectedSlotByRow = ref({});
 
-const rows = [
-    { level: 100, planets: [planet1, planet2, planet3] },
-    { level: 200, planets: [planet2, planet3, planet4] },
-    { level: 300, planets: [planet3, planet4, planet1] },
-    { level: 400, planets: [planet4, planet1, planet2] },
-    { level: 500, planets: [planet1, planet3, planet4] },
-    { level: 600, planets: [planet2, planet4, planet1] },
-    { level: 700, planets: [planet3, planet1, planet2] },
-    { level: 800, planets: [planet4, planet2, planet3] },
-];
+const planetStore = usePlanetStore();
+
+const planetImages = import.meta.glob('@/assets/planets/*.svg', {
+    eager: true,
+    import: 'default',
+});
+
+const resolvePlanetImage = (skinKey) => {
+    const normalizedKey = (skinKey ?? 'planet_default').replace(/\.svg$/i, '');
+    const match = Object.entries(planetImages).find(([path]) =>
+        path.endsWith(`/${normalizedKey}.svg`)
+    );
+    return match ? match[1] : planetImages['/src/assets/planets/planet_default.svg'];
+};
+
+const rows = computed(() =>
+    (planetStore.planetSkins ?? []).map((row) => ({
+        ...row,
+        skinImages: row.skins.map((skin) => resolvePlanetImage(skin.sprite_key)),
+    }))
+);
 
 const pageClass = computed(() =>
     isAddFriendLink.value || isChoosePlanetPopupVisible.value ? 'transparent' : ''
 );
+
+const syncSelectedSlots = () => {
+    const next = {};
+    for (const row of rows.value) {
+        const selectedIndex = row.skins.findIndex((skin) => skin.is_selected);
+        if (selectedIndex >= 0) next[row.min_rating] = selectedIndex;
+    }
+    selectedSlotByRow.value = next;
+};
+
+onMounted(async () => {
+    await planetStore.getPlanetSkins();
+    syncSelectedSlots();
+});
+
+watch(rows, syncSelectedSlots);
 
 const closeLinkPopup = () => {
     isAddFriendLink.value = false;
@@ -96,9 +125,16 @@ const openLinkPopup = () => {
 };
 
 const openChoosePlanetPopup = (row, initialIndex) => {
-    selectedRowCost.value = row.level;
-    selectedRowPlanets.value = row.planets;
-    selectedPlanetIndex.value = selectedSlotByRow.value[row.level] ?? initialIndex;
+    const skin = row.skins?.[initialIndex];
+    const isSelected = selectedSlotByRow.value[row.min_rating] === initialIndex;
+    if (skin && !skin.is_available && !isSelected) {
+        push.error({ message: 'Данная планета недоступна' });
+        return;
+    }
+    selectedRowCost.value = row.min_rating;
+    selectedRowPlanets.value = row.skinImages;
+    selectedRowSkins.value = row.skins;
+    selectedPlanetIndex.value = selectedSlotByRow.value[row.min_rating] ?? initialIndex;
     isChoosePlanetPopupVisible.value = true;
 };
 
@@ -106,8 +142,13 @@ const closeChoosePlanetPopup = () => {
     isChoosePlanetPopupVisible.value = false;
 };
 
-const handlePlanetConfirm = ({ selectedIndex }) => {
+const handlePlanetConfirm = async ({ selectedIndex }) => {
     selectedSlotByRow.value[selectedRowCost.value] = selectedIndex;
+    const selectedSkin = selectedRowSkins.value[selectedIndex];
+    if (selectedSkin?.id) {
+        await planetStore.selectSkin(selectedSkin.id);
+        await planetStore.getPlanetSkins();
+    }
     closeChoosePlanetPopup();
 };
 </script>
@@ -175,7 +216,7 @@ const handlePlanetConfirm = ({ selectedIndex }) => {
         position: relative;
         width: 100%;
         aspect-ratio: 1.15 / 1;
-        border: 2px solid #6e67a6;
+        border: 2px solid #2f266f;
         border-radius: 14px;
         background: #ffffff;
         padding: 6px;
@@ -187,8 +228,11 @@ const handlePlanetConfirm = ({ selectedIndex }) => {
     }
 
     &__planet-slot--selected {
-        border-color: #2f266f;
-        box-shadow: 0 0 0 2px rgba(47, 38, 111, 0.2);
+        border-color: green;
+    }
+
+    &__planet-slot--not-available {
+        opacity: 0.4;
     }
 
     &__planet-placeholder {

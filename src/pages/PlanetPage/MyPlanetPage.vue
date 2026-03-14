@@ -40,13 +40,9 @@ import { useRoute, useRouter } from 'vue-router';
 import CongratulationPopup from '@/components/myPlanetPopup/CongratulationPopup.vue';
 import myNewPlanetPopup from '@/components/myPlanetPopup/myNewPlanetPopup.vue';
 import goToMainPopup from '@/components/myPlanetPopup/goToMainPopup.vue';
-import planet0 from '@/assets/img/planets/planet-img 0.png';
-import planet1 from '@/assets/img/planets/planet-img 1.png';
-import planet2 from '@/assets/img/planets/planet-img 2.png';
-import planet3 from '@/assets/img/planets/planet-img 3.png';
-import planet4 from '@/assets/img/planets/planet-img 4.png';
 import { useUserStore } from '@/stores/user';
 import { useCategoriesStore } from '@/stores/categories';
+import { usePlanetStore } from '@/stores/planet';
 import { useElementPosition } from '@/shared/composables/useElementPosition';
 
 const router = useRouter();
@@ -61,11 +57,11 @@ const dataLoaded = ref(false);
 const animateStars = ref(false);
 const currentUser = useUserStore().user;
 const userStore = useUserStore();
+const planetStore = usePlanetStore();
 const selectedCategory = useCategoriesStore().selectedCategory;
 const localStorageStars = Number(localStorage.getItem('earnedStars') ?? 0);
 const gameSource = ref(route.query.gameSource);
 const earnedStars = ref(0);
-const totalStars = ref(currentUser.rating);
 const queryStars = ref(0);
 
 const planetRef = ref(null);
@@ -89,6 +85,7 @@ const closePlanetHint = () => {
 
 onMounted(async () => {
     try {
+        await planetStore.getPlanetSkins();
         queryStars.value = route.query.earnedStars || 0;
         earnedStars.value = Number(queryStars.value) + localStorageStars;
 
@@ -163,16 +160,20 @@ const handleAnimationEnd = async () => {
     }
 };
 
-const planetImg = computed(() => {
-    if (everPlayedGame.value === false) {
-        return planet0;
-    } else {
-        if (totalStars.value < 100) return planet1;
-        if (totalStars.value >= 100 && totalStars.value < 300) return planet2;
-        if (totalStars.value >= 300 && totalStars.value < 500) return planet3;
-        return planet4;
-    }
+const planetImages = import.meta.glob('@/assets/planets/*.svg', {
+    eager: true,
+    import: 'default',
 });
+
+const resolvePlanetImage = (skinKey) => {
+    const normalizedKey = (skinKey ?? 'planet_default').replace(/\.svg$/i, '');
+    const match = Object.entries(planetImages).find(([path]) =>
+        path.endsWith(`/${normalizedKey}.svg`)
+    );
+    return match ? match[1] : planetImages['/src/assets/planets/planet_default.svg'];
+};
+
+const planetImg = computed(() => resolvePlanetImage(planetStore.selectedSkin));
 
 const goToEditPlanet = () => {
     router.push({ name: 'editPlanet' });
@@ -198,6 +199,7 @@ const goToEditPlanet = () => {
             object-fit: cover;
             display: block;
             position: relative;
+            width: 225px;
         }
 
         .stars-container {

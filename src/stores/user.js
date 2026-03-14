@@ -19,6 +19,7 @@ export const useUserStore = defineStore('user', () => {
     const notifications = ref([]);
     const searchUsersPaginator = ref(null);
     const searchedFriends = ref([]);
+    const planetSkins = ref(null);
 
     const currentHeaderTitle = ref(null);
 
@@ -259,6 +260,16 @@ export const useUserStore = defineStore('user', () => {
         }
     }
 
+    async function getPlanetSkins() {
+        try {
+            const response = await apiClient.get('/me/planet/skins');
+
+            planetSkins.value = response.data;
+        } catch (error) {
+            console.error('Fetch users error:', error);
+        }
+    }
+
     const switchPlanetOverview = (value) => {
         isShowPlanetOverview.value = value;
     };
@@ -286,6 +297,7 @@ export const useUserStore = defineStore('user', () => {
         installPopupClosed,
         currentSearchedUsers,
         searchedFriends,
+        planetSkins,
         register,
         login,
         logout,
@@ -310,5 +322,6 @@ export const useUserStore = defineStore('user', () => {
         searchUsers,
         searchFriends,
         deleteFriend,
+        getPlanetSkins,
     };
 });
