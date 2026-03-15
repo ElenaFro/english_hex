@@ -76,8 +76,8 @@ const games = ref([
         id: 'endless',
         title: 'Бесконечный режим',
         subtitle: null,
-        routeName: null,
-        disabled: true,
+        routeName: 'infinityGame',
+        disabled: false,
     },
 ]);
 

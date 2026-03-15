@@ -53,7 +53,11 @@ import AnswerOptionButton from '@/components/ui/AnswerOptionButton.vue';
 const soundRef = ref(null);
 const route = useRoute();
 const currentUser = useUserStore().getCurrentUser();
-const emit = defineEmits(['update:lives', 'update:earnedStars', 'switch-component']);
+const props = defineProps({
+    questions: { type: Array, default: null },
+    isInfinity: { type: Boolean, default: false },
+});
+const emit = defineEmits(['update:lives', 'update:earnedStars', 'switch-component', 'finish']);
 const lives = ref(5);
 const earnedStars = ref(currentUser.rating);
 const selectedCategory = computed(() => useCategoriesStore().selectedCategory);
@@ -64,9 +68,27 @@ const categoryId = computed(() => selectedCategory.value.id || route.query.id);
 
 const isQuestionPlayed = ref(false);
 
+const resolveAudioUrl = (question) => {
+    if (!question) return '';
+    if (question.audio_url) return question.audio_url;
+    if (question.audio && /^https?:\/\//i.test(question.audio)) return question.audio;
+    if (question.audio && question.audio.startsWith('/')) return question.audio;
+
+    const categoryIdFromQuestion =
+        question.category_id || question.categoryId || categoryId.value;
+    if (categoryIdFromQuestion && question.audio) {
+        return `${import.meta.env.VITE_STORAGE_URI}/${categoryIdFromQuestion}/cards/${question.id}/audio/${question.audio}`;
+    }
+    if (question.audio) {
+        return `${import.meta.env.VITE_STORAGE_URI}/${question.audio}`;
+    }
+    return '';
+};
+
 const playSound = () => {
     if (soundRef.value) {
-        const audioUrl = `${import.meta.env.VITE_STORAGE_URI}/${categoryId.value}/cards/${currentQuestion.value.id}/audio/${currentQuestion.value.audio}`;
+        const audioUrl = resolveAudioUrl(currentQuestion.value);
+        if (!audioUrl) return;
         soundRef.value.src = audioUrl;
         soundRef.value.currentTime = 0;
         soundRef.value.play();
@@ -82,6 +104,8 @@ const onAudioEnded = () => {
 
 const currentQuestionIndex = ref(0);
 const questions = ref([]);
+const correctCount = ref(0);
+const wrongCount = ref(0);
 
 const buttonStyles = ref({});
 
@@ -110,6 +134,7 @@ const sendAnswer = (answer) => {
             color: '#FFFFFF',
             border: 'none',
         };
+        correctCount.value += 1;
         setTimeout(nextQuestion, 1000);
     } else {
         buttonStyles.value[currentQuestionData.options.indexOf(answer)] = {
@@ -117,14 +142,17 @@ const sendAnswer = (answer) => {
             color: '#FFFFFF',
             border: 'none',
         };
-        lives.value--;
-        meteorTop.value = `calc(${meteorTop.value} + 3vh)`;
-        meteorRight.value = `${parseInt(meteorRight.value) + 8}px`;
-        meteorWidth.value = `${parseInt(meteorWidth.value) + 8}px`;
+        wrongCount.value += 1;
+        if (!props.isInfinity) {
+            lives.value--;
+            meteorTop.value = `calc(${meteorTop.value} + 3vh)`;
+            meteorRight.value = `${parseInt(meteorRight.value) + 8}px`;
+            meteorWidth.value = `${parseInt(meteorWidth.value) + 8}px`;
 
-        emit('update:lives', lives.value);
-        if (lives.value <= 0) {
-            emit('switch-component', 'AttackPlanetLoss');
+            emit('update:lives', lives.value);
+            if (lives.value <= 0) {
+                emit('switch-component', 'AttackPlanetLoss');
+            }
         }
     }
 };
@@ -133,6 +161,15 @@ const nextQuestion = () => {
     const currentQuestionData = currentQuestion.value;
     resetButtonStyles(currentQuestionData, true);
     isQuestionPlayed.value = false;
+
+    if (props.isInfinity) {
+        if (currentQuestionIndex.value < questions.value.length - 1) {
+            currentQuestionIndex.value++;
+            return;
+        }
+        emit('finish', { correctCount: correctCount.value, wrongCount: wrongCount.value });
+        return;
+    }
 
     if (lives.value > 0 && currentQuestionIndex.value < questions.value.length - 1) {
         currentQuestionIndex.value++;
@@ -171,11 +208,24 @@ const meteorTop = ref('-25px');
 const meteorRight = ref('-4px');
 
 onMounted(async () => {
-    if (!selectedCategory.value.id) useCategoriesStore().getCategoryById(route.query.id);
-    try {
-        if (soundRef.value) {
-            soundRef.value.addEventListener('ended', onAudioEnded);
+    if (soundRef.value) {
+        soundRef.value.addEventListener('ended', onAudioEnded);
+    }
+
+    if (props.isInfinity) {
+        if (props.questions?.length) {
+            questions.value = props.questions.map((question) => ({
+                id: question.id,
+                audio: question.audio,
+                correctAnswer: question.correctAnswer ?? question.correct_answer,
+                options: question.options,
+            }));
         }
+        return;
+    }
+
+    if (!selectedCategory.value?.id) useCategoriesStore().getCategoryById(route.query.id);
+    try {
         if (!selectedCategory.value) return;
         const response = await useGamesStore().fetchDataForPlanetAttack(categoryId.value);
 
@@ -379,3 +429,4 @@ onBeforeUnmount(() => {
     background-position: center;
 }
 </style>
+

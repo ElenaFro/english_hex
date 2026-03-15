@@ -37,6 +37,12 @@ import { useGamesStore } from '@/stores/games';
 import { useCategoriesStore } from '@/stores/categories';
 import { useUserStore } from '@/stores/user';
 
+const props = defineProps({
+    questions: { type: Array, default: null },
+    isInfinity: { type: Boolean, default: false },
+});
+const emit = defineEmits(['wrong-answer', 'game-finished', 'question-opened', 'image-opened', 'finish']);
+
 const router = useRouter();
 const route = useRoute();
 const currentUser = useUserStore().user;
@@ -46,28 +52,59 @@ const answerList = ref([]);
 const currentIndex = ref(0);
 const selectedOption = ref(null);
 const wrongCount = ref(0);
+const correctCount = ref(0);
 const everPlayedGame = ref(currentUser.ever_played_game);
 const selectedCategoryId = computed(
     () => useCategoriesStore().selectedCategory?.id || route.query.id
 );
 
-const emit = defineEmits(['wrong-answer', 'game-finished', 'question-opened', 'image-opened']);
+const resolveImage = (question) => {
+    if (!question) return '';
+    if (question.image) return question.image;
+    if (typeof question.card_photo === 'string') {
+        if (/^https?:\/\//i.test(question.card_photo)) return question.card_photo;
+        if (question.card_photo.startsWith('/')) return question.card_photo;
+    }
+
+    const categoryId =
+        question.category_id ||
+        question.categoryId ||
+        (typeof question.category === 'number' ? question.category : null) ||
+        selectedCategoryId.value ||
+        null;
+    if (categoryId) {
+        return `${import.meta.env.VITE_STORAGE_URI}/${categoryId}/cards/${question.id}/word_image/${question.card_photo}`;
+    }
+    if (question.id && question.card_photo) {
+        return `${import.meta.env.VITE_STORAGE_URI}/cards/${question.id}/word_image/${question.card_photo}`;
+    }
+    if (question.card_photo) {
+        return `${import.meta.env.VITE_STORAGE_URI}/${question.card_photo}`;
+    }
+    return '';
+};
 
 const currentQuestion = computed(() => {
     const question = answerList.value[currentIndex.value] || {};
     return {
         id: question.id || null,
-        image: `${import.meta.env.VITE_STORAGE_URI}/${selectedCategoryId.value}/cards/${question.id}/word_image/${question.card_photo}`,
-        correctAnswer: question.correctAnswer || '',
+        image: resolveImage(question),
+        correctAnswer: question.correctAnswer ?? question.correct_answer ?? '',
         options: question.options || [],
     };
 });
 
 onMounted(async () => {
-    try {
-        answerList.value = await useGamesStore().getWordForTwinkleGame(selectedCategoryId.value);
-    } catch (error) {
-        console.error('Error fetching game data:', error);
+    if (props.questions?.length) {
+        answerList.value = props.questions;
+    } else {
+        try {
+            answerList.value = await useGamesStore().getWordForTwinkleGame(
+                selectedCategoryId.value
+            );
+        } catch (error) {
+            console.error('Error fetching game data:', error);
+        }
     }
     emit('image-opened');
     setTimeout(goToAnswers, 4000);
@@ -97,6 +134,7 @@ const checkAnswer = (option) => {
     }
 
     if (option === currentQuestion.value.correctAnswer) {
+        correctCount.value += 1;
         setTimeout(() => {
             goToNext();
         }, 1000);
@@ -116,6 +154,10 @@ const goToNext = async () => {
 const goToResult = () => {
     emit('image-opened');
     emit('game-finished');
+    if (props.isInfinity) {
+        emit('finish', { correctCount: correctCount.value, wrongCount: wrongCount.value });
+        return;
+    }
     router.push({
         name: 'gameResult',
         query: {

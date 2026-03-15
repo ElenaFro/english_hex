@@ -48,39 +48,64 @@ import { useCategoriesStore } from '@/stores/categories';
 import AnswerOptionButton from '@/components/ui/AnswerOptionButton.vue';
 import girlHead from '@/assets/Di_avatar/girl_head.png';
 
+const props = defineProps({
+    questions: { type: Array, default: null },
+    isInfinity: { type: Boolean, default: false },
+});
+const emit = defineEmits(['finish']);
+
 const userStore = useUserStore();
 const router = useRouter();
 const route = useRoute();
 
 onMounted(() => {
-    userStore.setHeaderTitle('Контекст');
+    if (!props.isInfinity) {
+        userStore.setHeaderTitle('Контекст');
+    }
 });
 
 onBeforeUnmount(() => {
-    userStore.setHeaderTitle(null);
+    if (!props.isInfinity) {
+        userStore.setHeaderTitle(null);
+    }
 });
 
-const questions = ref([
-    {
-        id: 1,
-        ru: 'Я иду в школу',
-        en: "I'm going to",
-        correct: 'School',
-        options: ['School', 'House', 'Street', 'Café'],
-    },
-    {
-        id: 2,
-        ru: 'Я пью кофе',
-        en: "I'm drinking",
-        correct: 'Café',
-        options: ['School', 'Café', 'House', 'Street'],
-    },
-]);
+const questions = ref([]);
+
+onMounted(() => {
+    if (props.questions?.length) {
+        questions.value = props.questions.map((item) => ({
+            id: item.id,
+            ru: item.ru ?? item.word ?? '',
+            en: item.en ?? item.translation_word ?? '',
+            correct: item.correct ?? item.correct_answer ?? '',
+            options: item.options ?? [],
+        }));
+    } else {
+        questions.value = [
+            {
+                id: 1,
+                ru: 'РЇ РёРґСѓ РІ С€РєРѕР»Сѓ',
+                en: "I'm going to",
+                correct: 'School',
+                options: ['School', 'House', 'Street', 'CafГ©'],
+            },
+            {
+                id: 2,
+                ru: 'РЇ РїСЊСЋ РєРѕС„Рµ',
+                en: "I'm drinking",
+                correct: 'CafГ©',
+                options: ['School', 'CafГ©', 'House', 'Street'],
+            },
+        ];
+    }
+});
 
 const currentIndex = ref(0);
 const selectedOption = ref(null);
 const buttonsLocked = ref(false);
 const wrongCount = ref(0);
+const correctCount = ref(0);
 
 const seconds = ref(0);
 const showPenalty = ref(false);
@@ -95,10 +120,6 @@ onMounted(() => {
 onBeforeUnmount(() => {
     if (timerId) window.clearInterval(timerId);
 });
-
-const current = computed(
-    () => questions.value[currentIndex.value] || { ru: '', en: '', options: [] }
-);
 
 const isCorrectAnswered = computed(
     () => selectedOption.value && selectedOption.value === current.value.correct
@@ -127,6 +148,10 @@ const next = () => {
 const categoryId = computed(() => route.query.id || useCategoriesStore().selectedCategory?.id);
 
 const goToResult = () => {
+    if (props.isInfinity) {
+        emit('finish', { correctCount: correctCount.value, wrongCount: wrongCount.value });
+        return;
+    }
     router.push({
         name: 'gameResult',
         query: {
@@ -144,6 +169,7 @@ const onPick = (option) => {
     selectedOption.value = option;
 
     if (option === current.value.correct) {
+        correctCount.value += 1;
         buttonsLocked.value = true;
         window.setTimeout(() => {
             next();
@@ -276,3 +302,6 @@ const onPick = (option) => {
     }
 }
 </style>
+
+
+

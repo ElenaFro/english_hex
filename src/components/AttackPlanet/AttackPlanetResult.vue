@@ -75,18 +75,14 @@ const goToGamePage = () => {
         display: flex;
         flex-direction: column;
         align-items: center;
-        gap: 12px;
+        gap: 1dvh;
         width: 100%;
         max-width: 414px;
-        max-height: 422px;
-        height: 422px;
         background-color: #ffffff;
         border-radius: 20px;
         border: none;
-        margin-left: 30px;
-        margin-right: 30px;
         color: #311d5d;
-        padding: 20px 20px 37px;
+        padding: 2dvh 2dvw 2dvh;
     }
 }
 .container-result {
@@ -146,7 +142,7 @@ const goToGamePage = () => {
     position: absolute;
     bottom: -224px;
     right: 21%;
-    z-index: 500;
+    z-index: 200;
 }
 
 @media (max-height: 810px) {

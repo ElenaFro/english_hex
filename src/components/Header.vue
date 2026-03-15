@@ -141,6 +141,7 @@ const gameRoutes = [
     'wordTwinkleGame',
     'constellationGame',
     'galaxyPhrasesGame',
+    'infinityGame',
 ];
 
 const isDailyRewardPage = computed(() => route.name === 'DailyReward');

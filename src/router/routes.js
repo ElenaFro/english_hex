@@ -183,6 +183,11 @@ const routes = [
                 component: () => import('@/pages/games/galaxyPhrases/GalaxyPhrasesGamePage.vue'),
             },
             {
+                path: 'infinityGame',
+                name: 'infinityGame',
+                component: () => import('@/pages/games/infinityGame/InfinitiGamePage.vue'),
+            },
+            {
                 path: 'myPlanet',
                 name: 'myPlanet',
                 component: () => import('@/pages/PlanetPage/MyPlanetPage.vue'),

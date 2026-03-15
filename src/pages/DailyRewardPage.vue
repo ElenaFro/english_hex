@@ -60,7 +60,7 @@
 
                 <div class="progress-bar">
                     <div class="progress-bar__fill" :style="{ width: percentOfFill }" />
-                    <span class="progress-bar__label"> {{ learnedWords }} / 20 </span>
+                    <span class="progress-bar__label"> {{ progressWords }} / 20 </span>
                 </div>
                 <button class="start-btn" @click="goToInfinityGame">Начать</button>
             </div>
@@ -72,16 +72,10 @@
 </template>
 
 <script setup>
-import { computed, ref, onMounted } from 'vue';
+import { computed, ref, onMounted, watch } from 'vue';
 import { useRouter } from 'vue-router';
-
-onMounted(async () => {
-    if (localStorage.getItem('task_hint_shown')) return;
-
-    setTimeout(() => {
-        showHint.value = true;
-    }, 500);
-});
+import { useUserStore } from '@/stores/user';
+import { useGamesStore } from '@/stores/games';
 
 const closeHint = () => {
     showHint.value = false;
@@ -90,19 +84,87 @@ const closeHint = () => {
 
 const showHint = ref(false);
 const currentDay = ref(1);
-const completedDays = ref([1, 2, 3, 4, 5, 6]);
+const completedDays = ref([]);
 const learnedWords = ref(0);
 const headerText = 'Заходи каждый день, изучай новые слова и получай награду!';
 const router = useRouter();
+const userStore = useUserStore();
+const gamesStore = useGamesStore();
+const lastFinishSentWords = ref(null);
 
-const percentOfFill = computed(() => (learnedWords.value === 0 ? 4 : learnedWords.value * 5) + '%');
+const progressWords = computed(() => Math.min(Math.max(learnedWords.value, 0), 20));
+const percentOfFill = computed(
+    () => (progressWords.value === 0 ? 4 : progressWords.value * 5) + '%'
+);
 
 const overlayClass = computed(() => ({ 'index-up': showHint.value }));
 
 const goToInfinityGame = () => {
-    router.push('/');
+    router.push({ name: 'infinityGame' });
     localStorage.setItem('task_hint_shown', 'true');
 };
+
+const applyDailyStreak = (dailyStreak) => {
+    if (!dailyStreak) {
+        currentDay.value = 1;
+        completedDays.value = [];
+        learnedWords.value = 0;
+        return;
+    }
+
+    const words = Number(dailyStreak.words_repeated_today ?? 0);
+    const streak = Number(dailyStreak.current_streak ?? 0);
+    const rewardGranted = Boolean(dailyStreak.reward_granted_today);
+
+    learnedWords.value = Math.max(words, 0);
+    const completedCount = Math.min(Math.max(streak, 0), 7);
+    completedDays.value = Array.from({ length: completedCount }, (_, index) => index + 1);
+    currentDay.value = Math.min(rewardGranted ? Math.max(streak, 1) : Math.max(streak + 1, 1), 7);
+};
+
+const sendInfinityFinish = async (words) => {
+    try {
+        await gamesStore.finishInfinityMode(words);
+    } catch (error) {
+        console.error('РћС€РёР±РєР° РѕС‚РїСЂР°РІРєРё daily streak', error);
+    }
+};
+
+onMounted(async () => {
+    if (!localStorage.getItem('task_hint_shown')) {
+        setTimeout(() => {
+            showHint.value = true;
+        }, 500);
+    }
+
+    await userStore.fetchUser();
+    const dailyStreak = userStore.user?.daily_streak ?? null;
+    applyDailyStreak(dailyStreak);
+
+    if (dailyStreak) {
+        const words = Number(dailyStreak.words_repeated_today ?? 0);
+        await sendInfinityFinish(words);
+        lastFinishSentWords.value = words;
+    }
+});
+
+watch(
+    () => userStore.user?.daily_streak,
+    async (dailyStreak) => {
+        applyDailyStreak(dailyStreak);
+        if (!dailyStreak) return;
+
+        const words = Number(dailyStreak.words_repeated_today ?? 0);
+        const rewardGranted = Boolean(dailyStreak.reward_granted_today);
+        const lastSent = lastFinishSentWords.value;
+
+        if (rewardGranted && (lastSent == null || words > lastSent)) {
+            await sendInfinityFinish(words);
+            lastFinishSentWords.value = words;
+        }
+    },
+    { deep: true }
+);
 </script>
 
 <style scoped>
@@ -112,12 +174,19 @@ const goToInfinityGame = () => {
     display: flex;
     flex-direction: column;
     padding-top: 40px;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+}
+
+.daily-reward-page::-webkit-scrollbar {
+    display: none;
 }
 
 .girl {
     width: 160px;
     margin: 0 auto;
-    margin-bottom: -40px;
+    margin-bottom: -30px;
     z-index: 2;
 }
 

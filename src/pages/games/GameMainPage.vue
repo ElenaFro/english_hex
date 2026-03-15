@@ -84,6 +84,11 @@ const gameList = ref([
         name: 'Галактика фраз',
         path: 'galaxyPhrasesGame',
     },
+    {
+        id: 5,
+        name: 'Бесконечный режим',
+        path: 'infinityGame',
+    },
 ]);
 const goToGame = (item) => {
     router.push({ name: item.path, query: { id: category.value.id } });

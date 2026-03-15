@@ -132,7 +132,7 @@ const goToGamePage = () => {
     position: absolute;
     bottom: -224px;
     right: 10%;
-    z-index: 500;
+    z-index: 200;
     width: 175px;
 }
 

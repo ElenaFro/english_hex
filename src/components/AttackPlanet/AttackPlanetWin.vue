@@ -123,7 +123,7 @@ const goToPlanet = () => {
     position: absolute;
     bottom: -210px;
     right: 21%;
-    z-index: 500;
+    z-index: 200;
 }
 
 @media (max-height: 810px) {
