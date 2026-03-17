@@ -124,8 +124,24 @@ const headerItemsRight = computed(() => {
 const currentTitle = ref(' ');
 const route = useRoute();
 
+const gameExitRoutes = new Set([
+    'planetGame',
+    'planetAttackPage',
+    'wordTwinkle',
+    'wordTwinkleGame',
+    'constellationGame',
+    'galaxyPhrasesGame',
+    'infinityGame',
+    'gameResult',
+    'flyAnimation',
+]);
+
 function goBack() {
-    window.history.back();
+    if (gameExitRoutes.has(route.name)) {
+        router.push({ name: 'games' });
+        return;
+    }
+    router.back();
 }
 
 const goToMyPlanet = () => {
