@@ -150,7 +150,7 @@ import { computed, reactive, ref, watch, onMounted } from 'vue';
 import { useFormValidation } from '@/composables/useFormValidation';
 import { useFileUpload } from '@/composables/useFileUpload';
 import LessonsPage from '../Learning/LessonsPage.vue';
-import defaultPopup from '../popups/defaultPopup.vue';
+import defaultPopup from '@/shared/components/popups/defaultPopup.vue';
 import { useImageValidation } from '@/composables/useImageValidation';
 import { useVideoValidation } from '@/composables/useVideoValidation';
 

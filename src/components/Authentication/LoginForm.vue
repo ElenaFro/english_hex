@@ -63,10 +63,13 @@
                         />
                     </button>
                 </div>
-                <button class="button button--purple button--big" @click="login">
-                    <loader v-if="loading" :size="20" />
-                    <p v-else>Продолжить</p>
-                </button>
+                <b-button
+                    class="button button--purple button--big"
+                    :loading="loading"
+                    label="Продолжить"
+                    label-class="text-white"
+                    @click="login"
+                />
             </div>
         </div>
     </div>
@@ -90,9 +93,9 @@ import { useRouter } from 'vue-router';
 import { useUserStore } from '../../stores/user';
 import visibilityIcon from '@/assets/img/visibility_icon.svg';
 import visibilityOffIcon from '@/assets/img/visibility_off_icon.svg';
-import loader from '../Loader.vue';
-import defaultPopup from '../popups/defaultPopup.vue';
-import SubscribePushNotify from '@/components/popups/SubscribePushNotify.vue';
+import BButton from '@/shared/components/BaseButton.vue';
+import defaultPopup from '@/shared/components/popups/defaultPopup.vue';
+import SubscribePushNotify from '@/pages/MainPage/popups/SubscribePushNotify.vue';
 
 const router = useRouter();
 
@@ -128,6 +131,7 @@ const login = async () => {
         await userStore.login(email.value, password.value);
         await userStore.fetchUser();
         await userStore.checkUserSubscribe();
+        await userStore.getUserRole();
         subscribePopup.value =
             userStore.isSubscribed === 'unsubscribe' ? true : !userStore.isSubscribed;
         await router.push({ name: 'mainPage' });

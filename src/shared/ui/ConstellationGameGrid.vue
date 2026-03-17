@@ -86,6 +86,9 @@ const isCorrect = computed(() => (card) => {
     background: #262060;
     color: #fff;
 }
+.card.translation span {
+    color: #fff;
+}
 
 .card:not(.translation) {
     background: #fff;

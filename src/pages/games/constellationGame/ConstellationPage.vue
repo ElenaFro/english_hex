@@ -2,7 +2,7 @@
     <StartGamePopup
         v-if="openStartInfo"
         title="Созвездие слов"
-        subtitle="Готовы?"
+        :subtitle="subtitleText"
         :message="popupMessage"
         game-name="constellationGame"
         :id="route.query.id"
@@ -19,8 +19,8 @@ import ConstellationGame from '@/components/ConstellationGame/ConstellationGame.
 const route = useRoute();
 const openStartInfo = ref(true);
 const popupMessage =
-    'Найдите соответствующее определение для каждого термина. Если вы допустите ошибку, мы добавим к вашему результату дополнительное время.';
-
+    'Сопоставь каждое слово с правильным переводом. Если ошибёшься — мы добавим немного времени к твоему результату. Играй внимательно, побеждает точность!';
+const subtitleText = `Найди свою пару,\n` + 'запомни навсегда';
 onMounted(() => {
     if (route.query.startGame === 'true') {
         openStartInfo.value = false;

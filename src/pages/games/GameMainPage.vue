@@ -4,6 +4,7 @@
         <section v-else>
             <section class="page-container__header">
                 <p>Поздравляю!</p>
+                <p>Ты изучил тему</p>
                 <p>{{ headerTopic }}</p>
             </section>
             <section class="page-container__message">
@@ -34,32 +35,32 @@
 <script setup>
 import { computed, onMounted, ref } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
-import defaultPopup from '@/components/popups/defaultPopup.vue';
-import Loader from '@/components/Loader.vue';
+import defaultPopup from '@/shared/components/popups/defaultPopup.vue';
+import Loader from '@/shared/components/Loader.vue';
 import { useCategoriesStore } from '@/stores/categories';
 
 const router = useRouter();
 const route = useRoute();
 const loading = ref(true);
 const hasEarnedStars = localStorage.getItem('earnedStars');
-const category = ref(useCategoriesStore().chosedCategory);
+const category = ref(useCategoriesStore().selectedCategory);
 onMounted(async () => {
     if (!category.value?.name) {
-        await useCategoriesStore().getChosedCategory(route.query.id);
-        category.value = useCategoriesStore().chosedCategory;
+        await useCategoriesStore().getCategoryById(route.query.id);
+        category.value = useCategoriesStore().selectedCategory;
     }
     loading.value = false;
 });
 
 const openPopup = ref(false);
-const headerTopic = computed(() => `Ты изучил тему ${category.value?.name}`);
+const headerTopic = computed(() => `"${category.value?.name}"`);
 const message =
-    'Чтобы закрепить полученые знания — выбирай игру и продолжай покорять английский без потерь';
+    'Чтобы закрепить полученые знания\u00A0— выбирай игру и продолжай покорять английский';
 
-const popupTitle = ' Уже уходите?';
+const popupTitle = ' Уже уходишь?';
 const popupMessage = computed(
     () =>
-        `Вы завершили обучение ${category.value?.name}, вам будут начислены 20 звезд, если вы не хотите увеличить награду подтвердите выбор, если хотите поднять рейтинг вернитесь к игре!`
+        `Отличный прогресс! Ты завершил тему ${category.value?.name} и получаешь 20 звёзд! Можно выйти и сохранить результат, а можно вернуться в игру и попробовать заработать больше. Решать тебе!`
 );
 
 const gameList = ref([
@@ -77,6 +78,16 @@ const gameList = ref([
         id: 3,
         name: 'Мерцание слов',
         path: 'wordTwinkle',
+    },
+    {
+        id: 4,
+        name: 'Галактика фраз',
+        path: 'galaxyPhrasesGame',
+    },
+    {
+        id: 5,
+        name: 'Бесконечный режим',
+        path: 'infinityGame',
     },
 ]);
 const goToGame = (item) => {
@@ -134,7 +145,6 @@ const goMainButton = () => {
         width: 100%;
         padding: 16px;
         background-color: #262060;
-        color: #fff;
         border-radius: 20px;
         align-items: center;
 
@@ -143,6 +153,7 @@ const goMainButton = () => {
             font-size: 20px;
             font-weight: 700;
             line-height: 100%;
+            color: #fff;
         }
     }
 
@@ -164,5 +175,6 @@ const goMainButton = () => {
     justify-content: flex-start;
     align-self: start;
     padding-bottom: 200px;
+    max-width: 244px;
 }
 </style>

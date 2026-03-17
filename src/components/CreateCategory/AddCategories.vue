@@ -63,7 +63,7 @@ const props = defineProps({
 const router = useRouter();
 const showAddCard = ref(false);
 const categoryStore = useCategoriesStore();
-const currentCategory = computed(() => categoryStore.chosedCategory);
+const currentCategory = computed(() => categoryStore.selectedCategory);
 const loading = ref(false);
 const originalCategory = ref(null);
 const originalCards = ref([]);

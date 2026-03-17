@@ -14,11 +14,8 @@ const router = createRouter({
 });
 
 router.beforeEach((to, from, next) => {
-    if (MAINTENANCE_MODE) {
-        // Show service page only on the initial app load.
-        if (from === START_LOCATION && to.path !== MAINTENANCE_ROUTE) {
-            return next(MAINTENANCE_ROUTE);
-        }
+    if (MAINTENANCE_MODE && to.path !== MAINTENANCE_ROUTE) {
+        return next(MAINTENANCE_ROUTE);
     }
 
     const requiresAuth = to.matched.some((record) => record.meta.requiresAuth);

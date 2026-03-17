@@ -1,14 +1,14 @@
 <template>
-    <div class="header-bar">
-        <template v-if="isHomePage">
-            <span @click="goToMyPlanet" class="header-star">
-                {{ totalStars }}
+    <div v-if="!isDailyRewardPage" class="header-bar">
+        <template v-if="isHomePage || isGameWordTwinkle || myPlanet">
+            <div class="header-star" @click="goToMyPlanet">
+                <span>{{ totalStars }}</span>
                 <img
                     src="@/assets/icons/navBarIcon/star.svg"
                     class="header-star-left"
                     alt="Звезда"
                 />
-            </span>
+            </div>
         </template>
 
         <template v-else-if="isGamePlanetPage">
@@ -22,7 +22,7 @@
                 </span>
             </span>
         </template>
-        <template v-else-if="isGameWordTwinkle || myPlanet">
+        <!-- <template v-else-if="">
             <span @click="goToMyPlanet" class="header-star">
                 {{ totalStars }}
                 <img
@@ -31,7 +31,7 @@
                     alt="Звезда"
                 />
             </span>
-        </template>
+        </template> -->
         <template v-else>
             <button @click="goBack" class="header-item-button">
                 <img
@@ -59,7 +59,7 @@
                 :alt="item.name"
             />
         </RouterLink>
-        <template v-if="isGamePlanetPage">
+        <template v-if="isGamePlanetPage || isEditPlanetPage">
             <span class="header-star">
                 {{ totalStars }}
                 <img
@@ -74,7 +74,7 @@
 
 <script setup>
 import { RouterLink } from 'vue-router';
-import { ref, watch, computed } from 'vue';
+import { ref, watch, computed, onMounted, nextTick } from 'vue';
 import { useRoute } from 'vue-router';
 import { useRouter } from 'vue-router';
 import { defineProps } from 'vue';
@@ -83,13 +83,23 @@ import Bell from '@/assets/icons/navBarIcon/Bell.svg';
 import BellUnread from '@/assets/icons/navBarIcon/Bell_unread.svg';
 
 const router = useRouter();
-const currentNotifications = computed(() => useUserStore().notifications);
+const userStore = useUserStore();
+const currentNotifications = computed(() => userStore.notifications);
 
-const currentUser = computed(() => useUserStore().getCurrentUser());
+const currentUser = computed(() => userStore.getCurrentUser());
 const totalStars = computed(() => currentUser.value.rating);
 const props = defineProps(['lives']);
 
+onMounted(() => {
+    nextTick(() => {
+        updateTitleFromRoute();
+    });
+});
+
+const currentHeaderTitle = computed(() => userStore.currentHeaderTitle);
+
 const isGamePlanetPage = computed(() => route.path === '/planetAttackPage');
+const isEditPlanetPage = computed(() => route.path === '/editPlanet');
 
 const isGameWordTwinkle = computed(() => route.path === '/wordTwinkleResult');
 
@@ -99,13 +109,17 @@ const hasUnreadNotify = computed(() =>
     currentNotifications.value?.find((notify) => notify.was_read === false)
 );
 
-const headerItemsRight = computed(() => [
-    {
-        name: 'notifications',
-        path: '/notifications',
-        icon: hasUnreadNotify.value ? BellUnread : Bell,
-    },
-]);
+const headerItemsRight = computed(() => {
+    if (isEditPlanetPage.value) return [];
+
+    return [
+        {
+            name: 'notifications',
+            path: '/notifications',
+            icon: hasUnreadNotify.value ? BellUnread : Bell,
+        },
+    ];
+});
 
 const currentTitle = ref(' ');
 const route = useRoute();
@@ -120,58 +134,96 @@ const goToMyPlanet = () => {
 };
 const isHomePage = computed(() => route.fullPath === '/');
 
-// onMounted(async () => {
-// 	try {
-// 		const res = await axios.get('/test.json')
-// 		learningSections.value = res.data
-// 	} catch {
-// 		console.error(err)
-// 	}
-// })
-const gameRoutes = ['games', 'planetGame', 'wordTwinkle', 'wordTwinkleGame', 'constellationGame'];
+const gameRoutes = [
+    'games',
+    'planetGame',
+    'wordTwinkle',
+    'wordTwinkleGame',
+    'constellationGame',
+    'galaxyPhrasesGame',
+    'infinityGame',
+];
+
+const isDailyRewardPage = computed(() => route.name === 'DailyReward');
+
+const updateTitleFromRoute = () => {
+    if (userStore.currentHeaderTitle) {
+        currentTitle.value = userStore.currentHeaderTitle;
+        return;
+    }
+
+    if (gameRoutes.includes(route.name)) {
+        currentTitle.value = 'Игры';
+    } else {
+        switch (route.name) {
+            case 'profile':
+                currentTitle.value = 'Профиль';
+                break;
+            case 'profileEdit':
+                currentTitle.value = 'Настройки';
+                break;
+            case 'dictionary':
+                currentTitle.value = 'Избранное';
+                break;
+            case 'profileSubscriptions':
+                currentTitle.value = 'Моя подписка';
+                break;
+            case 'friends':
+                currentTitle.value = 'Друзья';
+                break;
+            case 'rating':
+                currentTitle.value = 'Рейтинг';
+                break;
+            case 'notifications':
+                currentTitle.value = 'Уведомления';
+                break;
+            case 'createNotification':
+                currentTitle.value = 'Уведомления';
+                break;
+            case 'addCategories':
+                currentTitle.value = 'Редактирование';
+                break;
+            case 'editCategory':
+                currentTitle.value = 'Редактирование';
+                break;
+            case 'learning':
+                currentTitle.value = route.query.name || '';
+                break;
+            case 'planetAttackPage':
+                currentTitle.value = '';
+                break;
+            case 'editPlanet':
+                currentTitle.value = 'Планета';
+                break;
+            default:
+                currentTitle.value = ' ';
+                break;
+        }
+    }
+};
 
 watch(
-    () => route.path,
+    () => route.name,
     () => {
-        if (gameRoutes.includes(route.name)) {
-            currentTitle.value = 'Игры';
+        updateTitleFromRoute();
+    },
+    { immediate: true }
+);
+
+watch(
+    () => userStore.currentHeaderTitle,
+    (newTitle) => {
+        if (newTitle && newTitle.trim() !== '') {
+            currentTitle.value = newTitle;
         } else {
-            switch (route.name) {
-                case 'profile':
-                    currentTitle.value = 'Профиль';
-                    break;
-                case 'rating':
-                    currentTitle.value = 'Рейтинг';
-                    break;
-                case 'notifications':
-                    currentTitle.value = 'Уведомления';
-                    break;
-                case 'createNotification':
-                    currentTitle.value = 'Уведомления';
-                    break;
-                case 'addCategories':
-                    currentTitle.value = 'Редактирование';
-                    break;
-                case 'editCategory':
-                    currentTitle.value = 'Редактирование';
-                    break;
-                case 'learning':
-                    currentTitle.value = route.query.name;
-                    break;
-                case 'planetAttackPage':
-                    currentTitle.value = '';
-                    break;
-                default:
-                    currentTitle.value = ' ';
-                    break;
-            }
+            updateTitleFromRoute();
         }
     },
     { immediate: true }
 );
 </script>
 
-<style scoped>
+<style scoped lang="scss">
 .header-bar {
     position: relative;
     display: flex;
@@ -201,6 +253,7 @@ watch(
     padding-bottom: 0px;
     align-items: center;
     cursor: pointer;
+    z-index: 500;
 }
 
 .header-live {

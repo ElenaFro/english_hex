@@ -6,10 +6,13 @@
         </div>
         <div class="scroll-container">
             <gameComponent
-            @wrong-answer="addTime"
-            @game-finished="onGameFinished"
-            @question-opened="startTimer"
-            @image-opened="stopTimer"
+                :questions="questions"
+                :is-infinity="isInfinity"
+                @wrong-answer="addTime"
+                @game-finished="onGameFinished"
+                @question-opened="startTimer"
+                @image-opened="stopTimer"
+                @finish="onFinish"
             />
         </div>
     </div>
@@ -19,6 +22,12 @@
 import { onMounted, ref } from 'vue';
 import { useRouter } from 'vue-router';
 import gameComponent from '@/components/wordTwinkle/wordTwinkleGameComponent.vue';
+
+const props = defineProps({
+    questions: { type: Array, default: null },
+    isInfinity: { type: Boolean, default: false },
+});
+const emit = defineEmits(['finish']);
 
 const router = useRouter();
 const time = ref(0);
@@ -54,7 +63,14 @@ onMounted(() => {
 
 const onGameFinished = () => {
     stopTimer();
-    const total = timeCalcul();
+    if (!props.isInfinity) {
+        timeCalcul();
+    }
+};
+
+const onFinish = (payload) => {
+    stopTimer();
+    emit('finish', payload);
 };
 
 const timeCalcul = () => {

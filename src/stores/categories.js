@@ -1,12 +1,17 @@
 import { defineStore } from 'pinia';
 import { ref } from 'vue';
 import apiClient from '../api/axios';
+import { push } from 'notivue';
 
 export const useCategoriesStore = defineStore('categories', () => {
     const categories = ref([]);
-    const chosedCategory = ref({});
+    const selectedCategory = ref({});
+    const favoriteCards = ref([]);
 
     async function getCategories() {
+        const token = localStorage.getItem('access_token');
+        if (!token) return;
+
         try {
             const response = await apiClient.get('/categories');
             categories.value = response.data.data;
@@ -16,7 +21,7 @@ export const useCategoriesStore = defineStore('categories', () => {
         }
     }
 
-    async function getChosedCategory(id) {
+    async function getCategoryById(id) {
         try {
             const response = await apiClient.get(`/category/${id}`);
             setChosedCategories(response.data);
@@ -36,7 +41,7 @@ export const useCategoriesStore = defineStore('categories', () => {
     }
 
     function setChosedCategories(category) {
-        chosedCategory.value = category;
+        selectedCategory.value = category;
     }
 
     async function getCategoryStars(id) {
@@ -105,6 +110,16 @@ export const useCategoriesStore = defineStore('categories', () => {
         }
     }
 
+    async function getCardById(id) {
+        try {
+            const response = await apiClient.get(`/card/${id}`);
+            return response.data;
+        } catch (error) {
+            console.error(error);
+            throw error;
+        }
+    }
+
     async function createCard(categoryId, card) {
         try {
             const response = await apiClient.post(
@@ -163,19 +178,85 @@ export const useCategoriesStore = defineStore('categories', () => {
         }
     }
 
+    async function finishCard(id) {
+        try {
+            await apiClient.patch(`/card/finish`, { cardId: id });
+        } catch (error) {
+            console.error(error);
+            throw error;
+        }
+    }
+
+    async function getFavoriteCards() {
+        try {
+            const response = await apiClient.get('/favorite/show');
+
+            favoriteCards.value = response.data.data;
+        } catch (error) {
+            console.error('Fetch notifications error:', error);
+        }
+    }
+
+    async function addCardInFavorite(cardId) {
+        try {
+            const response = await apiClient.post('/favorite/add', { card_id: cardId });
+            push.success({ message: 'Карточка добавлена в избранные' });
+            getFavoriteCards();
+            return response.data;
+        } catch (error) {
+            console.error(error);
+            throw error;
+        }
+    }
+
+    async function deleteCardFromFavorite(id) {
+        try {
+            const response = await apiClient.delete('/favorite/delete/', {
+                params: {
+                    card_id: id,
+                },
+            });
+            await getFavoriteCards();
+            push.success({ message: 'Карточка удалена из избранных' });
+            return response.data;
+        } catch (error) {
+            console.error(error);
+            throw error;
+        }
+    }
+
+    async function searchFavorite(name) {
+        try {
+            const response = await apiClient.get('/favorite/search', {
+                params: { request: name },
+            });
+
+            favoriteCards.value = response.data.data;
+        } catch (error) {
+            console.error('Fetch role error:', error);
+        }
+    }
+
     return {
         categories,
-        chosedCategory,
+        selectedCategory,
+        favoriteCards,
         getCategories,
         setChosedCategories,
-        getChosedCategory,
+        getCategoryById,
+        getFavoriteCards,
         updateComplateCategory,
         getCategoryStars,
         createCategory,
         updateCategory,
         deleteCategory,
+        getCardById,
         createCard,
         updateCard,
         deleteCard,
+        finishCard,
+        addCardInFavorite,
+        deleteCardFromFavorite,
+        searchFavorite,
     };
 });

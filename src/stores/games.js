@@ -33,10 +33,39 @@ export const useGamesStore = defineStore('games', () => {
             console.error('Ошибка при получении вопросов:', error);
         }
     }
+    async function getInfinityMode() {
+        try {
+            const response = await apiClient.get('/games/infinity-mode');
+            return response.data;
+        } catch (error) {
+            console.error('Ошибка получения данных для infinity mode:', error);
+            throw error;
+        }
+    }
+
+    async function finishInfinityMode(wordsRepeated) {
+        try {
+            await apiClient.post('/games/infinity-mode/finish', {
+                words_repeated: wordsRepeated,
+            });
+        } catch (error) {
+            console.error('Ошибка получения infinity mode:', error);
+            throw error;
+        }
+    }
+
     return {
         wordsForGame,
         getWordForConstellatonGame,
         getWordForTwinkleGame,
         fetchDataForPlanetAttack,
+        getInfinityMode,
+        finishInfinityMode,
     };
 });
+
+
+
+
+
+

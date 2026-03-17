@@ -31,7 +31,7 @@ const routes = [
             {
                 path: '',
                 name: 'mainPage',
-                component: () => import('@/pages/MainPage.vue'),
+                component: () => import('@/pages/MainPage/MainPage.vue'),
             },
             {
                 path: 'addCategories',
@@ -44,14 +44,88 @@ const routes = [
                 component: () => import('@/pages/EditCategoryPage.vue'),
             },
             {
-                path: 'rating',
-                name: 'rating',
-                component: () => import('@/pages/RatingPage.vue'),
+                path: 'users',
+                name: 'users',
+                component: () => import('@/pages/UsersPage/UsersPage.vue'),
+                children: [
+                    {
+                        path: '',
+                        name: 'usersMenu',
+                        component: () => import('@/pages/UsersPage/UsersMenuPage.vue'),
+                    },
+                    {
+                        path: 'rating',
+                        name: 'rating',
+                        component: () => import('@/pages/RatingPage/RatingPage.vue'),
+                    },
+                    {
+                        path: 'friends',
+                        name: 'friends',
+                        component: () => import('@/pages/FriendsPage/FriendsPage.vue'),
+                    },
+                    {
+                        path: 'classes',
+                        name: 'classes',
+                        component: () => import('@/pages/ClassesPage/ClassesPage.vue'),
+                        children: [
+                            {
+                                path: '',
+                                name: 'allClasses',
+                                component: () =>
+                                    import('@/pages/ClassesPage/AllClassesPage/AllClassesPage.vue'),
+                            },
+                            {
+                                path: 'profile/:id',
+                                name: 'classProfile',
+                                component: () =>
+                                    import(
+                                        '@/pages/ClassesPage/ClassProfilePage/ClassProfilePage.vue'
+                                    ),
+                            },
+                        ],
+                    },
+                ],
             },
             {
                 path: 'profile',
                 name: 'profile',
-                component: () => import('@/pages/ProfilePage.vue'),
+                component: () => import('@/pages/ProfilePage/ProfilePage.vue'),
+                children: [
+                    {
+                        path: 'profileEdit',
+                        name: 'profileEdit',
+                        component: () =>
+                            import('@/pages/ProfilePage/EditProfile/ProfileEditPage.vue'),
+                    },
+                    {
+                        path: 'profileAchievements/:id',
+                        name: 'profileAchievements',
+                        component: () =>
+                            import(
+                                '@/pages/ProfilePage/AchievementsPage/ProfileAchievementsPage.vue'
+                            ),
+                    },
+                    {
+                        path: 'dictionaryPage',
+                        name: 'dictionary',
+                        component: () =>
+                            import('@/pages/ProfilePage/DictionaryPage/DictionaryPage.vue'),
+                        children: [
+                            {
+                                path: 'cardPreview/:id',
+                                name: 'cardPreview',
+                                component: () =>
+                                    import('@/pages/ProfilePage/DictionaryPage/CardPreview.vue'),
+                            },
+                        ],
+                    },
+                    {
+                        path: 'subscriptions',
+                        name: 'profileSubscriptions',
+                        component: () =>
+                            import('@/pages/ProfilePage/SubscriptionsPage/SubscriptionsPage.vue'),
+                    },
+                ],
             },
             {
                 path: 'notifications',
@@ -72,6 +146,11 @@ const routes = [
                 path: 'games',
                 name: 'games',
                 component: () => import('@/pages/games/GameMainPage.vue'),
+            },
+            {
+                path: 'allGames',
+                name: 'allGames',
+                component: () => import('@/pages/allGamesPage/AllGamesPage.vue'),
             },
             {
                 path: 'planetGame',
@@ -99,9 +178,29 @@ const routes = [
                 component: () => import('@/pages/games/constellationGame/ConstellationPage.vue'),
             },
             {
+                path: 'galaxyPhrasesGame',
+                name: 'galaxyPhrasesGame',
+                component: () => import('@/pages/games/galaxyPhrases/GalaxyPhrasesGamePage.vue'),
+            },
+            {
+                path: 'infinityGame',
+                name: 'infinityGame',
+                component: () => import('@/pages/games/infinityGame/InfinitiGamePage.vue'),
+            },
+            {
                 path: 'myPlanet',
                 name: 'myPlanet',
-                component: () => import('@/pages/MyPlanetPage.vue'),
+                component: () => import('@/pages/PlanetPage/MyPlanetPage.vue'),
+            },
+            {
+                path: 'editPlanet',
+                name: 'editPlanet',
+                component: () => import('@/pages/PlanetPage/EditPlanet/EditPlanet.vue'),
+            },
+            {
+                path: 'DailyReward',
+                name: 'DailyReward',
+                component: () => import('@/pages/DailyRewardPage.vue'),
             },
         ],
         meta: { requiresAuth: true },

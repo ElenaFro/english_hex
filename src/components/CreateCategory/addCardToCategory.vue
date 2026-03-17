@@ -89,7 +89,7 @@
 import { ref, computed, watch } from 'vue';
 import { useFormValidation } from '@/composables/useFormValidation';
 import cardCreateForm from '../CreateCategory/cardCreateForm.vue';
-import DefaultPopup from '../popups/defaultPopup.vue';
+import DefaultPopup from '@/shared/components/popups/defaultPopup.vue';
 import LessonsPage from '../Learning/LessonsPage.vue';
 
 const props = defineProps({

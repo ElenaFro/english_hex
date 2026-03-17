@@ -32,7 +32,7 @@ import { ref, onMounted, onUnmounted, computed, watch } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 //component
 import CongratulationPopup from '../myPlanetPopup/CongratulationPopup.vue';
-import Loader from '../Loader.vue';
+import Loader from '../../shared/components/Loader.vue';
 import ConstellationGameGrid from '@/shared/ui/ConstellationGameGrid.vue';
 //stores
 import { useGamesStore } from '@/stores/games';
@@ -40,6 +40,11 @@ import { useCategoriesStore } from '@/stores/categories';
 
 const router = useRouter();
 const route = useRoute();
+const props = defineProps({
+    items: { type: Array, default: null },
+    isInfinity: { type: Boolean, default: false },
+});
+const emit = defineEmits(['finish']);
 const timer = ref(0);
 const loading = ref(true);
 const errorCount = ref(0);
@@ -107,15 +112,22 @@ const checkMatch = () => {
                 if (currentChunk.value + 1 < cardChunks.value.length) {
                     currentChunk.value++;
                 } else {
-                    router.push({
-                        name: 'gameResult',
-                        query: {
-                            wrong: wrongCount.value,
-                            from: 'constellationGame',
-                            gameSource: 'constellation_word',
-                            id: route.query.id || useCategoriesStore().chosedCategory.id,
-                        },
-                    });
+                    if (props.isInfinity) {
+                        emit('finish', {
+                            correctCount: matchedPairs.value.length,
+                            wrongCount: wrongCount.value,
+                        });
+                    } else {
+                        router.push({
+                            name: 'gameResult',
+                            query: {
+                                wrong: wrongCount.value,
+                                from: 'constellationGame',
+                                gameSource: 'constellation_word',
+                                id: route.query.id || useCategoriesStore().selectedCategory.id,
+                            },
+                        });
+                    }
                 }
             }
         }, 1000);
@@ -221,9 +233,17 @@ watch(currentStarsForCategory, (newVal) => {
 onMounted(async () => {
     loading.value = true;
 
-    const categoryId = route.query.id || useCategoriesStore().chosedCategory.id;
+    const categoryId = route.query.id || useCategoriesStore().selectedCategory?.id;
 
-    data.value = await useGamesStore().getWordForConstellatonGame(categoryId);
+    if (props.items?.length) {
+        data.value = props.items;
+    } else {
+        if (!categoryId) {
+            loading.value = false;
+            return;
+        }
+        data.value = await useGamesStore().getWordForConstellatonGame(categoryId);
+    }
 
     const pairedCards = data.value.map((item) => {
         const pairId = item.id;
@@ -251,7 +271,9 @@ onMounted(async () => {
     intervalId = setInterval(() => {
         timer.value++;
     }, 1000);
-    currentStarsForCategory.value = useCategoriesStore().getCategoryStars(categoryId);
+    if (categoryId) {
+        currentStarsForCategory.value = useCategoriesStore().getCategoryStars(categoryId);
+    }
 });
 
 onUnmounted(() => {

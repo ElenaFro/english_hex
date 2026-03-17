@@ -1,15 +1,29 @@
 import { defineStore } from 'pinia';
-import { ref } from 'vue';
+import { computed, ref } from 'vue';
 import apiClient from '../api/axios';
 
 export const useUserStore = defineStore('user', () => {
     const user = ref(JSON.parse(localStorage.getItem('user')) || null);
     const token = ref(localStorage.getItem('access_token') || null);
-    const isAuthenticated = ref(!!localStorage.getItem('access_token'));
-    const isSubscribed = ref(null);
-    const notifications = ref([]);
     const unsubscribed_at = ref(null);
+
     const isAdmin = ref(null);
+    const isTeacher = ref(null);
+
+    const isAuthenticated = ref(!!localStorage.getItem('access_token'));
+    const isLoggingIn = ref(false);
+    const isSubscribed = ref(null);
+    const isShowPlanetOverview = ref(false);
+    const installPopupClosed = ref(false);
+
+    const notifications = ref([]);
+    const searchUsersPaginator = ref(null);
+    const searchedFriends = ref([]);
+    const planetSkins = ref(null);
+
+    const currentHeaderTitle = ref(null);
+
+    const currentSearchedUsers = computed(() => searchUsersPaginator.value.data);
 
     const getCurrentUser = () => {
         return user.value;
@@ -26,6 +40,7 @@ export const useUserStore = defineStore('user', () => {
     }
 
     async function login(email, password) {
+        isLoggingIn.value = true;
         try {
             const response = await apiClient.post('/login', {
                 email: email,
@@ -38,6 +53,8 @@ export const useUserStore = defineStore('user', () => {
             return response.data;
         } catch (error) {
             throw error;
+        } finally {
+            isLoggingIn.value = false;
         }
     }
 
@@ -58,6 +75,7 @@ export const useUserStore = defineStore('user', () => {
 
     async function fetchUser() {
         if (!token.value) return;
+        const requestToken = token.value;
         try {
             const response = await apiClient.get('/profile/get');
             user.value = response.data;
@@ -65,7 +83,14 @@ export const useUserStore = defineStore('user', () => {
             isAuthenticated.value = true;
         } catch (error) {
             console.error('Fetch user error:', error);
-            logout();
+            const status = error?.response?.status;
+            const tokenChanged = token.value !== requestToken;
+            const shouldLogout =
+                (status === 401 || status === 403) && !tokenChanged && !isLoggingIn.value;
+
+            if (shouldLogout) {
+                logout();
+            }
         }
     }
 
@@ -74,9 +99,9 @@ export const useUserStore = defineStore('user', () => {
         try {
             const response = await apiClient.get('/is-role');
             isAdmin.value = response.data?.role === 'admin' ? true : false;
+            isTeacher.value = response.data?.role === 'teacher' ? true : false;
         } catch (error) {
             console.error('Fetch role error:', error);
-            logout();
         }
     }
 
@@ -171,28 +196,132 @@ export const useUserStore = defineStore('user', () => {
         }
     }
 
+    async function sendNotification(form) {
+        if (!token.value) return;
+        if (!isAdmin.value) return;
+        try {
+            await apiClient.post('/notification/send-notification', {
+                title: form.title,
+                message: form.message,
+            });
+        } catch (error) {
+            console.error('Ошибка отправки уведомления', error);
+        }
+    }
+
+    async function searchUsers(name, page) {
+        if (!token.value) return;
+        try {
+            const response = await apiClient.get('/users/search', {
+                params: { q: name, page: page },
+            });
+
+            searchUsersPaginator.value = response.data;
+        } catch (error) {
+            console.error('Fetch users error:', error);
+        }
+    }
+
+    async function getUserById(id) {
+        try {
+            const response = await apiClient.get(`users/show/${id}`);
+
+            return response.data;
+        } catch (error) {
+            console.error('Fetch users error:', error);
+        }
+    }
+
+    async function searchFriends(name) {
+        try {
+            const response = await apiClient.get('/friends/get', {
+                params: { search: name },
+            });
+
+            searchedFriends.value = response.data.data;
+        } catch (error) {
+            console.error('Fetch users error:', error);
+        }
+    }
+
+    async function addToFriend(id) {
+        try {
+            await apiClient.post(`/friends/add/${id}`);
+        } catch (error) {
+            console.error('Ошибка добавления в друзья', error);
+        }
+    }
+
+    async function deleteFriend(id) {
+        try {
+            await apiClient.delete(`/friends/remove/${id}`);
+        } catch (error) {
+            console.error(error);
+        }
+    }
+
+    async function getPlanetSkins() {
+        try {
+            const response = await apiClient.get('/me/planet/skins');
+
+            planetSkins.value = response.data;
+        } catch (error) {
+            console.error('Fetch users error:', error);
+        }
+    }
+
+    const switchPlanetOverview = (value) => {
+        isShowPlanetOverview.value = value;
+    };
+
+    const setHeaderTitle = (value) => {
+        currentHeaderTitle.value = value;
+    };
+
+    const setInstallPopupClosed = (value) => {
+        installPopupClosed.value = value;
+    };
+
     return {
         user,
         token,
         isAuthenticated,
+        isLoggingIn,
         isSubscribed,
         notifications,
         unsubscribed_at,
         isAdmin,
+        isShowPlanetOverview,
+        currentHeaderTitle,
+        isTeacher,
+        installPopupClosed,
+        currentSearchedUsers,
+        searchedFriends,
+        planetSkins,
         register,
         login,
         logout,
         getCurrentUser,
+        getUserById,
+        getRaiting,
+        getUserNotifications,
+        getUserRole,
         recoverPassword,
         fetchUser,
-        getRaiting,
         markFirstGame,
         addRatingToGame,
         addRatingToCategory,
-        getUserNotifications,
+        addToFriend,
         markReadNotifications,
         checkUserSubscribe,
         unSubscribeUser,
-        getUserRole,
+        sendNotification,
+        switchPlanetOverview,
+        setHeaderTitle,
+        setInstallPopupClosed,
+        searchUsers,
+        searchFriends,
+        deleteFriend,
+        getPlanetSkins,
     };
 });
