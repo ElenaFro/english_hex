@@ -1,4 +1,4 @@
-<template>
+﻿<template>
     <section class="page-content" :class="pageClass">
         <InviteUsersPopup v-if="isAddFriendLink" @close="closeLinkPopup" />
         <ChoosePlanetPopup
@@ -127,6 +127,10 @@ const openLinkPopup = () => {
 const openChoosePlanetPopup = (row, initialIndex) => {
     const skin = row.skins?.[initialIndex];
     const isSelected = selectedSlotByRow.value[row.min_rating] === initialIndex;
+    if (isSelected) {
+        push.error({ message: 'Выбрать планету той же категории нельзя' });
+        return;
+    }
     if (skin && !skin.is_available && !isSelected) {
         push.error({ message: 'Данная планета недоступна' });
         return;
