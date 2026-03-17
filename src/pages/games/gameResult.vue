@@ -50,7 +50,8 @@ import { useCategoriesStore } from '@/stores/categories';
 const route = useRoute();
 const router = useRouter();
 const loading = ref(false);
-const wrong = Number(route.query.wrong);
+const wrong = Number(route.query.wrong ?? 0);
+const safeWrong = computed(() => (Number.isFinite(wrong) ? Math.max(0, wrong) : 0));
 const currentUser = useUserStore().user;
 const headerPerfect = 'Превосходный результат!';
 const textPerfect =
@@ -87,10 +88,10 @@ onMounted(async () => {
 });
 
 const resultHeader = computed(() => {
-    if (wrong <= 2) {
+    if (safeWrong.value <= 2) {
         return headerPerfect;
     }
-    if (wrong <= 5) {
+    if (safeWrong.value <= 5) {
         return headerPassed;
     } else {
         return headerLoss;
@@ -99,10 +100,10 @@ const resultHeader = computed(() => {
 
 const resultText = computed(() => {
     if (maxStarsForGame.value === 0) return textAllStarsGiven;
-    if (wrong <= 2) {
+    if (safeWrong.value <= 2) {
         return textPerfect;
     }
-    if (wrong <= 5) {
+    if (safeWrong.value <= 5) {
         return textPassed;
     } else {
         return textLoss;
@@ -111,11 +112,11 @@ const resultText = computed(() => {
 
 const showButton = computed(() => {
     if (maxStarsForGame.value === 0) return false;
-    if (wrong <= 4 && wrong !== 0) {
+    if (safeWrong.value <= 4 && safeWrong.value !== 0) {
         buttonText.value = buttonPassed;
         return true;
     }
-    if (wrong > 4) {
+    if (safeWrong.value > 4) {
         buttonText.value = buttonLoss;
         return true;
     } else {
@@ -124,7 +125,7 @@ const showButton = computed(() => {
 });
 
 const totalStars = computed(() => {
-    const stars = 50 - 5 * wrong;
+    const stars = Math.max(0, 50 - 5 * safeWrong.value);
     return stars <= maxStarsForGame.value ? stars : maxStarsForGame.value;
 });
 
@@ -158,7 +159,7 @@ const goToMainPage = () => {
             width: 204px;
             height: 204px;
             position: fixed;
-            top: 10px;
+            top: 26px;
             left: 50%;
             transform: translate(-50%);
         }
@@ -185,7 +186,7 @@ const goToMainPage = () => {
         background-color: #ffffff;
         border-radius: 20px;
         padding: 39px 18px 34px;
-        margin-top: 30px;
+        margin-top: 68px;
         display: flex;
         flex-direction: column;
         z-index: 100;
