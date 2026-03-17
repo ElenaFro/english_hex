@@ -1,4 +1,4 @@
-<template>
+﻿<template>
     <section class="page-content" :class="pageClass">
         <InviteUsersPopup v-if="isAddFriendLink" @close="closeLinkPopup" />
         <ChoosePlanetPopup
@@ -71,7 +71,7 @@ const isChoosePlanetPopupVisible = ref(false);
 const selectedRowCost = ref(0);
 const selectedRowPlanets = ref([]);
 const selectedRowSkins = ref([]);
-const selectedPlanetIndex = ref(0);
+const selectedPlanetIndex = ref(null);
 const selectedSlotByRow = ref({});
 
 const planetStore = usePlanetStore();
@@ -102,9 +102,19 @@ const pageClass = computed(() =>
 
 const syncSelectedSlots = () => {
     const next = {};
+    const selectedId = planetStore.planetSkinsOptions?.selected_skin ?? null;
+    if (!selectedId) {
+        selectedSlotByRow.value = next;
+        return;
+    }
     for (const row of rows.value) {
-        const selectedIndex = row.skins.findIndex((skin) => skin.is_selected);
-        if (selectedIndex >= 0) next[row.min_rating] = selectedIndex;
+        const selectedIndex = row.skins.findIndex(
+            (skin) => skin.id === selectedId || skin.skin_id === selectedId
+        );
+        if (selectedIndex >= 0) {
+            next[row.min_rating] = selectedIndex;
+            break;
+        }
     }
     selectedSlotByRow.value = next;
 };
@@ -127,6 +137,10 @@ const openLinkPopup = () => {
 const openChoosePlanetPopup = (row, initialIndex) => {
     const skin = row.skins?.[initialIndex];
     const isSelected = selectedSlotByRow.value[row.min_rating] === initialIndex;
+    if (isSelected) {
+        push.error({ message: 'Выбрать планету той же категории нельзя' });
+        return;
+    }
     if (skin && !skin.is_available && !isSelected) {
         push.error({ message: 'Данная планета недоступна' });
         return;

@@ -15,7 +15,7 @@
     </div>
 </template>
 <script setup>
-import { ref, onMounted, onUnmounted, computed, watch } from 'vue';
+import { ref, onMounted, computed } from 'vue';
 
 import ConstellationGameGrid from '@/shared/ui/ConstellationGameGrid.vue';
 
@@ -24,9 +24,7 @@ const emit = defineEmits(['change-component']);
 const selectedCards = ref([]);
 const matchedPairs = ref([]);
 const incorrectCards = ref([]);
-const allMatched = ref(false);
 const correctCards = ref([]);
-const cards = ref([]);
 const currentChunk = ref(0);
 const cardChunks = ref([]);
 
@@ -159,6 +157,7 @@ const checkMatch = () => {
                 if (currentChunk.value + 1 < cardChunks.value.length) {
                     currentChunk.value++;
                 } else {
+                    localStorage.setItem('onboardingComplete', 'true');
                     emit('change-component', 'AgeVerif');
                 }
             }
@@ -205,16 +204,16 @@ onMounted(async () => {
 }
 .page-container {
     background-color: #f6f6fe;
-    max-height: 75dvh;
     margin: 0 auto;
-    padding-top: 10px;
+    padding-top: 20px;
     overflow: hidden;
 }
 
 .character-image {
     position: relative;
-    top: 52px;
+    top: 20px;
     margin: 0 auto;
+    max-width: 159px;
 }
 
 .title {

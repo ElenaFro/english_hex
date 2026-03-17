@@ -67,6 +67,7 @@ import { useRouter } from 'vue-router';
 const loading = ref(true);
 const openHelloPopup = ref(false);
 const popupShowed = ref(true);
+const PLANET_HINT_SHOWN_KEY = 'planet_hint_shown';
 
 const subscribePopup = ref(false);
 const userStore = useUserStore();
@@ -81,9 +82,12 @@ onMounted(async () => {
     userStore.getUserNotifications();
     if (isAdmin.value === null || isTeacher.value == null) await userStore.getUserRole();
 
-    if (localStorage.getItem('markFirstGame')) {
+    const planetHintShown = localStorage.getItem(PLANET_HINT_SHOWN_KEY) === 'true';
+    if (localStorage.getItem('markFirstGame') && !planetHintShown) {
         popupShowed.value = false;
         userStore.switchPlanetOverview(true);
+    }
+    if (localStorage.getItem('markFirstGame')) {
         localStorage.removeItem('markFirstGame');
     }
 
@@ -155,6 +159,7 @@ const checkTimeForLastReject = () => {
 
 const handlePopup = async () => {
     popupShowed.value = true;
+    localStorage.setItem(PLANET_HINT_SHOWN_KEY, 'true');
     goToMyPlanet();
 };
 
