@@ -74,7 +74,7 @@ const { getPositionStyle, calculatePositionDelayed } = useElementPosition(planet
     watchScroll: true,
 });
 
-const highlightStyle = computed(() => getPositionStyle({ top: 250, width: 240 }));
+const highlightStyle = computed(() => getPositionStyle({ top: 250, width: 149, left: 110 }));
 
 const overlayClass = computed(() => ({ 'index-up': isShowPlanetHint.value }));
 
