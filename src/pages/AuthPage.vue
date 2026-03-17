@@ -43,9 +43,12 @@ const switchComponent = (componentName) => {
 onMounted(() => {
     const salutionShown = localStorage.getItem('salutionShown');
     const ageVerified = localStorage.getItem('ageVerified');
+    const onboardingCompleted = localStorage.getItem('onboardingComplete');
 
     if (!salutionShown) {
         currentComponent.value = 'Salution';
+    } else if (!onboardingCompleted) {
+        currentComponent.value = 'Onboarding';
     } else if (!ageVerified) {
         currentComponent.value = 'AgeVerif';
     } else {
