@@ -33,7 +33,7 @@ export const useCategoriesStore = defineStore('categories', () => {
 
     async function updateComplateCategory(id) {
         try {
-            await apiClient.patch(`/category/finish`, { categoryId: id });
+            await apiClient.patch(`/category/finish/${id}`);
         } catch (error) {
             console.error(error);
             throw error;
@@ -46,9 +46,7 @@ export const useCategoriesStore = defineStore('categories', () => {
 
     async function getCategoryStars(id) {
         try {
-            const response = await apiClient.get('/rating/get-rating-for-category', {
-                params: { categoryId: id },
-            });
+            const response = await apiClient.get(`/rating/get-rating-for-category/${id}`);
             return response.data;
         } catch (error) {
             console.error(error);
@@ -180,7 +178,7 @@ export const useCategoriesStore = defineStore('categories', () => {
 
     async function finishCard(id) {
         try {
-            await apiClient.patch(`/card/finish`, { cardId: id });
+            await apiClient.patch(`/card/finish/${id}`);
         } catch (error) {
             console.error(error);
             throw error;
