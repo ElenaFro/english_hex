@@ -4,7 +4,7 @@ import { useUserStore } from '../stores/user';
 import router from '@/router';
 
 const apiClient = axios.create({
-    baseURL: 'https://dicardz.com/api/api',
+    baseURL: 'https://dicardz.com/api',
     headers: { 'Content-Type': 'application/json' },
     timeout: 10000,
 });
