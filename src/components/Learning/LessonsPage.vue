@@ -95,6 +95,7 @@ import CardFlip from '@/shared/components/CardFlip.vue';
 import defaultPopup from '@/shared/components/popups/defaultPopup.vue';
 import { useCategoriesStore } from '@/stores/categories';
 import { useElementPosition } from '@/shared/composables/useElementPosition';
+import { useUserStore } from '@/stores/user';
 
 const props = defineProps({
     propsCards: { type: Array, default: () => [] },
@@ -117,8 +118,8 @@ const router = useRouter();
 const categoriesStore = useCategoriesStore();
 const beforLeaveMessage = 'Чтобы не потерять текущий прогресс заверши изучение раздела';
 
-const isRetryHintShowed = ref(!!localStorage.getItem('retry_hint_shown'));
-const isPreviousHintShowed = ref(!!localStorage.getItem('previous_hint_shown'));
+const isRetryHintShowed = ref(true);
+const isPreviousHintShowed = ref(true);
 const isShowRetryHint = ref(false);
 const isShowPreviousHint = ref(false);
 
@@ -157,6 +158,8 @@ onMounted(async () => {
     if (props.propsCards.length > 0) return;
     selectedCategory.value = categoriesStore.selectedCategory;
     cards.value = selectedCategory.value.cards || [];
+    isRetryHintShowed.value = useUserStore().hintsArray.card_retry_hint;
+    isPreviousHintShowed.value = useUserStore().hintsArray.card_back_hint;
 });
 
 const replayAgain = () => {
@@ -252,13 +255,13 @@ const closeRetryHint = () => {
     isRetryHintShowed.value = true;
     isShowRetryHint.value = false;
     replayAgain();
-    localStorage.setItem('retry_hint_shown', 'true');
+    useUserStore().markAsShowHint('card_retry_hint');
 };
 
 const closePreviousHint = () => {
     isPreviousHintShowed.value = true;
     isShowPreviousHint.value = false;
-    localStorage.setItem('retry_hint_shown', 'true');
+    useUserStore().markAsShowHint('card_back_hint');
     setTimeout(() => {
         emit('showLikeHint');
     }, 500);
@@ -270,7 +273,6 @@ const openPreviousHint = async () => {
     if (currentCardIndex.value === 1 && !isPreviousHintShowed.value && !isShowPreviousHint.value) {
         calculatePrevious();
         isShowPreviousHint.value = true;
-        localStorage.setItem('previous_hint_shown', 'true');
     }
 };
 

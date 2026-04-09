@@ -81,7 +81,7 @@ const overlayClass = computed(() => ({ 'index-up': isShowPlanetHint.value }));
 const closePlanetHint = () => {
     isShowPlanetHint.value = false;
     userStore.switchStarOverview(false);
-    localStorage.setItem('planet_hint_shown', 'true');
+    userStore.markAsShowHint('planet_hint');
 };
 
 onMounted(async () => {

@@ -46,7 +46,7 @@
 
 <script setup>
 //vue
-import { ref, onMounted, computed, watch } from 'vue';
+import { ref, onMounted, computed } from 'vue';
 //components
 import CategoryChoice from '@/pages/MainPage/components/CategoryChoice.vue';
 import loader from '@/shared/components/Loader.vue';
@@ -67,7 +67,6 @@ import { useRouter } from 'vue-router';
 const loading = ref(true);
 const openHelloPopup = ref(false);
 const popupShowed = ref(true);
-const PLANET_HINT_SHOWN_KEY = 'planet_hint_shown';
 
 const subscribePopup = ref(false);
 const userStore = useUserStore();
@@ -82,25 +81,24 @@ onMounted(async () => {
     userStore.getUserNotifications();
     if (isAdmin.value === null || isTeacher.value == null) await userStore.getUserRole();
 
-    const planetHintShown = localStorage.getItem(PLANET_HINT_SHOWN_KEY) === 'true';
+    const planetHintShown = userStore.hintsArray.planet_hint;
     if (localStorage.getItem('markFirstGame') && !planetHintShown) {
         popupShowed.value = false;
-        userStore.switchPlanetOverview(true);
+        if (!userStore.hintsArray.planet_hint) userStore.switchPlanetOverview(true);
     }
     if (localStorage.getItem('markFirstGame')) {
         localStorage.removeItem('markFirstGame');
     }
 
     loading.value = false;
-    if (!hasVisited.value) {
+    if (!userStore.hintsArray.hello_popup) {
         openHelloPopup.value = true;
-        hasVisited.value = true;
-        localStorage.setItem('hasVisited', 'true');
     }
 
     if (userStore.user.ever_played_game) {
         if (userStore.isSubscribed === null) await userStore.checkUserSubscribe();
         subscribePopup.value = !userStore.isSubscribed;
+        isShowInstallPopup.value = true;
     }
     if (userStore.unsubscribed_at && userStore.isSubscribed === 'unsubscribe')
         checkTimeForLastReject();
@@ -125,8 +123,6 @@ const generateColors = (count) => {
 
 const randomColor = (id) => colorsForSections.value[id];
 
-const hasVisited = ref(localStorage.getItem('hasVisited') === 'true');
-
 const currentUser = computed(() => userStore.getCurrentUser());
 const userName = computed(() => currentUser.value.name);
 const avatarIcon = computed(() => (currentUser.value.gender === 'male' ? BoyIcon : GirlIcon));
@@ -145,6 +141,7 @@ const colorsForSections = computed(() => {
 const closePopup = () => {
     openHelloPopup.value = !openHelloPopup.value;
     openHelloPopup.value = false;
+    userStore.markAsShowHint('hello_popup');
 };
 
 const titlePopup = 'Добро пожаловать!';
@@ -159,7 +156,7 @@ const checkTimeForLastReject = () => {
 
 const handlePopup = async () => {
     popupShowed.value = true;
-    localStorage.setItem(PLANET_HINT_SHOWN_KEY, 'true');
+    userStore.markAsShowHint('planet_hint');
     goToMyPlanet();
 };
 
@@ -176,13 +173,6 @@ const goToMyPlanet = () => {
     if (!currentUser.value.ever_played_game) return;
     router.push({ path: '/myPlanet' });
 };
-
-watch(
-    () => currentUser.value,
-    () => {
-        if (currentUser.value.ever_played_game) return (isShowInstallPopup.value = true);
-    }
-);
 </script>
 
 <style scoped>

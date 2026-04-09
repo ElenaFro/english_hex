@@ -27,6 +27,7 @@
 <script setup>
 import { ref, computed, onMounted, watch } from 'vue';
 import { useElementPosition } from '@/shared/composables/useElementPosition';
+import { useUserStore } from '@/stores/user';
 
 const props = defineProps({
     videoUrl: String,
@@ -44,9 +45,7 @@ const { calculatePositionDelayed, getPositionStyle } = useElementPosition(videoR
 });
 
 onMounted(() => {
-    if (localStorage.getItem('video_hint_shown')) return; //убрать после связкис бэком
-
-    // if (isOnboardingShoved.value) return;
+    if (useUserStore().hintsArray.card_video_hint) return;
 
     setTimeout(() => {
         calculatePositionDelayed();
@@ -81,9 +80,9 @@ const enableSound = () => {
 
 const closeHint = () => {
     isSoundHintShow.value = false;
+    useUserStore().markAsShowHint('card_video_hint');
     replayVideo();
     enableSound();
-    localStorage.setItem('video_hint_shown', 'true');
 };
 
 const onVideoEnded = () => {
