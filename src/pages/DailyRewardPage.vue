@@ -79,7 +79,7 @@ import { useGamesStore } from '@/stores/games';
 
 const closeHint = () => {
     showHint.value = false;
-    localStorage.setItem('task_hint_shown', 'true');
+    userStore.markAsShowHint('daily_reward');
 };
 
 const showHint = ref(false);
@@ -126,12 +126,12 @@ const sendInfinityFinish = async (words) => {
     try {
         await gamesStore.finishInfinityMode(words);
     } catch (error) {
-        console.error('РћС€РёР±РєР° РѕС‚РїСЂР°РІРєРё daily streak', error);
+        console.error('Ошибка завершения бесконечного режима', error);
     }
 };
 
 onMounted(async () => {
-    if (!localStorage.getItem('task_hint_shown')) {
+    if (!userStore.hintsArray.daily_reward) {
         setTimeout(() => {
             showHint.value = true;
         }, 500);

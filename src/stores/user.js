@@ -20,6 +20,7 @@ export const useUserStore = defineStore('user', () => {
     const searchUsersPaginator = ref(null);
     const searchedFriends = ref([]);
     const planetSkins = ref(null);
+    const hintsArray = ref([]);
 
     const currentHeaderTitle = ref(null);
 
@@ -81,6 +82,7 @@ export const useUserStore = defineStore('user', () => {
             user.value = response.data;
             localStorage.setItem('user', JSON.stringify(response.data));
             isAuthenticated.value = true;
+            await getHintsArray();
         } catch (error) {
             console.error('Fetch user error:', error);
             const status = error?.response?.status;
@@ -268,6 +270,27 @@ export const useUserStore = defineStore('user', () => {
         }
     }
 
+    async function getHintsArray() {
+        try {
+            const response = await apiClient.get('/hints/shown');
+
+            hintsArray.value = response.data;
+        } catch (error) {
+            console.error('Ошибка получения подсказок:', error);
+        }
+    }
+
+    async function markAsShowHint(hintName) {
+        try {
+            await apiClient.post('/hints/mark-as-shown', {
+                [hintName]: true,
+            });
+            await getHintsArray();
+        } catch (error) {
+            console.error('Ошибка прохождения подсказки', error);
+        }
+    }
+
     const switchPlanetOverview = (value) => {
         isShowPlanetOverview.value = value;
     };
@@ -296,6 +319,7 @@ export const useUserStore = defineStore('user', () => {
         currentSearchedUsers,
         searchedFriends,
         planetSkins,
+        hintsArray,
         register,
         login,
         logout,
@@ -321,5 +345,7 @@ export const useUserStore = defineStore('user', () => {
         searchFriends,
         deleteFriend,
         getPlanetSkins,
+        getHintsArray,
+        markAsShowHint,
     };
 });

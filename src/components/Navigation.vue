@@ -106,14 +106,14 @@ const setProfileIconRef = (el, item) => {
 
 const closeSubscribeHint = () => {
     isShowSubscribeHint.value = false;
-    localStorage.setItem('isSubscribeHintShowed', 'true');
+    useUserStore().markAsShowHint('profile_hint');
 };
 
 watch(
     () => userStore.installPopupClosed,
     async (isClosed) => {
         if (!isClosed) return;
-        const isSubscribeHintShowed = localStorage.getItem('isSubscribeHintShowed');
+        const isSubscribeHintShowed = useUserStore().hintsArray.profile_hint;
         if (!isSubscribeHintShowed) {
             showSubscribeHint();
         }

@@ -50,7 +50,7 @@
 </template>
 
 <script setup>
-import { computed, ref } from 'vue';
+import { computed, onMounted, ref } from 'vue';
 import StartLearning from '../components/Learning/StartLearning.vue';
 import LessonsPage from '../components/Learning/LessonsPage.vue';
 import Popup from '@/shared/components/popups/defaultPopup.vue';
@@ -58,9 +58,10 @@ import likeDisabled from '@/assets/icons/like_disabled.svg';
 import likeEnabled from '@/assets/icons/like_enabled.svg';
 import likeWhite from '@/assets/icons/like_white.svg';
 import { useElementPosition } from '@/shared/composables/useElementPosition';
+import { useUserStore } from '@/stores/user';
 
 const activeComponentName = ref('start-learning');
-const isLikeHintShowed = ref(!!localStorage.getItem('like_hint_shown'));
+const isLikeHintShowed = ref(true);
 const isShowLikeHint = ref(false);
 const likeRef = ref(null);
 const componentRef = ref(null);
@@ -72,6 +73,10 @@ const components = {
     'start-learning': StartLearning,
     'lessons-page': LessonsPage,
 };
+
+onMounted(() => {
+    isLikeHintShowed.value = useUserStore().hintsArray.card_like_hint;
+});
 
 const { calculatePositionDelayed, getPositionStyle } = useElementPosition(likeRef, {
     autoUpdate: true,
@@ -108,6 +113,7 @@ const switchLike = () => {
     } else {
         componentRef.value.updateLike(true);
     }
+    if (isShowLikeHint.value) isShowLikeHint.value = false;
 };
 
 const setHintShowing = () => {
@@ -115,7 +121,7 @@ const setHintShowing = () => {
     calculatePositionDelayed();
     calculateLikePosition();
     isShowLikeHint.value = true;
-    localStorage.setItem('like_hint_shown', 'true');
+    useUserStore().markAsShowHint('card_like_hint');
 };
 
 const closeLikeHintShowing = () => {
