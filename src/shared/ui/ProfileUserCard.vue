@@ -6,7 +6,7 @@
 
         <div class="profile-user-card__info">
             <p class="profile-user-card__name">{{ displayName }}</p>
-            <div class="profile-user-card__stars">
+            <div v-if="profileAchievementsPage" class="profile-user-card__stars">
                 <span class="profile-user-card__stars-value">{{ displayRating }}</span>
                 <img class="profile-user-card__stars-icon" :src="yellowStarIcon" alt="" />
             </div>
@@ -29,6 +29,14 @@
                     @click.once="addToClass"
                 />
             </div>
+            <b-button
+                v-if="isSelfProfile && !profileAchievementsPage"
+                label="Звёзды сегодня"
+                label-class="text-white"
+                class="button d-mt-34 full_width button-dark_blue"
+                :icon="yellowStarIcon"
+                @click.once="goToDailyStreak"
+            />
         </div>
     </section>
 </template>
@@ -41,7 +49,7 @@ import yellowStarIcon from '@/assets/icons/yelow_star.svg';
 import BButton from '../components/BaseButton.vue';
 import { useUserStore } from '@/stores/user';
 import { useTeacherStore } from '@/stores/teacher';
-import { useRoute } from 'vue-router';
+import { useRoute, useRouter } from 'vue-router';
 
 const props = defineProps({
     user: { type: Object, required: true },
@@ -52,6 +60,7 @@ const props = defineProps({
 
 const emit = defineEmits(['update:user']);
 const route = useRoute();
+const router = useRouter();
 const userStore = useUserStore();
 const teacherStore = useTeacherStore();
 
@@ -92,6 +101,12 @@ const addToFriend = async () => {
     emit('update:user');
     loading.value = false;
 };
+
+const profileAchievementsPage = computed(() => route.name === 'profileAchievements');
+
+const goToDailyStreak = () => {
+    router.push({ name: 'DailyReward' });
+};
 </script>
 
 <style scoped lang="scss">
@@ -125,6 +140,7 @@ const addToFriend = async () => {
         display: flex;
         flex-direction: column;
         justify-content: flex-start;
+        align-items: baseline;
         height: 100%;
     }
 
@@ -163,5 +179,14 @@ const addToFriend = async () => {
         width: 119px;
         height: 119px;
     }
+}
+
+.button-dark_blue {
+    background: #262060;
+    padding: 12px 16px;
+}
+
+.d-mt-34 {
+    margin-top: 34px;
 }
 </style>
