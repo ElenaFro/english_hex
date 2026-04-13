@@ -1,4 +1,3 @@
-```vue
 <template>
     <div class="main-container">
         <section class="content-container" v-if="!loading">
@@ -127,6 +126,7 @@
 
 <script setup>
 import { ref, computed, watch } from 'vue';
+import { useRoute } from 'vue-router';
 import visibilityIcon from '@/assets/img/visibility_icon.svg';
 import visibilityOffIcon from '@/assets/img/visibility_off_icon.svg';
 import { useUserStore } from '../../stores/user';
@@ -134,7 +134,10 @@ import loader from '@/shared/components/Loader.vue';
 import defaultPopup from '@/shared/components/popups/defaultPopup.vue';
 import { useTeacherStore } from '@/stores/teacher';
 
+const route = useRoute();
+const userStore = useUserStore();
 const teacherStore = useTeacherStore();
+const REFERRAL_CODE_STORAGE_KEY = 'referral_code';
 const nick = ref('');
 const email = ref('');
 const password = ref('');
@@ -308,6 +311,12 @@ async function login() {
     loading.value = true;
     try {
         let response;
+        const rawReferralCode = route.query.referral_code;
+        const referralCodeFromQuery = Array.isArray(rawReferralCode)
+            ? rawReferralCode[0]
+            : rawReferralCode;
+        const referralCode = referralCodeFromQuery || localStorage.getItem(REFERRAL_CODE_STORAGE_KEY);
+
         if (isTeacherReg.value) {
             response = await teacherStore.registerTeacher(
                 nick.value,
@@ -317,14 +326,16 @@ async function login() {
             );
             localStorage.removeItem('isTeacherReg');
         } else {
-            response = await useUserStore().register(
+            response = await userStore.register(
                 nick.value,
                 email.value,
                 password.value,
-                agreementCheckbox.value
+                agreementCheckbox.value,
+                referralCode || null
             );
         }
         if (response?.message?.includes('Success registration')) {
+            localStorage.removeItem(REFERRAL_CODE_STORAGE_KEY);
             confirmEmailSend.value = true;
         } else {
             errorMessage.value = 'Что-то пошло не так, попробуйте еще раз';

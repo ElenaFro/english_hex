@@ -10,7 +10,7 @@
                 <h2 class="popup-title">Больше друзей<br />больше звезд</h2>
 
                 <p class="popup-subtitle">
-                    Пригласи человека по своей уникальной ссылке, и заработай больше звезд
+                    Пригласи человека по своей уникальной ссылке, и зарабатывай больше звезд
                 </p>
 
                 <ul class="rewards-list">
@@ -43,7 +43,7 @@
                         <img src="@/assets/icons/arrow_right.svg" alt="arrow" />
                     </button>
                     <div class="friends-counter">
-                        <span>5</span>
+                        <span>{{ totalReferrals }}</span>
                         <img src="@/assets/icons/profile-violet.svg" alt="profile" />
                     </div>
                 </div>
@@ -53,10 +53,19 @@
 </template>
 
 <script setup>
-import { ref } from 'vue';
+import { computed, onMounted, ref } from 'vue';
+import { useUserStore } from '@/stores/user';
+import { push } from 'notivue';
 
 const emit = defineEmits(['close']);
 const isVisible = ref(true);
+const userStore = useUserStore();
+const referralStats = ref(null);
+
+const totalReferrals = computed(() => Number(referralStats.value?.total_referrals ?? 0));
+const referralLink = computed(
+    () => referralStats.value?.referral_link || `${window.location.origin}/auth`
+);
 
 const closePopup = () => {
     isVisible.value = false;
@@ -64,19 +73,23 @@ const closePopup = () => {
 };
 
 const shareInviteLink = async () => {
-    const shareText = 'Присоединяйся и получай звезды вместе со мной!';
-
-    if (navigator.share) {
-        try {
-            await navigator.share({ text: shareText, url: window.location.origin });
-            return;
-        } catch {}
-    }
+    const url = referralLink.value;
 
     try {
-        await navigator.clipboard.writeText(window.location.origin);
-    } catch {}
+        await navigator.clipboard.writeText(url);
+        push.success({ message: 'Ссылка скопирована' });
+    } catch {
+        push.error({ message: 'Не удалось скопировать ссылку' });
+    }
 };
+
+onMounted(async () => {
+    try {
+        referralStats.value = await userStore.getReferralStats();
+    } catch (error) {
+        console.error('Ошибка получения статистики рефералов', error);
+    }
+});
 </script>
 
 <style scoped lang="scss">
@@ -212,7 +225,7 @@ const shareInviteLink = async () => {
         line-height: 1;
     }
 
-    svg {
+    img {
         width: 28px;
         height: 28px;
     }

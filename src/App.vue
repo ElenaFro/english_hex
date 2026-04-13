@@ -1,7 +1,7 @@
 <template>
     <div>
         <RouterView />
-        <Notivue v-slot="item" style="z-index: 1000 !important">
+        <Notivue v-slot="item" :style="{ '--nv-z': '4000' }">
             <Notification :item="item" />
         </Notivue>
     </div>
@@ -41,3 +41,9 @@ watch(
     }
 );
 </script>
+
+<style>
+:root {
+    --nv-z: 4000;
+}
+</style>
