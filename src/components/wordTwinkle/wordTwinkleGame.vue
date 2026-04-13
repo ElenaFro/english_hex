@@ -54,6 +54,10 @@ const addTime = () => {
 
     if (timeWrong !== 0) {
         isVisible.value = true;
+        setTimeout(() => {
+            isVisible.value = false;
+            timeWrong.value = 0;
+        }, 2000);
     }
 };
 
