@@ -1,7 +1,7 @@
 <template>
     <div>
         <RouterView />
-        <Notivue v-slot="item" style="z-index: 1000 !important">
+        <Notivue v-slot="item" :style="{ '--nv-z': '4000' }">
             <Notification :item="item" />
         </Notivue>
     </div>
@@ -11,7 +11,7 @@ import { onMounted, watch } from 'vue';
 import { useUserStore } from './stores/user';
 import { useRouter, useRoute } from 'vue-router';
 import { Notivue, Notification } from 'notivue';
-import { shouldShowDailyReward, markDailyRewardShown } from '@/shared/utils/dailyReward';
+import { shouldShowDailyReward } from '@/shared/utils/dailyReward';
 
 const userStore = useUserStore();
 const router = useRouter();
@@ -22,11 +22,7 @@ const maybeShowDailyReward = async () => {
     if (route.path.startsWith('/auth')) return;
     const dailyStreak = userStore.user?.daily_streak ?? null;
     if (!shouldShowDailyReward(dailyStreak)) return;
-    if (route.name === 'DailyReward') {
-        markDailyRewardShown();
-        return;
-    }
-    markDailyRewardShown();
+    if (route.name === 'DailyReward') return;
     await router.push({ name: 'DailyReward' });
 };
 
@@ -45,3 +41,9 @@ watch(
     }
 );
 </script>
+
+<style>
+:root {
+    --nv-z: 4000;
+}
+</style>

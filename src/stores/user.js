@@ -24,19 +24,36 @@ export const useUserStore = defineStore('user', () => {
 
     const currentHeaderTitle = ref(null);
 
-    const currentSearchedUsers = computed(() => searchUsersPaginator.value.data);
+    const currentSearchedUsers = computed(() => searchUsersPaginator.value?.data);
 
     const getCurrentUser = () => {
         return user.value;
     };
 
-    async function register(name, email, password, confirm_agreement) {
-        const response = await apiClient.post('/registration', {
+    async function register(name, email, password, confirm_agreement, referralCode = null) {
+        const payload = {
             email: email,
             password: password,
             name: name,
             confirm_agreement: confirm_agreement,
-        });
+        };
+        if (referralCode) {
+            payload.referral_code = referralCode;
+        }
+        const requestConfig = referralCode
+            ? {
+                  params: {
+                      referral_code: referralCode,
+                  },
+              }
+            : undefined;
+        const response = await apiClient.post('/registration', payload, requestConfig);
+        return response.data;
+    }
+
+    async function getReferralStats() {
+        if (!token.value) return null;
+        const response = await apiClient.get('/referral/stats');
         return response.data;
     }
 
@@ -70,6 +87,14 @@ export const useUserStore = defineStore('user', () => {
     async function recoverPassword(email) {
         const response = await apiClient.patch('/send-restore-code', {
             email: email,
+        });
+        return response.data;
+    }
+
+    async function restorePassword(tokenValue, passwordValue) {
+        const response = await apiClient.patch('/restore', {
+            token: tokenValue,
+            password: passwordValue,
         });
         return response.data;
     }
@@ -329,6 +354,8 @@ export const useUserStore = defineStore('user', () => {
         getUserNotifications,
         getUserRole,
         recoverPassword,
+        restorePassword,
+        getReferralStats,
         fetchUser,
         markFirstGame,
         addRatingToGame,

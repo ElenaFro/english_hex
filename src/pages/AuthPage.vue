@@ -5,7 +5,8 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, watch } from 'vue';
+import { useRoute } from 'vue-router';
 import Salution from '@/components/Authentication/Salution.vue';
 import AgeVerif from '@/components/Authentication/AgeVerif.vue';
 import LoginForm from '@/components/Authentication/LoginForm.vue';
@@ -20,6 +21,8 @@ import OnboardingGame from '@/components/Authentication/OnboardingGame.vue';
 import OnboardingStartSolutionGame from '@/components/Authentication/OnboardingStartSolutionGame.vue';
 
 const currentComponent = ref(null);
+const route = useRoute();
+const REFERRAL_CODE_STORAGE_KEY = 'referral_code';
 
 const componentsMap = {
     Salution,
@@ -40,7 +43,15 @@ const switchComponent = (componentName) => {
     currentComponent.value = componentName;
 };
 
+const persistReferralCode = (rawCode) => {
+    const code = Array.isArray(rawCode) ? rawCode[0] : rawCode;
+    if (!code) return;
+    localStorage.setItem(REFERRAL_CODE_STORAGE_KEY, String(code));
+};
+
 onMounted(() => {
+    persistReferralCode(route.query.referral_code);
+
     const salutionShown = localStorage.getItem('salutionShown');
     const ageVerified = localStorage.getItem('ageVerified');
     const onboardingCompleted = localStorage.getItem('onboardingComplete');
@@ -55,6 +66,13 @@ onMounted(() => {
         currentComponent.value = 'LoginForm';
     }
 });
+
+watch(
+    () => route.query.referral_code,
+    (referralCode) => {
+        persistReferralCode(referralCode);
+    }
+);
 </script>
 
 <style></style>

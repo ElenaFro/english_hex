@@ -24,6 +24,12 @@ const routes = [
         meta: { requiresAuth: false },
     },
     {
+        path: '/reset-password/:token',
+        name: 'ResetPassword',
+        component: () => import('@/pages/Authentication/ResetPasswordPage.vue'),
+        meta: { requiresAuth: false },
+    },
+    {
         path: '/',
         name: 'Home',
         component: () => import('@/layouts/MainLayout.vue'),

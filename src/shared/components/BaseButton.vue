@@ -1,8 +1,9 @@
 <template>
     <button :type="type" :disabled="isDisabled" :aria-busy="loading" @click="handleClick">
         <Loader v-if="loading" :size="loaderSize" :spinner-color="loaderColor" />
-        <span v-else>
+        <span v-else class="flex">
             <p :class="labelClass">{{ label }}</p>
+            <img v-if="icon" :src="icon" alt="" class="base-button__icon" />
         </span>
     </button>
 </template>
@@ -40,6 +41,10 @@ const props = defineProps({
         type: String,
         default: '',
     },
+    icon: {
+        type: String,
+        default: null,
+    },
 });
 
 const emit = defineEmits(['click']);
@@ -51,3 +56,10 @@ const handleClick = (event) => {
     emit('click', event);
 };
 </script>
+<style scoped lang="scss">
+.base-button {
+    &__icon {
+        margin-left: 10px;
+    }
+}
+</style>

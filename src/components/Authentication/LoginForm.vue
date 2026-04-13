@@ -96,7 +96,7 @@ import visibilityOffIcon from '@/assets/img/visibility_off_icon.svg';
 import BButton from '@/shared/components/BaseButton.vue';
 import defaultPopup from '@/shared/components/popups/defaultPopup.vue';
 import SubscribePushNotify from '@/pages/MainPage/popups/SubscribePushNotify.vue';
-import { shouldShowDailyReward, markDailyRewardShown } from '@/shared/utils/dailyReward';
+import { shouldShowDailyReward } from '@/shared/utils/dailyReward';
 
 const router = useRouter();
 
@@ -137,7 +137,6 @@ const login = async () => {
             userStore.isSubscribed === 'unsubscribe' ? true : !userStore.isSubscribed;
         const dailyStreak = userStore.user?.daily_streak ?? null;
         if (shouldShowDailyReward(dailyStreak)) {
-            markDailyRewardShown();
             await router.push({ name: 'DailyReward' });
             return;
         }
