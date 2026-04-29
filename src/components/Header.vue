@@ -96,8 +96,6 @@ onMounted(() => {
     });
 });
 
-const currentHeaderTitle = computed(() => userStore.currentHeaderTitle);
-
 const isGamePlanetPage = computed(() => route.path === '/planetAttackPage');
 const isEditPlanetPage = computed(() => route.path === '/editPlanet');
 
@@ -163,11 +161,6 @@ const gameRoutes = [
 const isDailyRewardPage = computed(() => route.name === 'DailyReward');
 
 const updateTitleFromRoute = () => {
-    if (userStore.currentHeaderTitle) {
-        currentTitle.value = userStore.currentHeaderTitle;
-        return;
-    }
-
     if (gameRoutes.includes(route.name)) {
         currentTitle.value = 'Игры';
     } else {
@@ -224,6 +217,15 @@ watch(
         updateTitleFromRoute();
     },
     { immediate: true }
+);
+
+watch(
+    () => route.fullPath,
+    (newPath, oldPath) => {
+        if (oldPath != null && newPath !== oldPath && userStore.currentHeaderTitle) {
+            userStore.setHeaderTitle(null);
+        }
+    }
 );
 
 watch(
