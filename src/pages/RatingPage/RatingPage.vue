@@ -46,10 +46,9 @@ const raitingData = ref([]);
 const currentUser = ref(null);
 
 onMounted(async () => {
-    const authStore = useUserStore();
-    raitingData.value = await authStore.getRaiting();
-    currentUser.value = await authStore.getCurrentUser();
-    authStore.setHeaderTitle('Рейтинг');
+    const userStore = useUserStore();
+    raitingData.value = await userStore.getRaiting();
+    currentUser.value = await userStore.getCurrentUser();
 });
 
 const sortedUsers = computed(() => {

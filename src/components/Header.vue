@@ -65,8 +65,7 @@
 <script setup>
 import { RouterLink } from 'vue-router';
 import { ref, watch, computed, onMounted, onUnmounted, nextTick } from 'vue';
-import { useRoute } from 'vue-router';
-import { useRouter } from 'vue-router';
+import { useRoute, useRouter } from 'vue-router';
 import { defineProps } from 'vue';
 import { useUserStore } from '@/stores/user';
 import Bell from '@/assets/icons/navBarIcon/Bell.svg';
@@ -101,10 +100,11 @@ const fitTitle = async () => {
     }
 };
 
-onMounted(() => {
-    nextTick(() => {
-        updateTitleFromRoute();
-    });
+onMounted(async () => {
+    // На reload у vue-router route.name может быть пустым до готовности роутера,
+    // поэтому ждём isReady и только потом синхронизируем заголовок.
+    await router.isReady();
+    updateTitleFromRoute();
     fitTitle();
     window.addEventListener('resize', fitTitle, { passive: true });
 });
@@ -177,59 +177,45 @@ const gameRoutes = [
 
 const isDailyRewardPage = computed(() => route.name === 'DailyReward');
 
+const routeMetaTitle = computed(() => {
+    const matched = route.matched ?? [];
+    for (let i = matched.length - 1; i >= 0; i -= 1) {
+        const title = matched[i]?.meta?.title;
+        if (typeof title === 'string') return title;
+    }
+    return null;
+});
+
 const updateTitleFromRoute = () => {
     if (gameRoutes.includes(route.name)) {
         currentTitle.value = 'Игры';
-    } else {
-        switch (route.name) {
-            case 'profile':
-                currentTitle.value = 'Профиль';
-                break;
-            case 'profileEdit':
-                currentTitle.value = 'Настройки';
-                break;
-            case 'dictionary':
-                currentTitle.value = 'Избранное';
-                break;
-            case 'profileSubscriptions':
-                currentTitle.value = 'Моя подписка';
-                break;
-            case 'friends':
-                currentTitle.value = 'Друзья';
-                break;
-            case 'rating':
-                currentTitle.value = 'Рейтинг';
-                break;
-            case 'notifications':
-                currentTitle.value = 'Уведомления';
-                break;
-            case 'createNotification':
-                currentTitle.value = 'Уведомления';
-                break;
-            case 'addCategories':
-                currentTitle.value = 'Редактирование';
-                break;
-            case 'editCategory':
-                currentTitle.value = 'Редактирование';
-                break;
-            case 'learning':
-                currentTitle.value = route.query.name || '';
-                break;
-            case 'planetAttackPage':
-                currentTitle.value = '';
-                break;
-            case 'editPlanet':
-                currentTitle.value = 'Планета';
-                break;
-            default:
-                currentTitle.value = ' ';
-                break;
-        }
+        return;
     }
+
+    if (route.name === 'learning') {
+        currentTitle.value = route.query.name || '';
+        return;
+    }
+
+    const metaTitle = routeMetaTitle.value;
+    if (typeof metaTitle === 'string') {
+        currentTitle.value = metaTitle;
+        return;
+    }
+
+    currentTitle.value = ' ';
 };
 
 watch(
     () => route.name,
+    () => {
+        updateTitleFromRoute();
+    },
+    { immediate: true }
+);
+
+watch(
+    () => route.fullPath,
     () => {
         updateTitleFromRoute();
     },

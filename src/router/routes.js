@@ -53,32 +53,38 @@ const routes = [
                 path: 'users',
                 name: 'users',
                 component: () => import('@/pages/UsersPage/UsersPage.vue'),
+                meta: { title: 'Пользователи' },
                 children: [
                     {
                         path: '',
                         name: 'usersMenu',
                         component: () => import('@/pages/UsersPage/UsersMenuPage.vue'),
+                        meta: { title: 'Пользователи' },
                     },
                     {
                         path: 'rating',
                         name: 'rating',
                         component: () => import('@/pages/RatingPage/RatingPage.vue'),
+                        meta: { title: 'Рейтинг' },
                     },
                     {
                         path: 'friends',
                         name: 'friends',
                         component: () => import('@/pages/FriendsPage/FriendsPage.vue'),
+                        meta: { title: 'Друзья' },
                     },
                     {
                         path: 'classes',
                         name: 'classes',
                         component: () => import('@/pages/ClassesPage/ClassesPage.vue'),
+                        meta: { title: 'Классы' },
                         children: [
                             {
                                 path: '',
                                 name: 'allClasses',
                                 component: () =>
                                     import('@/pages/ClassesPage/AllClassesPage/AllClassesPage.vue'),
+                                meta: { title: 'Классы' },
                             },
                             {
                                 path: 'profile/:id',
@@ -87,6 +93,7 @@ const routes = [
                                     import(
                                         '@/pages/ClassesPage/ClassProfilePage/ClassProfilePage.vue'
                                     ),
+                                meta: { title: 'Ученики' },
                             },
                         ],
                     },
@@ -96,12 +103,14 @@ const routes = [
                 path: 'profile',
                 name: 'profile',
                 component: () => import('@/pages/ProfilePage/ProfilePage.vue'),
+                meta: { title: 'Профиль' },
                 children: [
                     {
                         path: 'profileEdit',
                         name: 'profileEdit',
                         component: () =>
                             import('@/pages/ProfilePage/EditProfile/ProfileEditPage.vue'),
+                        meta: { title: 'Настройки' },
                     },
                     {
                         path: 'profileAchievements/:id',
@@ -110,12 +119,14 @@ const routes = [
                             import(
                                 '@/pages/ProfilePage/AchievementsPage/ProfileAchievementsPage.vue'
                             ),
+                        meta: { title: 'Достижения' },
                     },
                     {
                         path: 'dictionaryPage',
                         name: 'dictionary',
                         component: () =>
                             import('@/pages/ProfilePage/DictionaryPage/DictionaryPage.vue'),
+                        meta: { title: 'Избранное' },
                         children: [
                             {
                                 path: 'cardPreview/:id',
@@ -130,6 +141,7 @@ const routes = [
                         name: 'profileSubscriptions',
                         component: () =>
                             import('@/pages/ProfilePage/SubscriptionsPage/SubscriptionsPage.vue'),
+                        meta: { title: 'Моя подписка' },
                     },
                 ],
             },
@@ -137,11 +149,13 @@ const routes = [
                 path: 'notifications',
                 name: 'notifications',
                 component: () => import('@/pages/NotificationsPage.vue'),
+                meta: { title: 'Уведомления' },
             },
             {
                 path: 'createNotification',
                 name: 'createNotification',
                 component: () => import('@/pages/CreateNotificationPage.vue'),
+                meta: { title: 'Уведомления' },
             },
             {
                 path: 'learning/:id',
@@ -152,11 +166,13 @@ const routes = [
                 path: 'games',
                 name: 'games',
                 component: () => import('@/pages/games/GameMainPage.vue'),
+                meta: { title: 'Игры' },
             },
             {
                 path: 'allGames',
                 name: 'allGames',
                 component: () => import('@/pages/allGamesPage/AllGamesPage.vue'),
+                meta: { title: 'Игры' },
             },
             {
                 path: 'planetGame',
@@ -197,16 +213,19 @@ const routes = [
                 path: 'myPlanet',
                 name: 'myPlanet',
                 component: () => import('@/pages/PlanetPage/MyPlanetPage.vue'),
+                meta: { title: 'Планета' },
             },
             {
                 path: 'editPlanet',
                 name: 'editPlanet',
                 component: () => import('@/pages/PlanetPage/EditPlanet/EditPlanet.vue'),
+                meta: { title: 'Планета' },
             },
             {
                 path: 'DailyReward',
                 name: 'DailyReward',
                 component: () => import('@/pages/DailyRewardPage.vue'),
+                meta: { title: '' },
             },
         ],
         meta: { requiresAuth: true },

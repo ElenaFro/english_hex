@@ -49,7 +49,6 @@ const loading = ref(false);
 onMounted(async () => {
     loading.value = true;
     await searchFriend('');
-    userStore.setHeaderTitle('Друзья');
     loading.value = false;
 });
 
