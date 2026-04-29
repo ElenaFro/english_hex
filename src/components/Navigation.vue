@@ -1,5 +1,5 @@
 <template>
-    <nav v-if="!isDailyRewardPage" class="navigation-bar">
+    <nav class="navigation-bar">
         <RouterLink
             v-for="item in navItems"
             :key="item.name"
@@ -95,8 +95,6 @@ const isActive = (item) => {
     if (route.path === '/') return item.path === '/';
     return item.path === '/';
 };
-
-const isDailyRewardPage = computed(() => route.name === 'DailyReward');
 
 const setProfileIconRef = (el, item) => {
     if (item.name === 'profile') {

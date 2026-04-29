@@ -174,6 +174,7 @@ watch(
     display: flex;
     flex-direction: column;
     padding-top: 40px;
+    padding-bottom: 80px;
     overflow-y: auto;
     -webkit-overflow-scrolling: touch;
     scrollbar-width: none;
