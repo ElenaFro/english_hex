@@ -22,16 +22,6 @@
                 </span>
             </span>
         </template>
-        <!-- <template v-else-if="">
-            <span @click="goToMyPlanet" class="header-star">
-                {{ totalStars }}
-                <img
-                    src="@/assets/icons/navBarIcon/star.svg"
-                    class="header-star-left"
-                    alt="Звезда"
-                />
-            </span>
-        </template> -->
         <template v-else>
             <button @click="goBack" class="header-item-button">
                 <img
@@ -41,7 +31,7 @@
                 />
             </button>
         </template>
-        <p class="header-title">{{ currentTitle }}</p>
+        <p ref="titleEl" class="header-title">{{ currentTitle }}</p>
         <RouterLink
             v-for="item in headerItemsRight"
             :key="item.name + '-right'"
@@ -74,7 +64,7 @@
 
 <script setup>
 import { RouterLink } from 'vue-router';
-import { ref, watch, computed, onMounted, nextTick } from 'vue';
+import { ref, watch, computed, onMounted, onUnmounted, nextTick } from 'vue';
 import { useRoute } from 'vue-router';
 import { useRouter } from 'vue-router';
 import { defineProps } from 'vue';
@@ -90,10 +80,37 @@ const currentUser = computed(() => userStore.getCurrentUser());
 const totalStars = computed(() => currentUser.value.rating);
 const props = defineProps(['lives']);
 
+const titleEl = ref(null);
+const TITLE_BASE_PX = 28;
+const TITLE_MIN_PX = 18;
+
+const fitTitle = async () => {
+    await nextTick();
+
+    const el = titleEl.value;
+    if (!el) return;
+
+    el.style.fontSize = `${TITLE_BASE_PX}px`;
+
+    // Если текст шире контейнера — уменьшаем размер шрифта.
+    // scrollWidth учитывает реальную ширину текста, clientWidth — доступную ширину блока.
+    let fontSize = TITLE_BASE_PX;
+    while (el.scrollWidth > el.clientWidth && fontSize > TITLE_MIN_PX) {
+        fontSize -= 1;
+        el.style.fontSize = `${fontSize}px`;
+    }
+};
+
 onMounted(() => {
     nextTick(() => {
         updateTitleFromRoute();
     });
+    fitTitle();
+    window.addEventListener('resize', fitTitle, { passive: true });
+});
+
+onUnmounted(() => {
+    window.removeEventListener('resize', fitTitle);
 });
 
 const isGamePlanetPage = computed(() => route.path === '/planetAttackPage');
@@ -239,6 +256,13 @@ watch(
     },
     { immediate: true }
 );
+
+watch(
+    () => currentTitle.value,
+    () => {
+        fitTitle();
+    }
+);
 </script>
 
 <style scoped lang="scss">
@@ -343,10 +367,12 @@ watch(
 
 .header-title {
     color: #ffff;
-    font-size: 28px;
     font-weight: 800;
     line-height: 35px;
     margin-top: 13px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .live-icon {
