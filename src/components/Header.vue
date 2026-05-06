@@ -189,21 +189,17 @@ const routeMetaTitle = computed(() => {
 const updateTitleFromRoute = () => {
     if (gameRoutes.includes(route.name)) {
         currentTitle.value = 'Игры';
-        return;
-    }
-
-    if (route.name === 'learning') {
+    } else if (route.name === 'learning') {
         currentTitle.value = route.query.name || '';
-        return;
+    } else {
+        const metaTitle = routeMetaTitle.value;
+        currentTitle.value = typeof metaTitle === 'string' ? metaTitle : ' ';
     }
 
-    const metaTitle = routeMetaTitle.value;
-    if (typeof metaTitle === 'string') {
-        currentTitle.value = metaTitle;
-        return;
+    const storeTitle = userStore.currentHeaderTitle;
+    if (storeTitle && storeTitle.trim() !== '') {
+        currentTitle.value = storeTitle;
     }
-
-    currentTitle.value = ' ';
 };
 
 watch(
@@ -220,15 +216,6 @@ watch(
         updateTitleFromRoute();
     },
     { immediate: true }
-);
-
-watch(
-    () => route.fullPath,
-    (newPath, oldPath) => {
-        if (oldPath != null && newPath !== oldPath && userStore.currentHeaderTitle) {
-            userStore.setHeaderTitle(null);
-        }
-    }
 );
 
 watch(

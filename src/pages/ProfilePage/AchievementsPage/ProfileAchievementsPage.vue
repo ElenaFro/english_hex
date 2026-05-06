@@ -47,7 +47,7 @@
 </template>
 
 <script setup>
-import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue';
+import { computed, onMounted, ref } from 'vue';
 import { useRoute } from 'vue-router';
 import { useUserStore } from '@/stores/user';
 
@@ -119,19 +119,6 @@ const achievementsList = computed(() =>
     Array.isArray(userProfile.value?.achievements) ? userProfile.value.achievements : []
 );
 
-const updateHeaderTitle = () => {
-    const profileId = route.params.id?.toString();
-    const currentUserId = currentUser.value?.id?.toString();
-
-    if (profileId && currentUserId && profileId === currentUserId) {
-        userStore.setHeaderTitle('Достижения');
-    } else if (isCanAddToFriends.value) {
-        userStore.setHeaderTitle('Пользователи');
-    } else {
-        userStore.setHeaderTitle('Друзья');
-    }
-};
-
 const refetchUser = async () => {
     userProfile.value =
         currentUser.value.id == route.params.id
@@ -148,21 +135,8 @@ onMounted(async () => {
     if (route.params.id) {
         await refetchUser();
     }
-    updateHeaderTitle();
     loading.value = false;
 });
-
-onBeforeUnmount(() => {
-    userStore.setHeaderTitle(null);
-});
-
-watch(
-    () => [route.params.id, currentUser.value?.id],
-    () => {
-        updateHeaderTitle();
-    },
-    { immediate: true }
-);
 </script>
 
 <style scoped lang="scss">
