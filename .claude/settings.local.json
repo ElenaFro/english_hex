@@ -1,0 +1,7 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(ls -la \"D:\\\\Проекты\\\\english_hex\\\\\" | head -30)"
+    ]
+  }
+}

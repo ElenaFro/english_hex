@@ -1,5 +1,5 @@
 <template>
-    <div v-if="!isDailyRewardPage" class="header-bar">
+    <div v-if="!isDailyRewardPage" class="header-bar" :class="{ 'header-bar--light': isLightPage }">
         <template v-if="isHomePage || isGameWordTwinkle || myPlanet">
             <div class="header-star" @click="goToMyPlanet">
                 <span>{{ totalStars }}</span>
@@ -25,30 +25,40 @@
         <template v-else>
             <button @click="goBack" class="header-item-button">
                 <img
-                    src="@/assets/icons/navBarIcon/arrow_left.svg"
+                    :src="isLightPage ? arrowDark : arrowLight"
                     class="header-icon-left"
                     alt="Назад"
                 />
             </button>
         </template>
         <p ref="titleEl" class="header-title">{{ currentTitle }}</p>
-        <RouterLink
-            v-for="item in headerItemsRight"
-            :key="item.name + '-right'"
-            :to="item.path"
-            class="header-item"
-            :class="{ active: $route.path === item.path }"
-        >
-            <img
-                v-if="
-                    !route.fullPath.includes('games') &&
-                    !route.fullPath.includes('planetAttackPage')
-                "
-                :src="item.icon"
-                class="header-icon"
-                :alt="item.name"
-            />
-        </RouterLink>
+        <template v-if="isLightPage">
+            <button
+                class="header-item-button header-close-btn"
+                @click="router.push({ name: 'profile' })"
+            >
+                <img src="@/assets/img/close_icon.svg" class="header-icon-close" alt="Закрыть" />
+            </button>
+        </template>
+        <template v-else>
+            <RouterLink
+                v-for="item in headerItemsRight"
+                :key="item.name + '-right'"
+                :to="item.path"
+                class="header-item"
+                :class="{ active: $route.path === item.path }"
+            >
+                <img
+                    v-if="
+                        !route.fullPath.includes('games') &&
+                        !route.fullPath.includes('planetAttackPage')
+                    "
+                    :src="item.icon"
+                    class="header-icon"
+                    :alt="item.name"
+                />
+            </RouterLink>
+        </template>
         <template v-if="isGamePlanetPage || isEditPlanetPage">
             <span class="header-star">
                 {{ totalStars }}
@@ -70,6 +80,8 @@ import { defineProps } from 'vue';
 import { useUserStore } from '@/stores/user';
 import Bell from '@/assets/icons/navBarIcon/Bell.svg';
 import BellUnread from '@/assets/icons/navBarIcon/Bell_unread.svg';
+import arrowLight from '@/assets/icons/navBarIcon/arrow_left.svg';
+import arrowDark from '@/assets/icons/arrow-left.svg';
 
 const router = useRouter();
 const userStore = useUserStore();
@@ -112,6 +124,10 @@ onMounted(async () => {
 onUnmounted(() => {
     window.removeEventListener('resize', fitTitle);
 });
+
+const isLightPage = computed(() =>
+    ['subscriptionPro', 'subscriptionPayment'].includes(route.name),
+);
 
 const isGamePlanetPage = computed(() => route.path === '/planetAttackPage');
 const isEditPlanetPage = computed(() => route.path === '/editPlanet');
@@ -250,6 +266,10 @@ watch(
     padding-right: 20px;
     width: 100%;
     max-width: 414px;
+
+    &--light {
+        background-color: rgba(246, 246, 254, 1);
+    }
 }
 
 .header-star {
@@ -324,6 +344,11 @@ watch(
 .header-icon {
     width: 32px;
     height: 32px;
+    margin-top: 13px;
+}
+.header-icon-close {
+    width: 20px;
+    height: 20px;
     margin-top: 13px;
 }
 

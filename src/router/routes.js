@@ -148,7 +148,14 @@ const routes = [
                         name: 'subscriptionPro',
                         component: () =>
                             import('@/pages/ProfilePage/SubscriptionsPage/SubscriptionProPage.vue'),
-                        meta: { title: 'Продвинутая версия' },
+                        meta: { title: '' },
+                    },
+                    {
+                        path: 'subscriptions/payment',
+                        name: 'subscriptionPayment',
+                        component: () =>
+                            import('@/pages/ProfilePage/SubscriptionsPage/PaymentPage.vue'),
+                        meta: { title: '' },
                     },
                 ],
             },
