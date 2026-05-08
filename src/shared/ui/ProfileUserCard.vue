@@ -30,7 +30,7 @@
                 />
             </div>
             <b-button
-                v-if="isSelfProfile && !profileAchievementsPage"
+                v-if="isSelfProfile && !profileAchievementsPage && userStore.user?.ever_played_game"
                 label="Звёзды сегодня"
                 label-class="text-white"
                 class="button d-mt-34 full_width button-dark_blue"
