@@ -21,7 +21,7 @@
 <script setup>
 import CardFlip from '@/shared/components/CardFlip.vue';
 import { useCategoriesStore } from '@/stores/categories';
-import { ref, onMounted, computed } from 'vue';
+import { ref, onBeforeUnmount, onMounted, computed } from 'vue';
 import { useRoute } from 'vue-router';
 import likeDisabled from '@/assets/icons/like_disabled.svg';
 import likeEnabled from '@/assets/icons/like_enabled.svg';
@@ -41,6 +41,10 @@ onMounted(async () => {
     await fetchCard();
     cards.value.push(currentCard.value);
     useUserStore().setHeaderTitle(selectedCategory.value?.name);
+});
+
+onBeforeUnmount(() => {
+    useUserStore().setHeaderTitle(null);
 });
 const isLikeEnabled = computed(() => currentCard.value?.added_to_favorite);
 

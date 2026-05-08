@@ -8,12 +8,27 @@
                 enable-auto-search
             />
 
-            <div v-if="friends.length === 0" class="empty-state">
+            <div v-if="friends.length === 0 && searchedUsers.length === 0" class="empty-state">
                 <img src="@/assets/img/empty-friends.webp" alt="girl" class="empty-state__img" />
                 <p class="empty-state__text">У тебя пока нет друзей, найдите же их скорее</p>
             </div>
+            <section v-if="searchedUsers.length > 0">
+                <p class="friends-menu__section-title">Игроки</p>
+                <div class="friends-list">
+                    <div
+                        v-for="searchedUser in searchedUsers"
+                        :key="searchedUser.id"
+                        class="friends-item"
+                    >
+                        <user-card-with-star
+                            :user="searchedUser"
+                            @click="goToUserProfile(searchedUser.id)"
+                        />
+                    </div>
+                </div>
+            </section>
 
-            <section v-else>
+            <section v-if="friends.length > 0">
                 <p class="friends-menu__section-title">Мои друзья</p>
                 <div class="friends-list">
                     <div v-for="friend in friends" :key="friend.id" class="friends-item">
@@ -44,12 +59,12 @@ import { push } from 'notivue';
 const router = useRouter();
 const userStore = useUserStore();
 const friends = ref([]);
+const searchedUsers = ref([]);
 const loading = ref(false);
 
 onMounted(async () => {
     loading.value = true;
     await searchFriend('');
-    userStore.setHeaderTitle('Друзья');
     loading.value = false;
 });
 
@@ -79,6 +94,13 @@ watch(
     () => userStore.searchedFriends,
     (newVal) => {
         friends.value = newVal;
+    }
+);
+
+watch(
+    () => userStore.searchedNotFriend,
+    (newVal) => {
+        searchedUsers.value = newVal;
     }
 );
 </script>

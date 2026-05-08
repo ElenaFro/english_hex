@@ -77,7 +77,6 @@ const students = ref([]);
 const users = ref([]);
 
 onMounted(async () => {
-    userStore.setHeaderTitle('Ученики');
     loading.value = true;
     if (currentClass.value === null) await teacherStore.getClassById(currentClassId.value);
     await userStore.searchUsers('', 1);

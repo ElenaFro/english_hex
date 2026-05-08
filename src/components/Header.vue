@@ -1,6 +1,6 @@
 <template>
-    <div v-if="!isDailyRewardPage" class="header-bar">
-        <template v-if="isHomePage || isGameWordTwinkle || myPlanet">
+    <div v-if="!isDailyRewardPage" class="header-bar" :class="{ 'header-bar--light': isLightPage }">
+        <template v-if="isHomePage || isGameWordTwinkle || myPlanet || isPaymentResultPage">
             <div class="header-star" @click="goToMyPlanet">
                 <span>{{ totalStars }}</span>
                 <img
@@ -22,43 +22,43 @@
                 </span>
             </span>
         </template>
-        <!-- <template v-else-if="">
-            <span @click="goToMyPlanet" class="header-star">
-                {{ totalStars }}
-                <img
-                    src="@/assets/icons/navBarIcon/star.svg"
-                    class="header-star-left"
-                    alt="Звезда"
-                />
-            </span>
-        </template> -->
         <template v-else>
             <button @click="goBack" class="header-item-button">
                 <img
-                    src="@/assets/icons/navBarIcon/arrow_left.svg"
+                    :src="isLightPage ? arrowDark : arrowLight"
                     class="header-icon-left"
                     alt="Назад"
                 />
             </button>
         </template>
-        <p class="header-title">{{ currentTitle }}</p>
-        <RouterLink
-            v-for="item in headerItemsRight"
-            :key="item.name + '-right'"
-            :to="item.path"
-            class="header-item"
-            :class="{ active: $route.path === item.path }"
-        >
-            <img
-                v-if="
-                    !route.fullPath.includes('games') &&
-                    !route.fullPath.includes('planetAttackPage')
-                "
-                :src="item.icon"
-                class="header-icon"
-                :alt="item.name"
-            />
-        </RouterLink>
+        <p ref="titleEl" class="header-title">{{ currentTitle }}</p>
+        <template v-if="isLightPage">
+            <button
+                class="header-item-button header-close-btn"
+                @click="router.push({ name: 'profile' })"
+            >
+                <img src="@/assets/img/close_icon.svg" class="header-icon-close" alt="Закрыть" />
+            </button>
+        </template>
+        <template v-else>
+            <RouterLink
+                v-for="item in headerItemsRight"
+                :key="item.name + '-right'"
+                :to="item.path"
+                class="header-item"
+                :class="{ active: $route.path === item.path }"
+            >
+                <img
+                    v-if="
+                        !route.fullPath.includes('games') &&
+                        !route.fullPath.includes('planetAttackPage')
+                    "
+                    :src="item.icon"
+                    class="header-icon"
+                    :alt="item.name"
+                />
+            </RouterLink>
+        </template>
         <template v-if="isGamePlanetPage || isEditPlanetPage">
             <span class="header-star">
                 {{ totalStars }}
@@ -74,13 +74,14 @@
 
 <script setup>
 import { RouterLink } from 'vue-router';
-import { ref, watch, computed, onMounted, nextTick } from 'vue';
-import { useRoute } from 'vue-router';
-import { useRouter } from 'vue-router';
+import { ref, watch, computed, onMounted, onUnmounted, nextTick } from 'vue';
+import { useRoute, useRouter } from 'vue-router';
 import { defineProps } from 'vue';
 import { useUserStore } from '@/stores/user';
 import Bell from '@/assets/icons/navBarIcon/Bell.svg';
 import BellUnread from '@/assets/icons/navBarIcon/Bell_unread.svg';
+import arrowLight from '@/assets/icons/navBarIcon/arrow_left.svg';
+import arrowDark from '@/assets/icons/arrow-left.svg';
 
 const router = useRouter();
 const userStore = useUserStore();
@@ -90,13 +91,42 @@ const currentUser = computed(() => userStore.getCurrentUser());
 const totalStars = computed(() => currentUser.value.rating);
 const props = defineProps(['lives']);
 
-onMounted(() => {
-    nextTick(() => {
-        updateTitleFromRoute();
-    });
+const titleEl = ref(null);
+const TITLE_BASE_PX = 28;
+const TITLE_MIN_PX = 18;
+
+const fitTitle = async () => {
+    await nextTick();
+
+    const el = titleEl.value;
+    if (!el) return;
+
+    el.style.fontSize = `${TITLE_BASE_PX}px`;
+
+    // Если текст шире контейнера — уменьшаем размер шрифта.
+    // scrollWidth учитывает реальную ширину текста, clientWidth — доступную ширину блока.
+    let fontSize = TITLE_BASE_PX;
+    while (el.scrollWidth > el.clientWidth && fontSize > TITLE_MIN_PX) {
+        fontSize -= 1;
+        el.style.fontSize = `${fontSize}px`;
+    }
+};
+
+onMounted(async () => {
+    // На reload у vue-router route.name может быть пустым до готовности роутера,
+    // поэтому ждём isReady и только потом синхронизируем заголовок.
+    await router.isReady();
+    updateTitleFromRoute();
+    fitTitle();
+    window.addEventListener('resize', fitTitle, { passive: true });
 });
 
-const currentHeaderTitle = computed(() => userStore.currentHeaderTitle);
+onUnmounted(() => {
+    window.removeEventListener('resize', fitTitle);
+});
+
+const isLightPage = computed(() => route.name === 'subscriptionPro');
+const isPaymentResultPage = computed(() => ['paymentSuccess', 'paymentFail'].includes(route.name));
 
 const isGamePlanetPage = computed(() => route.path === '/planetAttackPage');
 const isEditPlanetPage = computed(() => route.path === '/editPlanet');
@@ -162,64 +192,41 @@ const gameRoutes = [
 
 const isDailyRewardPage = computed(() => route.name === 'DailyReward');
 
-const updateTitleFromRoute = () => {
-    if (userStore.currentHeaderTitle) {
-        currentTitle.value = userStore.currentHeaderTitle;
-        return;
+const routeMetaTitle = computed(() => {
+    const matched = route.matched ?? [];
+    for (let i = matched.length - 1; i >= 0; i -= 1) {
+        const title = matched[i]?.meta?.title;
+        if (typeof title === 'string') return title;
     }
+    return null;
+});
 
+const updateTitleFromRoute = () => {
     if (gameRoutes.includes(route.name)) {
         currentTitle.value = 'Игры';
+    } else if (route.name === 'learning') {
+        currentTitle.value = route.query.name || '';
     } else {
-        switch (route.name) {
-            case 'profile':
-                currentTitle.value = 'Профиль';
-                break;
-            case 'profileEdit':
-                currentTitle.value = 'Настройки';
-                break;
-            case 'dictionary':
-                currentTitle.value = 'Избранное';
-                break;
-            case 'profileSubscriptions':
-                currentTitle.value = 'Моя подписка';
-                break;
-            case 'friends':
-                currentTitle.value = 'Друзья';
-                break;
-            case 'rating':
-                currentTitle.value = 'Рейтинг';
-                break;
-            case 'notifications':
-                currentTitle.value = 'Уведомления';
-                break;
-            case 'createNotification':
-                currentTitle.value = 'Уведомления';
-                break;
-            case 'addCategories':
-                currentTitle.value = 'Редактирование';
-                break;
-            case 'editCategory':
-                currentTitle.value = 'Редактирование';
-                break;
-            case 'learning':
-                currentTitle.value = route.query.name || '';
-                break;
-            case 'planetAttackPage':
-                currentTitle.value = '';
-                break;
-            case 'editPlanet':
-                currentTitle.value = 'Планета';
-                break;
-            default:
-                currentTitle.value = ' ';
-                break;
-        }
+        const metaTitle = routeMetaTitle.value;
+        currentTitle.value = typeof metaTitle === 'string' ? metaTitle : ' ';
+    }
+
+    const storeTitle = userStore.currentHeaderTitle;
+    if (storeTitle && storeTitle.trim() !== '') {
+        currentTitle.value = storeTitle;
     }
 };
 
 watch(
     () => route.name,
+    () => {
+        updateTitleFromRoute();
+    },
+    { immediate: true }
+);
+
+watch(
+    () => route.fullPath,
     () => {
         updateTitleFromRoute();
     },
@@ -237,6 +244,13 @@ watch(
     },
     { immediate: true }
 );
+
+watch(
+    () => currentTitle.value,
+    () => {
+        fitTitle();
+    }
+);
 </script>
 
 <style scoped lang="scss">
@@ -251,10 +265,14 @@ watch(
     padding-right: 20px;
     width: 100%;
     max-width: 414px;
+
+    &--light {
+        background-color: rgba(246, 246, 254, 1);
+    }
 }
 
 .header-star {
-    background-color: #ffffff;
+    background-color: #fff3ed;
     display: flex;
     width: 84px;
     height: 42px;
@@ -327,6 +345,11 @@ watch(
     height: 32px;
     margin-top: 13px;
 }
+.header-icon-close {
+    width: 20px;
+    height: 20px;
+    margin-top: 13px;
+}
 
 .header-icon-left {
     width: 29px;
@@ -341,10 +364,12 @@ watch(
 
 .header-title {
     color: #ffff;
-    font-size: 28px;
     font-weight: 800;
     line-height: 35px;
     margin-top: 13px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .live-icon {

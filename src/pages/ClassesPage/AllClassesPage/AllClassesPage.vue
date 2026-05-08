@@ -51,16 +51,14 @@
 </template>
 
 <script setup>
-import { computed, ref, onMounted, onUnmounted } from 'vue';
+import { computed, ref, onMounted } from 'vue';
 import Loader from '@/shared/components/Loader.vue';
 import SearchInput from '@/shared/ui/SearchInput.vue';
 import createClassForm from '@/pages/ClassesPage/components/CreateClassForm.vue';
-import { useUserStore } from '@/stores/user';
 import { useTeacherStore } from '@/stores/teacher';
 import { useRouter } from 'vue-router';
 
 const router = useRouter();
-const userStore = useUserStore();
 const teacherStore = useTeacherStore();
 
 const isFormOpen = ref(false);
@@ -71,7 +69,6 @@ const isHasSearch = computed(() => searchValue.value.trim().length > 0);
 
 onMounted(async () => {
     loading.value = true;
-    userStore.setHeaderTitle('Классы');
     await teacherStore.getAllClasses();
     loading.value = false;
 });
@@ -100,9 +97,6 @@ const goToClass = async (id) => {
     router.push({ name: 'classProfile', params: { id: id } });
 };
 
-onUnmounted(() => {
-    userStore.setHeaderTitle(null);
-});
 </script>
 <style scoped lang="scss">
 .empty-state {

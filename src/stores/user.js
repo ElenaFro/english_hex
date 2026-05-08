@@ -19,6 +19,7 @@ export const useUserStore = defineStore('user', () => {
     const notifications = ref([]);
     const searchUsersPaginator = ref(null);
     const searchedFriends = ref([]);
+    const searchedNotFriend = ref([]);
     const planetSkins = ref(null);
     const hintsArray = ref([]);
 
@@ -259,11 +260,17 @@ export const useUserStore = defineStore('user', () => {
 
     async function searchFriends(name) {
         try {
-            const response = await apiClient.get('/friends/get', {
-                params: { search: name },
+            const response = await apiClient.get('/users/search', {
+                params: { q: name },
             });
+            console.log(response);
 
-            searchedFriends.value = response.data.data;
+            searchedFriends.value = response.data.data.filter((user) => user.is_friend);
+            if (name !== '') {
+                searchedNotFriend.value = response.data.data.filter((user) => !user.is_friend);
+            } else {
+                searchedNotFriend.value = [];
+            }
         } catch (error) {
             console.error('Fetch users error:', error);
         }
@@ -343,6 +350,7 @@ export const useUserStore = defineStore('user', () => {
         installPopupClosed,
         currentSearchedUsers,
         searchedFriends,
+        searchedNotFriend,
         planetSkins,
         hintsArray,
         register,

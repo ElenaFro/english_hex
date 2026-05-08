@@ -59,12 +59,6 @@ import { computed, onMounted, ref } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import Loader from '../../shared/components/Loader.vue';
 import defaultPopup from '@/shared/components/popups/defaultPopup.vue';
-import animalsImg from '@/assets/categoryLessonImg/animals.svg';
-import clothesImg from '@/assets/categoryLessonImg/clothes.svg';
-import body_partImg from '@/assets/categoryLessonImg/body_part.svg';
-import femalyImg from '@/assets/categoryLessonImg/femaly.svg';
-import food_baseImg from '@/assets/categoryLessonImg/food_base.svg';
-import house_baseImg from '@/assets/categoryLessonImg/house_base.svg';
 import { useUserStore } from '@/stores/user';
 
 const route = useRoute();
@@ -97,15 +91,6 @@ const isAdmin = computed(() => userStore.isAdmin);
 const goToGames = () => {
     router.push({ name: 'games', query: { id: currentCategory.value.id } });
 };
-
-const imgSource = computed(() => {
-    if (currentCategory.value?.name === 'Животные') return animalsImg;
-    if (currentCategory.value?.name === 'Базовая одежда') return clothesImg;
-    if (currentCategory.value?.name === 'Части тела') return body_partImg;
-    if (currentCategory.value?.name === 'Семья') return femalyImg;
-    if (currentCategory.value?.name === 'Базовая еда') return food_baseImg;
-    return house_baseImg;
-});
 
 const openEditConfirmPopup = () => {
     goEditConfirmPopup.value = true;

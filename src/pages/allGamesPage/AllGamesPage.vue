@@ -27,21 +27,11 @@
     </div>
 </template>
 <script setup>
-import { onBeforeUnmount, onMounted, ref } from 'vue';
+import { ref } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
-import { useUserStore } from '@/stores/user';
 
 const router = useRouter();
 const route = useRoute();
-const userStore = useUserStore();
-
-onMounted(() => {
-    userStore.setHeaderTitle('Игры');
-});
-
-onBeforeUnmount(() => {
-    userStore.setHeaderTitle(null);
-});
 
 const games = ref([
     {

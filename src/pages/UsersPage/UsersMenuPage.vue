@@ -24,7 +24,7 @@
 </template>
 
 <script setup>
-import { computed, onBeforeUnmount, onMounted } from 'vue';
+import { computed } from 'vue';
 import { useRouter } from 'vue-router';
 import { useUserStore } from '@/stores/user';
 
@@ -45,13 +45,6 @@ const friendsText = computed(() =>
         : 'Посмотри что нового у\u00A0твоих друзей'
 );
 
-onMounted(() => {
-    userStore.setHeaderTitle('Пользователи');
-});
-
-onBeforeUnmount(() => {
-    userStore.setHeaderTitle(null);
-});
 </script>
 
 <style scoped lang="scss">
