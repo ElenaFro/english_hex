@@ -150,14 +150,19 @@ const routes = [
                             import('@/pages/ProfilePage/SubscriptionsPage/SubscriptionProPage.vue'),
                         meta: { title: '' },
                     },
-                    {
-                        path: 'subscriptions/payment',
-                        name: 'subscriptionPayment',
-                        component: () =>
-                            import('@/pages/ProfilePage/SubscriptionsPage/PaymentPage.vue'),
-                        meta: { title: '' },
-                    },
                 ],
+            },
+            {
+                path: 'payment/success',
+                name: 'paymentSuccess',
+                component: () => import('@/pages/payment/PaymentSuccessPage.vue'),
+                meta: { title: '' },
+            },
+            {
+                path: 'payment/fail',
+                name: 'paymentFail',
+                component: () => import('@/pages/payment/PaymentFailPage.vue'),
+                meta: { title: '' },
             },
             {
                 path: 'notifications',

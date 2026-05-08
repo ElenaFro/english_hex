@@ -1,6 +1,6 @@
 <template>
     <div v-if="!isDailyRewardPage" class="header-bar" :class="{ 'header-bar--light': isLightPage }">
-        <template v-if="isHomePage || isGameWordTwinkle || myPlanet">
+        <template v-if="isHomePage || isGameWordTwinkle || myPlanet || isPaymentResultPage">
             <div class="header-star" @click="goToMyPlanet">
                 <span>{{ totalStars }}</span>
                 <img
@@ -125,9 +125,8 @@ onUnmounted(() => {
     window.removeEventListener('resize', fitTitle);
 });
 
-const isLightPage = computed(() =>
-    ['subscriptionPro', 'subscriptionPayment'].includes(route.name),
-);
+const isLightPage = computed(() => route.name === 'subscriptionPro');
+const isPaymentResultPage = computed(() => ['paymentSuccess', 'paymentFail'].includes(route.name));
 
 const isGamePlanetPage = computed(() => route.path === '/planetAttackPage');
 const isEditPlanetPage = computed(() => route.path === '/editPlanet');
@@ -273,7 +272,7 @@ watch(
 }
 
 .header-star {
-    background-color: #ffffff;
+    background-color: #fff3ed;
     display: flex;
     width: 84px;
     height: 42px;
