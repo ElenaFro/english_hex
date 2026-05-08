@@ -20,6 +20,7 @@ const route = useRoute();
 const maybeShowDailyReward = async () => {
     if (!userStore.isAuthenticated) return;
     if (route.path.startsWith('/auth')) return;
+    if (!userStore.user?.ever_played_game) return;
     const dailyStreak = userStore.user?.daily_streak ?? null;
     if (!shouldShowDailyReward(dailyStreak)) return;
     if (route.name === 'DailyReward') return;
