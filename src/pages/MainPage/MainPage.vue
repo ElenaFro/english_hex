@@ -20,7 +20,7 @@
                 :imgUrl="section.category_photo"
                 :backgroundColor="randomColor(section.id)"
                 :progress="section.completed_category"
-                :locked="true"
+                :locked="section.is_locked"
                 :category_completion_percentage="section.category_completion_percentage"
             />
         </div>
@@ -62,6 +62,7 @@ import SoundForPopup from '@/assets/audio/helloFromDi.wav';
 //store
 import { useUserStore } from '@/stores/user';
 import { useCategoriesStore } from '@/stores/categories';
+import { useSubscriptionStore } from '@/stores/subscription';
 import { useRouter } from 'vue-router';
 
 const loading = ref(true);
@@ -78,6 +79,7 @@ const router = useRouter();
 
 onMounted(async () => {
     await useCategoriesStore().getCategories();
+    useSubscriptionStore().fetch();
     userStore.getUserNotifications();
     if (isAdmin.value === null || isTeacher.value == null) await userStore.getUserRole();
 
