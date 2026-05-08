@@ -4,29 +4,31 @@
         <button class="sound-container__sound-button" @click="playSound">
             <img src="@/assets/img/sound-icon.svg" alt="" class="sound-container__sound-img" />
         </button>
-        <audio ref="soundRef" class="sound-container__lerning-sound" :src="soundUrl"></audio>
         <p ref="wordRef" class="sound-container__word">{{ rusWord }}</p>
         <img src="@/assets/img/girl-img.svg" alt="" class="sound-container__girl-img" />
     </div>
 </template>
 
 <script setup>
-import { ref, onMounted, watch } from 'vue';
+import { ref, onMounted, onUnmounted, watch } from 'vue';
+import { useAudio } from '@/shared/composables/useAudio';
 
 const props = defineProps({
     engWord: String,
     rusWord: String,
     soundUrl: String,
 });
-const soundRef = ref(null);
+const { playAudio, stopAudio } = useAudio();
 const wordRef = ref(null);
 
 const playSound = () => {
-    if (soundRef.value) {
-        soundRef.value.currentTime = 0;
-        soundRef.value.play();
-    }
+    playAudio(props.soundUrl);
 };
+
+// Останавливаем звук при переходе к следующей карточке
+watch(() => props.soundUrl, stopAudio);
+
+onUnmounted(stopAudio);
 
 const resizeText = () => {
     const el = wordRef.value;

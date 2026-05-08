@@ -18,7 +18,6 @@
                     <p class="question">?</p>
                     <img src="@/assets/img/Games/sound.svg" alt="sound" class="sound1" />
                 </button>
-                <audio ref="soundRef"></audio>
                 <section class="page-container__button" v-if="currentQuestion.options">
                     <div
                         class="line"
@@ -49,8 +48,9 @@ import { useGamesStore } from '@/stores/games';
 import { useRoute } from 'vue-router';
 import Loader from '../../shared/components/Loader.vue';
 import AnswerOptionButton from '@/components/ui/AnswerOptionButton.vue';
+import { useAudio } from '@/shared/composables/useAudio';
 
-const soundRef = ref(null);
+const { playAudio, stopAudio } = useAudio();
 const route = useRoute();
 const currentUser = useUserStore().getCurrentUser();
 const props = defineProps({
@@ -74,8 +74,7 @@ const resolveAudioUrl = (question) => {
     if (question.audio && /^https?:\/\//i.test(question.audio)) return question.audio;
     if (question.audio && question.audio.startsWith('/')) return question.audio;
 
-    const categoryIdFromQuestion =
-        question.category_id || question.categoryId || categoryId.value;
+    const categoryIdFromQuestion = question.category_id || question.categoryId || categoryId.value;
     if (categoryIdFromQuestion && question.audio) {
         return `${import.meta.env.VITE_STORAGE_URI}/${categoryIdFromQuestion}/cards/${question.id}/audio/${question.audio}`;
     }
@@ -86,20 +85,10 @@ const resolveAudioUrl = (question) => {
 };
 
 const playSound = () => {
-    if (soundRef.value) {
-        const audioUrl = resolveAudioUrl(currentQuestion.value);
-        if (!audioUrl) return;
-        soundRef.value.src = audioUrl;
-        soundRef.value.currentTime = 0;
-        soundRef.value.play();
-        isQuestionPlayed.value = true;
-    }
-};
-
-const onAudioEnded = () => {
+    const audioUrl = resolveAudioUrl(currentQuestion.value);
+    if (!audioUrl) return;
+    playAudio(audioUrl);
     isQuestionPlayed.value = true;
-    const currentQuestionData = currentQuestion.value;
-    resetButtonStyles(currentQuestionData, false);
 };
 
 const currentQuestionIndex = ref(0);
@@ -158,6 +147,7 @@ const sendAnswer = (answer) => {
 };
 
 const nextQuestion = () => {
+    stopAudio();
     const currentQuestionData = currentQuestion.value;
     resetButtonStyles(currentQuestionData, true);
     isQuestionPlayed.value = false;
@@ -208,10 +198,6 @@ const meteorTop = ref('-25px');
 const meteorRight = ref('-4px');
 
 onMounted(async () => {
-    if (soundRef.value) {
-        soundRef.value.addEventListener('ended', onAudioEnded);
-    }
-
     if (props.isInfinity) {
         if (props.questions?.length) {
             questions.value = props.questions.map((question) => ({
@@ -247,9 +233,7 @@ onMounted(async () => {
 });
 
 onBeforeUnmount(() => {
-    if (soundRef.value) {
-        soundRef.value.removeEventListener('ended', onAudioEnded);
-    }
+    stopAudio();
 });
 </script>
 <style scoped lang="scss">
@@ -429,4 +413,3 @@ onBeforeUnmount(() => {
     background-position: center;
 }
 </style>
-
