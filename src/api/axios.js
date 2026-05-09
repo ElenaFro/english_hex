@@ -49,7 +49,7 @@ export function setupInterceptors(pinia) {
             const tokenChanged = requestToken && currentToken && requestToken !== currentToken;
             const isLoggingIn = authStore.isLoggingIn;
 
-            if ((status === 401 || status === 403) && !tokenChanged && !isLoggingIn) {
+            if (status === 401 && !tokenChanged && !isLoggingIn) {
                 authStore.logout();
             }
 
