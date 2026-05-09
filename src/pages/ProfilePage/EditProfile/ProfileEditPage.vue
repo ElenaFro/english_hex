@@ -1,9 +1,8 @@
 <template>
     <div class="page-container">
-        <!-- Текущая аватарка + кнопка выхода -->
         <div class="avatar-section">
-            <div class="avatar-wrapper" @click="toggleAvatar">
-                <img :src="avatarIcon" class="avatar" :class="opacityClass" alt="User avatar" />
+            <div class="avatar-wrapper" @click="handleAvatarClick">
+                <img :src="avatarIcon" class="avatar" :class="{ 'opacity-20': isEditAvatar }" alt="User avatar" />
                 <img
                     v-if="isEditAvatar"
                     src="@/assets/icons/profile/edit-blue-pencile.svg"
@@ -20,64 +19,7 @@
             </div>
         </div>
 
-        <!-- Редактирование аватарки -->
-        <div v-if="isAvatarEditing" class="avatar-edit">
-            <Loader v-if="avatarsLoading" />
-            <template v-else>
-                <!-- Базовые -->
-                <section class="avatar-edit-card">
-                    <p class="avatar-edit-card__title">Базовые</p>
-                    <div class="avatar-grid avatar-grid--basic">
-                        <button
-                            v-for="item in freeAvatarsList"
-                            :key="item.image_key"
-                            type="button"
-                            class="avatar-tile"
-                            :class="{
-                                'avatar-tile--selected': currentAvatarKey === item.image_key,
-                            }"
-                            :disabled="!item.is_unlocked || avatarSaving"
-                            :aria-label="item.name"
-                            @click="selectAvatar(item.id, item.image_key)"
-                        >
-                            <img
-                                class="avatar-tile__img"
-                                :src="item.is_unlocked ? getAvatarSrc(item.image_key) : lockedIcon"
-                                alt=""
-                            />
-                        </button>
-                    </div>
-                </section>
-
-                <!-- Премиум -->
-                <section class="avatar-edit-card">
-                    <p class="avatar-edit-card__title">Премиум</p>
-                    <div class="avatar-grid avatar-grid--premium">
-                        <button
-                            v-for="item in premiumAvatarsList"
-                            :key="item.image_key"
-                            type="button"
-                            class="avatar-tile"
-                            :class="{
-                                'avatar-tile--selected': currentAvatarKey === item.image_key,
-                            }"
-                            :disabled="!item.is_unlocked || avatarSaving"
-                            :aria-label="item.name"
-                            @click="selectAvatar(item.id, item.image_key)"
-                        >
-                            <img
-                                class="avatar-tile__img"
-                                :src="item.is_unlocked ? getAvatarSrc(item.image_key) : lockedIcon"
-                                alt=""
-                            />
-                        </button>
-                    </div>
-                </section>
-            </template>
-        </div>
-
-        <!-- Форма профиля -->
-        <div v-else class="profile-card">
+        <div class="profile-card">
             <div class="form-group">
                 <label for="name">Имя</label>
                 <div class="input-with-icon">
@@ -172,22 +114,15 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue';
 import { useUserStore } from '@/stores/user';
-import {
-    getAvatarSrc,
-    getUserAvatarSrc,
-    lockedAvatarSrc as lockedIcon,
-} from '@/shared/utils/avatarMap';
-import { getAvatars, setAvatar } from '@/api/avatars';
+import { getUserAvatarSrc } from '@/shared/utils/avatarMap';
 import apiClient from '@/api/axios';
 import { compareObjects } from '@/shared/compareObject';
 import defaultPopup from '@/shared/components/popups/defaultPopup.vue';
-import Loader from '@/shared/components/Loader.vue';
 import { useRouter } from 'vue-router';
 
 const router = useRouter();
 const userStore = useUserStore();
 
-// ─── форма профиля ───────────────────────────────────────────────────────────
 const form = ref({});
 const initialForm = ref({});
 const errors = ref({ gender: '', name: '', email: '', password: '' });
@@ -195,80 +130,23 @@ const isSaving = ref(false);
 const showPopup = ref(false);
 const edit = ref(true);
 
-// ─── аватарки ────────────────────────────────────────────────────────────────
-const avatarsLoading = ref(false);
-const avatarSaving = ref(false);
-const isEditAvatar = ref(false);
-const isAvatarEditing = ref(false);
-
-// Данные из API
-const freeAvatarsList = ref([]);
-const premiumAvatarsList = ref([]);
-
-const currentAvatarKey = computed(() => form.value?.avatar?.image_key ?? null);
 const avatarIcon = computed(() => getUserAvatarSrc(form.value));
-const opacityClass = computed(() => ({ 'opacity-20': isEditAvatar.value }));
 
-// ─── загрузка аватарок ───────────────────────────────────────────────────────
-const loadAvatars = async () => {
-    avatarsLoading.value = true;
-    try {
-        const { data } = await getAvatars();
-        freeAvatarsList.value = data.avatars?.basic ?? [];
-        premiumAvatarsList.value = data.avatars?.premium ?? [];
-        // Синхронизируем текущую аватарку из ответа
-        if (data.current_avatar?.image_key) {
-            form.value = {
-                ...form.value,
-                avatar: { image_key: data.current_avatar.image_key },
-            };
-        }
-    } catch (e) {
-        console.error('Ошибка загрузки аватарок:', e);
-    } finally {
-        avatarsLoading.value = false;
-    }
-};
+const isEditAvatar = ref(false);
 
-// ─── выбор аватарки (применяется сразу) ─────────────────────────────────────
-const selectAvatar = async (avatarId, imageKey) => {
-    if (avatarSaving.value || currentAvatarKey.value === imageKey) return;
-    avatarSaving.value = true;
-    try {
-        await setAvatar(avatarId);
-        // Обновляем локально сразу
-        form.value = { ...form.value, avatar: { image_key: imageKey } };
-        // Обновляем стор в фоне
-        userStore.fetchUser();
-    } catch (e) {
-        console.error('Ошибка смены аватарки:', e);
-    } finally {
-        avatarSaving.value = false;
-    }
-};
-
-// ─── переключение режима редактирования аватарки ─────────────────────────────
-const toggleAvatar = () => {
-    if (isAvatarEditing.value) {
-        isAvatarEditing.value = false;
-        isEditAvatar.value = false;
-        return;
-    }
+const handleAvatarClick = () => {
     if (isEditAvatar.value) {
-        isAvatarEditing.value = true;
+        router.push({ name: 'profileAvatars' });
     } else {
         isEditAvatar.value = true;
     }
 };
 
-// ─── инициализация ───────────────────────────────────────────────────────────
-onMounted(async () => {
+onMounted(() => {
     form.value = { ...userStore.getCurrentUser() };
     initialForm.value = JSON.parse(JSON.stringify(form.value));
-    await loadAvatars();
 });
 
-// ─── форма профиля ───────────────────────────────────────────────────────────
 const focusInput = (field) => document.getElementById(field).focus();
 const clearError = (field) => {
     errors.value[field] = '';
@@ -345,6 +223,10 @@ const confirmSave = async () => {
     border: 3px solid #262060;
 }
 
+.opacity-20 {
+    opacity: 20%;
+}
+
 .avatar {
     cursor: pointer;
     object-fit: cover;
@@ -352,6 +234,7 @@ const confirmSave = async () => {
     border-radius: 50%;
     width: 100%;
     height: 100%;
+    transition: opacity 0.2s ease;
 }
 
 .edit-avatar-icon {
@@ -376,113 +259,7 @@ const confirmSave = async () => {
     }
 }
 
-.opacity-20 {
-    opacity: 20%;
-}
-
-// ─── аватарки ────────────────────────────────────────────────────────────────
-.avatar-edit {
-    width: 100%;
-    max-width: 400px;
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
-}
-
-.avatar-edit-card {
-    &__title {
-        margin: 0 0 4px 0;
-        font-size: 22px;
-        font-weight: 800;
-        line-height: 1.1;
-        color: #311d5d;
-    }
-
-    &__hint {
-        margin: 0 0 12px 0;
-        font-size: 12px;
-        font-weight: 400;
-        color: #311d5d80;
-    }
-}
-
-.avatar-grid {
-    display: grid;
-    grid-template-columns: repeat(4, minmax(0, 1fr));
-    gap: 12px;
-    background: #262060;
-    border-radius: 20px;
-    padding: 18px;
-
-    &--basic {
-        max-height: 140px;
-        overflow-y: auto;
-        scrollbar-width: none;
-        &::-webkit-scrollbar {
-            display: none;
-        }
-    }
-}
-
-.avatar-tile {
-    position: relative;
-    width: 100%;
-    aspect-ratio: 1 / 1;
-    border-radius: 50%;
-    padding: 0;
-    border: 2px solid transparent;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    overflow: hidden;
-    background: transparent;
-    transition:
-        border-color 0.15s ease,
-        box-shadow 0.15s ease,
-        transform 0.06s ease;
-
-    &:active:not(:disabled) {
-        transform: scale(0.95);
-    }
-
-    &--selected {
-        border-color: #79bbfb;
-        box-shadow: 0 0 0 3px rgba(121, 187, 251, 0.35);
-    }
-
-    &--locked {
-        cursor: default;
-        opacity: 0.7;
-    }
-
-    &__img {
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-        object-position: top;
-        border-radius: 50%;
-        display: block;
-    }
-
-    &__lock {
-        position: absolute;
-        inset: 0;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        background: rgba(0, 0, 0, 0.45);
-        border-radius: 50%;
-
-        img {
-            width: 40%;
-            height: 40%;
-            object-fit: contain;
-        }
-    }
-}
-
-// ─── форма профиля ────────────────────────────────────────────────────────────
+// ─── форма профиля ───
 .profile-card {
     background: #262060;
     border-radius: 20px;
