@@ -3,7 +3,13 @@
         <!-- Шаг 1: Информация о категории -->
         <div v-if="step === '1'" class="categoryAddContainer">
             <div class="cover-upload">
-                <label class="cover-box" :class="{ error: errors.category_photo }">
+                <label
+                    class="cover-box"
+                    :class="{
+                        error: errors.category_photo,
+                        'cover-box--filled': form.category_photo,
+                    }"
+                >
                     <input
                         type="file"
                         accept="image/*"
@@ -28,6 +34,17 @@
                 <label>Описание категории</label>
                 <textarea v-model="form.description" placeholder="Введите описание"></textarea>
                 <span v-if="errors.description" class="error-msg">Поле заполнено некорректно</span>
+            </div>
+
+            <div class="radio-group">
+                <label class="radio-label">
+                    <input type="radio" v-model="form.is_paid" :value="false" />
+                    <span>Бесплатная</span>
+                </label>
+                <label class="radio-label">
+                    <input type="radio" v-model="form.is_paid" :value="true" />
+                    <span>Платная</span>
+                </label>
             </div>
 
             <div class="btn_container">
@@ -58,7 +75,7 @@
 
 <script setup>
 //vue
-import { reactive, ref, onUnmounted, computed, watch } from 'vue';
+import { reactive, ref, onMounted, onUnmounted, computed, watch } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 //components
 import addCardToCategory from './addCardToCategory.vue';
@@ -68,6 +85,7 @@ import { useFormValidation } from '@/composables/useFormValidation';
 import { useFileUpload } from '@/composables/useFileUpload';
 import { useImageValidation } from '@/composables/useImageValidation';
 import { useCategoriesStore } from '@/stores/categories';
+import { useUserStore } from '@/stores/user';
 import { push } from 'notivue';
 
 const props = defineProps({
@@ -77,15 +95,41 @@ const props = defineProps({
 const route = useRoute();
 const router = useRouter();
 const categoryStore = useCategoriesStore();
+const userStore = useUserStore();
 const currentCategory = computed(() => categoryStore.selectedCategory);
 const loading = ref(false);
 const originalCategory = ref(null);
 const originalCards = ref([]);
 
+const form = reactive({
+    name: props.updating ? currentCategory.value.name : '',
+    description: props.updating ? currentCategory.value.description : '',
+    category_photo: props.updating ? currentCategory.value?.category_photo : null,
+    category_photo_preview: null,
+    is_paid: props.updating ? (currentCategory.value?.is_paid ?? false) : false,
+    cards: props.updating ? currentCategory.value.cards : [],
+});
+
 // ─── Навигация по шагам ──────────────────────────────────────────────────────
 const step = computed(() => route.query.step ?? '1');
 
 const goToStep = (s) => router.push({ query: { step: s } });
+
+const isFormFilled = computed(() =>
+    props.updating
+        ? Boolean(currentCategory.value?.id)
+        : Boolean(form.name && form.description && form.category_photo)
+);
+
+watch(
+    step,
+    (newStep) => {
+        if (newStep !== '1' && !isFormFilled.value) {
+            router.replace({ query: { step: '1' } });
+        }
+    },
+    { immediate: true }
+);
 
 // ─── Состояние формы карточки (поднято из addCardToCategory) ─────────────────
 const editingIndex = ref(null);
@@ -119,14 +163,6 @@ const handleCardClose = () => {
 
 // ─── Форма категории ──────────────────────────────────────────────────────────
 const saveAction = computed(() => (props.updating ? updateCategory : publishCategory));
-
-const form = reactive({
-    name: props.updating ? currentCategory.value.name : '',
-    description: props.updating ? currentCategory.value.description : '',
-    category_photo: props.updating ? currentCategory.value?.category_photo : null,
-    category_photo_preview: null,
-    cards: props.updating ? currentCategory.value.cards : [],
-});
 
 if (props.updating && currentCategory.value?.category_photo) {
     form.category_photo_preview = `${import.meta.env.VITE_STORAGE_URI}/${currentCategory.value.id}/images/${currentCategory.value.category_photo}`;
@@ -174,6 +210,7 @@ const getCategoryDiff = () => {
     if (form.description !== originalCategory.value.description)
         diff.description = form.description;
     if (form.category_photo instanceof File) diff.category_photo = form.category_photo;
+    if (form.is_paid !== originalCategory.value.is_paid) diff.is_paid = form.is_paid;
     return diff;
 };
 
@@ -240,6 +277,7 @@ const publishCategory = async () => {
             name: form.name,
             description: form.description,
             category_photo: form.category_photo,
+            is_paid: form.is_paid,
         });
 
         const categoryId = response?.category?.id;
@@ -312,6 +350,7 @@ watch(
             name: category.name,
             description: category.description,
             category_photo: category.category_photo,
+            is_paid: category.is_paid ?? false,
         };
 
         originalCards.value = category.cards.map((card) => {
@@ -325,7 +364,12 @@ watch(
     { immediate: true }
 );
 
+onMounted(() => {
+    userStore.setHeaderTitle(props.updating ? 'Редактирование' : 'Создание');
+});
+
 onUnmounted(() => {
+    userStore.setHeaderTitle(null);
     if (form.category_photo_preview?.startsWith('blob:')) {
         URL.revokeObjectURL(form.category_photo_preview);
     }
@@ -355,6 +399,10 @@ onUnmounted(() => {
     color: white;
     font-size: 32px;
     cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+.cover-box--filled {
+    background: #79bbfb;
 }
 .cover-preview img {
     width: 100%;
@@ -366,7 +414,7 @@ onUnmounted(() => {
     display: none;
 }
 .form-group {
-    margin-bottom: 20px;
+    margin-bottom: 16px;
     display: flex;
     flex-direction: column;
     width: 100%;
@@ -481,5 +529,52 @@ textarea {
     width: 100%;
     height: auto;
     padding: 0 20px;
+}
+
+.radio-group {
+    display: flex;
+    gap: 20px;
+    margin-bottom: 16px;
+}
+
+.radio-label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    font-family: Mulish;
+    font-weight: 600;
+    font-size: 16px;
+    color: #262060;
+}
+
+.radio-label input[type='radio'] {
+    appearance: none;
+    -webkit-appearance: none;
+    width: 18px;
+    height: 18px;
+    border: 2px solid #262060;
+    border-radius: 50%;
+    outline: none;
+    cursor: pointer;
+    flex-shrink: 0;
+    position: relative;
+    transition: border-color 0.2s;
+}
+
+.radio-label input[type='radio']:checked {
+    border-color: #2e236d;
+}
+
+.radio-label input[type='radio']:checked::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    background-color: #2e236d;
 }
 </style>
