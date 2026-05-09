@@ -12,11 +12,14 @@
 
 <script setup>
 import { ref, markRaw, defineEmits, computed } from 'vue';
+import { useRoute, useRouter } from 'vue-router';
 import AttackPlanetGame from '@/components/AttackPlanet/AttackPlanetGame.vue';
 import AttackPlanetResult from '@/components/AttackPlanet/AttackPlanetResult.vue';
 import AttackPlanetLoss from '@/components/AttackPlanet/AttackPlanetLoss.vue';
 import AttackPlanetWin from '@/components/AttackPlanet/AttackPlanetWin.vue';
 
+const route = useRoute();
+const router = useRouter();
 const emit = defineEmits(['update:lives', 'switch-component']);
 
 const activeComponent = ref(markRaw(AttackPlanetGame));
@@ -30,7 +33,19 @@ const componentProps = computed(()=>  ({
 const textForAllStarsGiven = `Продолжайте изучение новых слов и\u00A0не\u00A0забывайте возвращаться для закрепления изученных слов!!`;
 const titleForAllStarsGiven = `Вы заработали максимальное количество звезд по\u00A0данной игре в\u00A0выбранной категории`;
 
-function switchComponent(componentName) {
+function switchComponent(componentName, wrongCount = 0) {
+    if (route.query.allCategories === 'true') {
+        router.push({
+            name: 'gameResult',
+            query: {
+                wrong: wrongCount,
+                from: 'planetAttackPage',
+                gameSource: 'planet_attack',
+                allCategories: 'true',
+            },
+        });
+        return;
+    }
     switch (componentName) {
         case 'AttackPlanetResult':
             activeComponent.value = markRaw(AttackPlanetResult);

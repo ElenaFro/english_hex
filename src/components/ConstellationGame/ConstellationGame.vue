@@ -118,15 +118,14 @@ const checkMatch = () => {
                             wrongCount: wrongCount.value,
                         });
                     } else {
-                        router.push({
-                            name: 'gameResult',
-                            query: {
-                                wrong: wrongCount.value,
-                                from: 'constellationGame',
-                                gameSource: 'constellation_word',
-                                id: route.query.id || useCategoriesStore().selectedCategory.id,
-                            },
-                        });
+                        const resultQuery = {
+                            wrong: wrongCount.value,
+                            from: 'constellationGame',
+                            gameSource: 'constellation_word',
+                            id: route.query.id || useCategoriesStore().selectedCategory.id,
+                        };
+                        if (route.query.allCategories) resultQuery.allCategories = route.query.allCategories;
+                        router.push({ name: 'gameResult', query: resultQuery });
                     }
                 }
             }
@@ -233,10 +232,13 @@ watch(currentStarsForCategory, (newVal) => {
 onMounted(async () => {
     loading.value = true;
 
+    const isAllCategories = route.query.allCategories === 'true';
     const categoryId = route.query.id || useCategoriesStore().selectedCategory?.id;
 
     if (props.items?.length) {
         data.value = props.items;
+    } else if (isAllCategories) {
+        data.value = await useGamesStore().getWordForConstellationAllCategories();
     } else {
         if (!categoryId) {
             loading.value = false;
@@ -271,7 +273,7 @@ onMounted(async () => {
     intervalId = setInterval(() => {
         timer.value++;
     }, 1000);
-    if (categoryId) {
+    if (categoryId && !isAllCategories) {
         currentStarsForCategory.value = useCategoriesStore().getCategoryStars(categoryId);
     }
 });

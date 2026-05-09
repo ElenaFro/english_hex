@@ -34,9 +34,10 @@
 </template>
 <script setup>
 import { computed } from 'vue';
-import { useRouter } from 'vue-router';
+import { useRouter, useRoute } from 'vue-router';
 
 const router = useRouter();
+const route = useRoute();
 const props = defineProps({
     earnedStars: { type: Number, default: 0 },
     title: { type: String, default: 'Планета спасена, но\u00A0с\u00A0трудностями.' },
@@ -48,6 +49,7 @@ const props = defineProps({
 });
 
 const goToPlanet = () => {
+    if (route.query.allCategories === 'true') return router.push({ name: 'allGames' });
     props.earnedStars > 0
         ? router.push({
               name: 'myPlanet',

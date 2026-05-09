@@ -157,7 +157,6 @@ const checkTimeForLastReject = () => {
 
 const handlePopup = async () => {
     popupShowed.value = true;
-    userStore.markAsShowHint('planet_hint');
     goToMyPlanet();
 };
 

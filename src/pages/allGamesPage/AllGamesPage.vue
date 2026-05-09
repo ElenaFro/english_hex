@@ -74,8 +74,14 @@ const games = ref([
 const goToGame = (game) => {
     if (!game?.routeName || game.disabled) return;
 
-    const query = {};
-    if (route.query?.id) query.id = route.query.id;
+    if (game.id === 'endless') {
+        router.push({ name: game.routeName });
+        return;
+    }
+
+    const query = route.query?.id
+        ? { id: route.query.id }
+        : { allCategories: 'true' };
 
     router.push({ name: game.routeName, query });
 };

@@ -29,10 +29,12 @@
     </div>
 </template>
 <script setup>
-import { useRouter } from 'vue-router';
+import { useRouter, useRoute } from 'vue-router';
 
 const router = useRouter();
+const route = useRoute();
 const goToPlanet = () => {
+    if (route.query.allCategories === 'true') return router.push({ name: 'allGames' });
     router.push({ name: 'myPlanet', query: { earnedStars: 50, gameSource: 'planet_attack' } });
 };
 </script>

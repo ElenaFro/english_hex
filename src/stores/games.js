@@ -33,6 +33,56 @@ export const useGamesStore = defineStore('games', () => {
             console.error('Ошибка при получении вопросов:', error);
         }
     }
+    async function getWordForGalaxyPhrasesGame(id) {
+        try {
+            const response = await apiClient.get(`/games/galaxy-phrases/${id}`);
+            return response.data;
+        } catch (error) {
+            console.error(error);
+            throw error;
+        }
+    }
+
+    async function getWordForConstellationAllCategories() {
+        try {
+            const response = await apiClient.get('/games/constellation-of-the-word/infinity');
+            return response.data;
+        } catch (error) {
+            console.error(error);
+            throw error;
+        }
+    }
+
+    async function getWordForTwinkleAllCategories() {
+        try {
+            const response = await apiClient.get('/games/flickering-words/infinity');
+            return response.data;
+        } catch (error) {
+            console.error(error);
+            throw error;
+        }
+    }
+
+    async function fetchDataForPlanetAttackAllCategories() {
+        try {
+            const response = await apiClient.get('/games/planet-attack/infinity');
+            return response.data;
+        } catch (error) {
+            console.error(error);
+            throw error;
+        }
+    }
+
+    async function getWordForGalaxyPhrasesAllCategories() {
+        try {
+            const response = await apiClient.get('/games/galaxy-phrases/infinity');
+            return response.data;
+        } catch (error) {
+            console.error(error);
+            throw error;
+        }
+    }
+
     async function getInfinityMode() {
         try {
             const response = await apiClient.get('/games/infinity-mode');
@@ -60,13 +110,12 @@ export const useGamesStore = defineStore('games', () => {
         getWordForConstellatonGame,
         getWordForTwinkleGame,
         fetchDataForPlanetAttack,
+        getWordForGalaxyPhrasesGame,
+        getWordForConstellationAllCategories,
+        getWordForTwinkleAllCategories,
+        fetchDataForPlanetAttackAllCategories,
+        getWordForGalaxyPhrasesAllCategories,
         getInfinityMode,
         finishInfinityMode,
     };
 });
-
-
-
-
-
-
