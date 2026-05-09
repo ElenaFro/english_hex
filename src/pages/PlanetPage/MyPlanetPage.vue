@@ -1,5 +1,4 @@
 <template>
-    <CongratulationPopup v-if="dataLoaded && !popupShowed && !everPlayedGame" @next="handlePopup" />
     <myNewPlanetPopup v-if="showNewPlanet" @goToMain="handlePopup" />
     <goToMainPopup v-if="showGoToMain" />
     <AchievementPopup
@@ -47,9 +46,8 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted, nextTick, watch } from 'vue';
+import { ref, computed, onMounted, nextTick } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
-import CongratulationPopup from '@/components/myPlanetPopup/CongratulationPopup.vue';
 import myNewPlanetPopup from '@/components/myPlanetPopup/myNewPlanetPopup.vue';
 import goToMainPopup from '@/components/myPlanetPopup/goToMainPopup.vue';
 import AchievementPopup from '@/shared/components/popups/AchievementPopup.vue';
@@ -61,7 +59,6 @@ import { useElementPosition } from '@/shared/composables/useElementPosition';
 const router = useRouter();
 const route = useRoute();
 
-const popupShowed = ref(false);
 const myPlanet = ref(false);
 const showNewPlanet = ref(false);
 const showGoToMain = ref(false);
@@ -95,8 +92,9 @@ const overlayClass = computed(() => ({ 'index-up': isShowPlanetHint.value }));
 
 const closePlanetHint = () => {
     isShowPlanetHint.value = false;
-    userStore.switchStarOverview(false);
+    userStore.switchPlanetOverview(isShowPlanetHint.value);
     userStore.markAsShowHint('planet_hint');
+    goToEditPlanet();
 };
 
 onMounted(async () => {
@@ -104,9 +102,12 @@ onMounted(async () => {
     const achievement =
         categoriesStore.pendingAchievement ??
         JSON.parse(localStorage.getItem('pendingAchievement') ?? 'null');
-    if (achievement) {
+    if (achievement?.title) {
         achievementData.value = achievement;
         showAchievement.value = true;
+        categoriesStore.pendingAchievement = null;
+        localStorage.removeItem('pendingAchievement');
+    } else if (achievement) {
         categoriesStore.pendingAchievement = null;
         localStorage.removeItem('pendingAchievement');
     }
@@ -118,6 +119,7 @@ onMounted(async () => {
 
         everPlayedGame.value = currentUser.ever_played_game;
         myPlanet.value = everPlayedGame.value;
+        if (!everPlayedGame.value) showNewPlanet.value = true;
     } catch (error) {
         console.error('Error in onMounted:', error);
     } finally {
@@ -146,28 +148,12 @@ onMounted(async () => {
     }
 });
 
-watch(
-    () => route.name,
-    async (newName) => {
-        if (isShowPlanetOverview.value && newName === 'myPlanet') {
-            isShowPlanetHint.value = true;
-            await nextTick();
-            calculatePositionDelayed();
-        }
-    }
-);
-
-const handlePopup = (action) => {
-    if (action === 'toPlanet') {
-        popupShowed.value = true;
-        showNewPlanet.value = true;
-    } else if (action === 'goToMain') {
-        showNewPlanet.value = false;
-        myPlanet.value = true;
-        setTimeout(() => {
-            animateStars.value = true;
-        }, 500);
-    }
+const handlePopup = () => {
+    showNewPlanet.value = false;
+    myPlanet.value = true;
+    setTimeout(() => {
+        animateStars.value = true;
+    }, 500);
 };
 
 const handleAnimationEnd = async () => {
@@ -235,6 +221,10 @@ const getDecorationStyle = (key) => {
 };
 
 const goToEditPlanet = () => {
+    if (isShowPlanetHint.value) {
+        closePlanetHint();
+        return;
+    }
     router.push({ name: 'editPlanet' });
 };
 </script>
@@ -286,6 +276,7 @@ const goToEditPlanet = () => {
             display: flex;
             align-items: center;
             gap: 3px;
+            z-index: 500;
 
             &__stars {
                 font-size: 50px;
@@ -300,7 +291,7 @@ const goToEditPlanet = () => {
             }
 
             &.animate-fly {
-                animation: flyUp 4s ease-out forwards;
+                animation: flyUp 2s ease-out forwards;
             }
         }
     }

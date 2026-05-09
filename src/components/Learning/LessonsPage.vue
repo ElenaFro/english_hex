@@ -178,7 +178,7 @@ const handleNextOrFinish = async () => {
         if (props.propsCards.length > 0) return emit('closePreview');
         if (!selectedCategory.value.completed_category) localStorage.setItem('earnedStars', 20);
         const result = await categoriesStore.updateComplateCategory(selectedCategory.value.id);
-        if (result?.achievement) {
+        if (result?.achievement?.title) {
             categoriesStore.pendingAchievement = result.achievement;
             localStorage.setItem('pendingAchievement', JSON.stringify(result.achievement));
         }
