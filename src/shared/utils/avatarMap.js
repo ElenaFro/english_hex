@@ -63,7 +63,7 @@ export const getAvatarSrc = (imageKey) => avatarMap[imageKey] ?? locked;
  * @returns {string}
  */
 export const getUserAvatarSrc = (user) => {
-    const key = user?.avatar?.image_key;
+    const key = user?.avatar?.avatar_key;
     if (key && avatarMap[key]) return avatarMap[key];
     return user?.gender === 'female' ? avatarMap.female_default : avatarMap.male_default;
 };
