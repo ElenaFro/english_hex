@@ -1,5 +1,6 @@
 <template>
     <div class="page-container">
+        <!-- Текущая аватарка + кнопка выхода -->
         <div class="avatar-section">
             <div class="avatar-wrapper" @click="toggleAvatar">
                 <img :src="avatarIcon" class="avatar" :class="opacityClass" alt="User avatar" />
@@ -18,42 +19,64 @@
                 />
             </div>
         </div>
-        <div v-if="isAvatarEditing" class="avatar-edit">
-            <section class="avatar-edit-card">
-                <p class="avatar-edit-card__title">Базовые</p>
-                <div class="avatar-grid avatar-grid--basic">
-                    <button
-                        v-for="item in basicAvatars"
-                        :key="item.id"
-                        type="button"
-                        class="avatar-tile"
-                        :class="{ 'avatar-tile--selected': isAvatarSelected(item.value) }"
-                        @click="selectAvatar(item.value)"
-                        :aria-label="`Выбрать аватар ${item.id}`"
-                    >
-                        <img class="avatar-tile__img" :src="item.src" alt="" />
-                    </button>
-                </div>
-            </section>
 
-            <section class="avatar-edit-card">
-                <p class="avatar-edit-card__title">Премиум</p>
-                <div class="avatar-grid avatar-grid--premium">
-                    <button
-                        v-for="item in premiumAvatars"
-                        :key="item.id"
-                        type="button"
-                        class="avatar-tile"
-                        :class="{ 'avatar-tile--selected': isAvatarSelected(item.value) }"
-                        @click="selectAvatar(item.value)"
-                        :aria-label="`Выбрать премиум-аватар ${item.id}`"
-                    >
-                        <img class="avatar-tile__img" :src="item.src" alt="" />
-                    </button>
-                </div>
-            </section>
+        <!-- Редактирование аватарки -->
+        <div v-if="isAvatarEditing" class="avatar-edit">
+            <Loader v-if="avatarsLoading" />
+            <template v-else>
+                <!-- Базовые -->
+                <section class="avatar-edit-card">
+                    <p class="avatar-edit-card__title">Базовые</p>
+                    <div class="avatar-grid avatar-grid--basic">
+                        <button
+                            v-for="item in freeAvatarsList"
+                            :key="item.image_key"
+                            type="button"
+                            class="avatar-tile"
+                            :class="{
+                                'avatar-tile--selected': currentAvatarKey === item.image_key,
+                            }"
+                            :disabled="!item.is_unlocked || avatarSaving"
+                            :aria-label="item.name"
+                            @click="selectAvatar(item.id, item.image_key)"
+                        >
+                            <img
+                                class="avatar-tile__img"
+                                :src="item.is_unlocked ? getAvatarSrc(item.image_key) : lockedIcon"
+                                alt=""
+                            />
+                        </button>
+                    </div>
+                </section>
+
+                <!-- Премиум -->
+                <section class="avatar-edit-card">
+                    <p class="avatar-edit-card__title">Премиум</p>
+                    <div class="avatar-grid avatar-grid--premium">
+                        <button
+                            v-for="item in premiumAvatarsList"
+                            :key="item.image_key"
+                            type="button"
+                            class="avatar-tile"
+                            :class="{
+                                'avatar-tile--selected': currentAvatarKey === item.image_key,
+                            }"
+                            :disabled="!item.is_unlocked || avatarSaving"
+                            :aria-label="item.name"
+                            @click="selectAvatar(item.id, item.image_key)"
+                        >
+                            <img
+                                class="avatar-tile__img"
+                                :src="item.is_unlocked ? getAvatarSrc(item.image_key) : lockedIcon"
+                                alt=""
+                            />
+                        </button>
+                    </div>
+                </section>
+            </template>
         </div>
 
+        <!-- Форма профиля -->
         <div v-else class="profile-card">
             <div class="form-group">
                 <label for="name">Имя</label>
@@ -78,31 +101,18 @@
                 <label>Пол</label>
                 <div class="gender-options">
                     <label class="gender-label">
-                        <input
-                            type="radio"
-                            name="gender"
-                            value="male"
-                            v-model="form.gender"
-                            @change="updateAvatar"
-                        />
+                        <input type="radio" name="gender" value="male" v-model="form.gender" />
                         <span class="custom-radio"></span>
                         Мужской
                     </label>
                     <label class="gender-label">
-                        <input
-                            type="radio"
-                            name="gender"
-                            value="female"
-                            v-model="form.gender"
-                            @change="updateAvatar"
-                        />
+                        <input type="radio" name="gender" value="female" v-model="form.gender" />
                         <span class="custom-radio"></span>
                         Женский
                     </label>
                 </div>
                 <span v-if="errors.gender" class="error-message">{{ errors.gender }}</span>
             </div>
-
             <div class="form-group">
                 <label for="email">Почта</label>
                 <div class="input-with-icon">
@@ -162,105 +172,120 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue';
 import { useUserStore } from '@/stores/user';
-import { getUserAvatarSrc } from '@/shared/utils/avatarMap';
+import {
+    getAvatarSrc,
+    getUserAvatarSrc,
+    lockedAvatarSrc as lockedIcon,
+} from '@/shared/utils/avatarMap';
+import { getAvatars, setAvatar } from '@/api/avatars';
 import apiClient from '@/api/axios';
 import { compareObjects } from '@/shared/compareObject';
 import defaultPopup from '@/shared/components/popups/defaultPopup.vue';
+import Loader from '@/shared/components/Loader.vue';
 import { useRouter } from 'vue-router';
 
 const router = useRouter();
+const userStore = useUserStore();
+
+// ─── форма профиля ───────────────────────────────────────────────────────────
 const form = ref({});
 const initialForm = ref({});
-const isEditAvatar = ref(false);
-const isAvatarEditing = ref(false);
-
-const errors = ref({
-    gender: '',
-    name: '',
-    email: '',
-    password: '',
-});
-
-onMounted(async () => {
-    form.value = { ...useUserStore().getCurrentUser() };
-    initialForm.value = JSON.parse(JSON.stringify(form.value));
-});
-
+const errors = ref({ gender: '', name: '', email: '', password: '' });
 const isSaving = ref(false);
 const showPopup = ref(false);
 const edit = ref(true);
 
+// ─── аватарки ────────────────────────────────────────────────────────────────
+const avatarsLoading = ref(false);
+const avatarSaving = ref(false);
+const isEditAvatar = ref(false);
+const isAvatarEditing = ref(false);
+
+// Данные из API
+const freeAvatarsList = ref([]);
+const premiumAvatarsList = ref([]);
+
+const currentAvatarKey = computed(() => form.value?.avatar?.image_key ?? null);
 const avatarIcon = computed(() => getUserAvatarSrc(form.value));
+const opacityClass = computed(() => ({ 'opacity-20': isEditAvatar.value }));
 
-const basicAvatars = computed(() =>
-    Array.from({ length: 8 }, (_, index) => ({
-        id: `basic-${index + 1}`,
-        value: 'male.webp',
-        src: BoyIcon,
-    }))
-);
-
-const premiumAvatars = computed(() =>
-    Array.from({ length: 4 }, (_, index) => ({
-        id: `premium-${index + 1}`,
-        value: 'male.webp',
-        src: BoyIcon,
-    }))
-);
-
-const selectAvatar = (avatar) => {
-    form.value = {
-        ...form.value,
-        avatar,
-    };
+// ─── загрузка аватарок ───────────────────────────────────────────────────────
+const loadAvatars = async () => {
+    avatarsLoading.value = true;
+    try {
+        const { data } = await getAvatars();
+        freeAvatarsList.value = data.avatars?.basic ?? [];
+        premiumAvatarsList.value = data.avatars?.premium ?? [];
+        // Синхронизируем текущую аватарку из ответа
+        if (data.current_avatar?.image_key) {
+            form.value = {
+                ...form.value,
+                avatar: { image_key: data.current_avatar.image_key },
+            };
+        }
+    } catch (e) {
+        console.error('Ошибка загрузки аватарок:', e);
+    } finally {
+        avatarsLoading.value = false;
+    }
 };
 
-const isAvatarSelected = (avatar) => form.value?.avatar === avatar;
+// ─── выбор аватарки (применяется сразу) ─────────────────────────────────────
+const selectAvatar = async (avatarId, imageKey) => {
+    if (avatarSaving.value || currentAvatarKey.value === imageKey) return;
+    avatarSaving.value = true;
+    try {
+        await setAvatar(avatarId);
+        // Обновляем локально сразу
+        form.value = { ...form.value, avatar: { image_key: imageKey } };
+        // Обновляем стор в фоне
+        userStore.fetchUser();
+    } catch (e) {
+        console.error('Ошибка смены аватарки:', e);
+    } finally {
+        avatarSaving.value = false;
+    }
+};
 
-const opacityClass = computed(() => ({
-    'opacity-20': isEditAvatar.value,
-}));
-
+// ─── переключение режима редактирования аватарки ─────────────────────────────
 const toggleAvatar = () => {
     if (isAvatarEditing.value) {
         isAvatarEditing.value = false;
         isEditAvatar.value = false;
         return;
     }
-
-    isEditAvatar.value === true ? switchAvatarEditing(true) : (isEditAvatar.value = true);
+    if (isEditAvatar.value) {
+        isAvatarEditing.value = true;
+    } else {
+        isEditAvatar.value = true;
+    }
 };
 
-const updateAvatar = () => {
-    clearError('gender');
-};
+// ─── инициализация ───────────────────────────────────────────────────────────
+onMounted(async () => {
+    form.value = { ...userStore.getCurrentUser() };
+    initialForm.value = JSON.parse(JSON.stringify(form.value));
+    await loadAvatars();
+});
 
-const switchAvatarEditing = (value) => {
-    isAvatarEditing.value = !!value;
-};
-
-const focusInput = (field) => {
-    document.getElementById(field).focus();
-};
-
+// ─── форма профиля ───────────────────────────────────────────────────────────
+const focusInput = (field) => document.getElementById(field).focus();
 const clearError = (field) => {
     errors.value[field] = '';
 };
 
 const logout = () => {
-    useUserStore().logout();
+    userStore.logout();
     router.push({ name: 'AuthPage' });
 };
 
 const validateForm = () => {
     let isValid = true;
     errors.value = { gender: '', name: '', email: '', password: '' };
-
-    if (!form.value.name.trim()) {
+    if (!form.value.name?.trim()) {
         errors.value.name = 'Поле заполнено некорректно';
         isValid = false;
     }
-
     const emailRegex = /^(?=.*[A-Za-z0-9])[^<>{}()[\],;:\\/"* ]{8,30}$/;
     if (!form.value.email) {
         errors.value.email = 'Поле заполнено некорректно';
@@ -269,16 +294,6 @@ const validateForm = () => {
         errors.value.email = 'Поле заполнено некорректно';
         isValid = false;
     }
-
-    // const passwordRegex = /^(?=.*[A-Za-z0-9]).{8,30}$/;
-    // if (!form.value.password) {
-    //     errors.value.password = "Поле заполнено некорректно";
-    //     isValid = false;
-    // } else if (!passwordRegex.test(form.value.password)) {
-    //     errors.value.password = "Поле заполнено некорректно";
-    //     isValid = false;
-    // }
-
     return isValid;
 };
 
@@ -295,77 +310,24 @@ const confirmSave = async () => {
     isSaving.value = true;
     try {
         const payload = compareObjects(initialForm.value, form.value);
-        await apiClient
-            .patch('/profile/update', payload)
-            .then(async () => {
-                await useUserStore().fetchUser();
-                closePopup();
-                isAvatarEditing.value = false;
-            })
-            .catch((error) => {
-                throw error;
-            });
+        await apiClient.patch('/profile/update', payload);
+        await userStore.fetchUser();
+        closePopup();
+        isAvatarEditing.value = false;
     } catch (error) {
         console.error('Ошибка сохранения:', error);
     } finally {
         isSaving.value = false;
-        form.value = useUserStore().getCurrentUser();
+        form.value = { ...userStore.getCurrentUser() };
     }
 };
 </script>
 
 <style scoped lang="scss">
-.profile-page {
-    width: 100%;
-    height: 100vh;
-    min-height: 100%;
-    padding: 40px 30px;
-    background-color: #f6f6fe;
-    border-radius: 40px;
-}
-
-.profile-page__inner {
-    overflow-y: scroll;
-    width: 100%;
-    height: 100%;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    row-gap: 25px;
-    scrollbar-width: none;
-    overflow-y: auto;
-    border-top-left-radius: 40px;
-    border-top-right-radius: 40px;
-
-    @media (min-width: 375px) {
-        width: 375px;
-    }
-
-    @media (max-width: 375px) {
-        width: 100%;
-    }
-}
-
 .page-container {
     row-gap: 25px;
     scrollbar-width: none;
     padding-top: 34px;
-}
-
-.profile-card {
-    background: #262060;
-    border-radius: 20px;
-    padding: 18px;
-    width: 100%;
-    max-width: 400px;
-    max-height: 800px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
-    color: #ffffff;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 20px;
-    margin-top: 15px;
 }
 
 .avatar-section {
@@ -402,17 +364,151 @@ const confirmSave = async () => {
     z-index: 20;
 }
 
+.logout-wrapper {
+    position: relative;
+    width: 50px;
+
+    &__icon {
+        position: absolute;
+        top: -10px;
+        right: -10px;
+        cursor: pointer;
+    }
+}
+
+.opacity-20 {
+    opacity: 20%;
+}
+
+// ─── аватарки ────────────────────────────────────────────────────────────────
+.avatar-edit {
+    width: 100%;
+    max-width: 400px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.avatar-edit-card {
+    &__title {
+        margin: 0 0 4px 0;
+        font-size: 22px;
+        font-weight: 800;
+        line-height: 1.1;
+        color: #311d5d;
+    }
+
+    &__hint {
+        margin: 0 0 12px 0;
+        font-size: 12px;
+        font-weight: 400;
+        color: #311d5d80;
+    }
+}
+
+.avatar-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 12px;
+    background: #262060;
+    border-radius: 20px;
+    padding: 18px;
+
+    &--basic {
+        max-height: 140px;
+        overflow-y: auto;
+        scrollbar-width: none;
+        &::-webkit-scrollbar {
+            display: none;
+        }
+    }
+}
+
+.avatar-tile {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 1 / 1;
+    border-radius: 50%;
+    padding: 0;
+    border: 2px solid transparent;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    overflow: hidden;
+    background: transparent;
+    transition:
+        border-color 0.15s ease,
+        box-shadow 0.15s ease,
+        transform 0.06s ease;
+
+    &:active:not(:disabled) {
+        transform: scale(0.95);
+    }
+
+    &--selected {
+        border-color: #79bbfb;
+        box-shadow: 0 0 0 3px rgba(121, 187, 251, 0.35);
+    }
+
+    &--locked {
+        cursor: default;
+        opacity: 0.7;
+    }
+
+    &__img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        object-position: top;
+        border-radius: 50%;
+        display: block;
+    }
+
+    &__lock {
+        position: absolute;
+        inset: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: rgba(0, 0, 0, 0.45);
+        border-radius: 50%;
+
+        img {
+            width: 40%;
+            height: 40%;
+            object-fit: contain;
+        }
+    }
+}
+
+// ─── форма профиля ────────────────────────────────────────────────────────────
+.profile-card {
+    background: #262060;
+    border-radius: 20px;
+    padding: 18px;
+    width: 100%;
+    max-width: 400px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+    color: #ffffff;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+    margin-top: 15px;
+}
+
 .form-group {
     width: 100%;
     display: flex;
     flex-direction: column;
     gap: 5px;
-}
 
-.form-group label {
-    font-size: 12px;
-    font-weight: 400;
-    color: #fff;
+    label {
+        font-size: 12px;
+        font-weight: 400;
+        color: #fff;
+    }
 }
 
 .form-input {
@@ -425,24 +521,24 @@ const confirmSave = async () => {
     color: #ffffff;
     outline: none;
     width: 100%;
-}
 
-.form-input::placeholder {
-    color: #a3bffa;
-}
+    &::placeholder {
+        color: #a3bffa;
+    }
 
-.form-input:-webkit-autofill,
-.form-input:-webkit-autofill:hover,
-.form-input:-webkit-autofill:focus,
-.form-input:-webkit-autofill:active {
-    -webkit-text-fill-color: #ffffff;
-    -webkit-box-shadow: 0 0 0 1000px #262060 inset;
-    box-shadow: 0 0 0 1000px #262060 inset;
-    transition: background-color 9999s ease-in-out 0s;
-}
+    &:-webkit-autofill,
+    &:-webkit-autofill:hover,
+    &:-webkit-autofill:focus,
+    &:-webkit-autofill:active {
+        -webkit-text-fill-color: #ffffff;
+        -webkit-box-shadow: 0 0 0 1000px #262060 inset;
+        box-shadow: 0 0 0 1000px #262060 inset;
+        transition: background-color 9999s ease-in-out 0s;
+    }
 
-.form-input.error {
-    border-bottom: 2px solid #ff0000;
+    &.error {
+        border-bottom: 2px solid #ff0000;
+    }
 }
 
 .input-with-icon {
@@ -455,17 +551,11 @@ const confirmSave = async () => {
     top: 50%;
     transform: translateY(-50%);
     cursor: pointer;
-    color: #3b82f6;
-    font-size: 16px;
-}
 
-.edit-icon:hover {
-    color: #60a5fa;
-}
-
-.edit-icon img {
-    width: 16px;
-    height: 16px;
+    img {
+        width: 16px;
+        height: 16px;
+    }
 }
 
 .gender-options {
@@ -483,10 +573,10 @@ const confirmSave = async () => {
     font-size: 20px !important;
     font-weight: 600 !important;
     cursor: pointer;
-}
 
-.gender-label input[type='radio'] {
-    display: none;
+    input[type='radio'] {
+        display: none;
+    }
 }
 
 .custom-radio {
@@ -527,89 +617,5 @@ const confirmSave = async () => {
 
 .action-button {
     max-width: 240px;
-}
-
-.logout-wrapper {
-    position: relative;
-    width: 50px;
-
-    &__icon {
-        position: absolute;
-        top: -10px;
-        right: -10px;
-        cursor: pointer;
-    }
-}
-
-.opacity-20 {
-    opacity: 20%;
-}
-
-.avatar-edit {
-    width: 100%;
-    max-width: 400px;
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-}
-
-.avatar-edit-card {
-    &__title {
-        margin: 0 0 12px 0;
-        font-size: 22px;
-        font-weight: 800;
-        line-height: 1.1;
-        color: #311d5d;
-    }
-}
-
-.avatar-grid {
-    display: grid;
-    gap: 12px;
-    background: #262060;
-    border-radius: 20px;
-    padding: 18px;
-
-    &--basic {
-        grid-template-columns: repeat(4, minmax(0, 1fr));
-    }
-
-    &--premium {
-        grid-template-columns: repeat(4, minmax(0, 1fr));
-    }
-}
-
-.avatar-tile {
-    width: 100%;
-    aspect-ratio: 1 / 1;
-    border-radius: 50%;
-    padding: 0;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    overflow: hidden;
-    transition:
-        border-color 0.15s ease,
-        box-shadow 0.15s ease,
-        transform 0.06s ease;
-
-    &:active {
-        transform: scale(0.98);
-    }
-
-    &--selected {
-        border-color: #79bbfb;
-        box-shadow: 0 0 0 3px rgba(121, 187, 251, 0.35);
-    }
-
-    &__img {
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-        object-position: top;
-        border-radius: 50%;
-        display: block;
-    }
 }
 </style>
