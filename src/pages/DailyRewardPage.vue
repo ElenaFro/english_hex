@@ -46,7 +46,7 @@
 
         <p class="block-title task">Задание на сегодня:</p>
 
-        <div class="task-wrapper" :class="overlayClass">
+        <div ref="taskWrapperRef" class="task-wrapper" :class="overlayClass">
             <!-- Текст подсказки -->
             <div v-if="showHint">
                 <div class="hint-text-above">
@@ -78,7 +78,7 @@
 </template>
 
 <script setup>
-import { computed, ref, onMounted, watch } from 'vue';
+import { computed, ref, onMounted, watch, nextTick } from 'vue';
 import { useRouter } from 'vue-router';
 import { useUserStore } from '@/stores/user';
 import { useGamesStore } from '@/stores/games';
@@ -90,6 +90,7 @@ const closeHint = () => {
 };
 
 const showHint = ref(false);
+const taskWrapperRef = ref(null);
 const showAvatarReward = ref(false);
 const avatarRewardKeys = ref(null);
 const currentDay = ref(1);
@@ -147,8 +148,10 @@ onMounted(async () => {
     }
 
     if (!userStore.hintsArray.daily_reward) {
-        setTimeout(() => {
+        setTimeout(async () => {
             showHint.value = true;
+            await nextTick();
+            taskWrapperRef.value?.scrollIntoView({ behavior: 'smooth', block: 'center' });
         }, 500);
     }
 
