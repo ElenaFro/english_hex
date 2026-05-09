@@ -41,7 +41,13 @@ const props = defineProps({
     questions: { type: Array, default: null },
     isInfinity: { type: Boolean, default: false },
 });
-const emit = defineEmits(['wrong-answer', 'game-finished', 'question-opened', 'image-opened', 'finish']);
+const emit = defineEmits([
+    'wrong-answer',
+    'game-finished',
+    'question-opened',
+    'image-opened',
+    'finish',
+]);
 
 const router = useRouter();
 const route = useRoute();
@@ -221,7 +227,7 @@ const getOptionState = (option) => {
     row-gap: 10px;
     justify-content: space-between;
     margin-top: 2dvh;
-    z-index: 1000;
+    z-index: 200;
 }
 
 .answer-btn {

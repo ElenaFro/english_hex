@@ -12,6 +12,12 @@
             <div v-else class="infinity-game__empty">Нет заданий для бесконечного режима</div>
         </template>
     </section>
+
+    <AvatarRewardPopup
+        :isVisible="showAvatarReward"
+        :avatarKeys="rewardAvatarKeys"
+        @close="onRewardClose"
+    />
 </template>
 
 <script setup>
@@ -24,6 +30,7 @@ import ConstellationGame from '@/components/ConstellationGame/ConstellationGame.
 import WordTwinkleGame from '@/components/wordTwinkle/wordTwinkleGame.vue';
 import AttackPlanetGame from '@/components/AttackPlanet/AttackPlanetGame.vue';
 import GalaxyPhrasesGame from '@/pages/games/galaxyPhrases/components/GalaxyPhrasesGame.vue';
+import AvatarRewardPopup from '@/shared/components/popups/AvatarRewardPopup.vue';
 
 const router = useRouter();
 const gamesStore = useGamesStore();
@@ -33,6 +40,8 @@ const loading = ref(true);
 const groups = ref([]);
 const activeGroupIndex = ref(0);
 const totalCorrect = ref(0);
+const showAvatarReward = ref(false);
+const rewardAvatarKeys = ref(null);
 
 const normalizeGameKey = (value) => (value || '').toString().toLowerCase();
 
@@ -152,14 +161,23 @@ const handleFinish = async (payload = {}) => {
     }
 
     try {
-        await gamesStore.finishInfinityMode(totalCorrect.value);
+        const result = await gamesStore.finishInfinityMode(totalCorrect.value);
+        const reward = result?.reward;
+
+        if (reward?.type === 'avatars') {
+            rewardAvatarKeys.value = reward.avatars?.map((a) => a.image_key) ?? null;
+            showAvatarReward.value = true;
+            return;
+        }
     } catch (error) {
-        console.error(
-            'Ошибка отправки прогресса бесконечного режима',
-            error
-        );
+        console.error('Ошибка отправки прогресса бесконечного режима', error);
     }
 
+    router.push({ name: 'DailyReward' });
+};
+
+const onRewardClose = () => {
+    showAvatarReward.value = false;
     router.push({ name: 'DailyReward' });
 };
 
@@ -202,4 +220,3 @@ onBeforeUnmount(() => {
     font-weight: 600;
 }
 </style>
-
