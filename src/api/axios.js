@@ -1,5 +1,4 @@
 import axios from 'axios';
-import { unref } from 'vue';
 import { useUserStore } from '../stores/user';
 import router from '@/router';
 
@@ -9,6 +8,26 @@ const apiClient = axios.create({
     timeout: 10000,
 });
 
+// Request interceptor — always reads token fresh from localStorage.
+// Store and localStorage are always in sync (login/logout both update both).
+apiClient.interceptors.request.use(
+    (config) => {
+        const token = localStorage.getItem('access_token');
+        config.headers = config.headers ?? {};
+
+        if (token) {
+            config.headers.Authorization = `Bearer ${token}`;
+            config._authTokenUsed = token;
+        } else {
+            delete config.headers.Authorization;
+            config._authTokenUsed = null;
+        }
+
+        return config;
+    },
+    (error) => Promise.reject(error)
+);
+
 let interceptorsInitialized = false;
 
 export function setupInterceptors(pinia) {
@@ -17,38 +36,20 @@ export function setupInterceptors(pinia) {
         return;
     }
     if (interceptorsInitialized) return;
-
-    const authStore = useUserStore(pinia);
     interceptorsInitialized = true;
 
-    apiClient.interceptors.request.use(
-        (config) => {
-            const token = unref(authStore.token) || localStorage.getItem('access_token');
-            config.headers = config.headers ?? {};
-
-            if (token) {
-                config.headers.Authorization = `Bearer ${token}`;
-                config._authTokenUsed = token;
-            } else {
-                delete config.headers.Authorization;
-                config._authTokenUsed = null;
-            }
-
-            return config;
-        },
-        (error) => Promise.reject(error)
-    );
+    const authStore = useUserStore(pinia);
 
     apiClient.interceptors.response.use(
         (response) => response,
         (error) => {
             const status = error.response?.status;
             const requestToken = error.config?._authTokenUsed;
-            const currentToken = unref(authStore.token) || localStorage.getItem('access_token');
+            const currentToken = localStorage.getItem('access_token');
             const tokenChanged = requestToken && currentToken && requestToken !== currentToken;
-            const isLoggingIn = unref(authStore.isLoggingIn);
+            const isLoggingIn = authStore.isLoggingIn;
 
-            if ((status === 401 || status === 403) && !tokenChanged && !isLoggingIn) {
+            if (status === 401 && !tokenChanged && !isLoggingIn) {
                 authStore.logout();
             }
 

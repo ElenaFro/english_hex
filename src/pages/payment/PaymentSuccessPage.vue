@@ -27,7 +27,10 @@
 
 <script setup>
 import { useRouter } from 'vue-router';
+import { useSubscriptionStore } from '@/stores/subscription';
+
 const router = useRouter();
+useSubscriptionStore().invalidate(); // сбрасываем кеш — подписка стала активной
 </script>
 
 <style scoped lang="scss">

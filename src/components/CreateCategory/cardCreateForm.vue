@@ -147,6 +147,7 @@
 
 <script setup>
 import { computed, reactive, ref, watch, onMounted } from 'vue';
+import { useAudio } from '@/shared/composables/useAudio';
 import { useFormValidation } from '@/composables/useFormValidation';
 import { useFileUpload } from '@/composables/useFileUpload';
 import LessonsPage from '../Learning/LessonsPage.vue';
@@ -265,10 +266,9 @@ const deleteAudio = () => {
 };
 const audioInput = ref(null);
 
+const { playAudio: _playAudio } = useAudio();
 const playAudio = () => {
-    if (localForm.audio_preview) {
-        new Audio(localForm.audio_preview).play().catch(console.error);
-    }
+    _playAudio(localForm.audio_preview);
 };
 
 const addVideoText = computed(() => (localForm.video ? 'Видео загружено' : 'Загрузить видео'));

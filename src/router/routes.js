@@ -113,6 +113,13 @@ const routes = [
                         meta: { title: 'Настройки' },
                     },
                     {
+                        path: 'avatars',
+                        name: 'profileAvatars',
+                        component: () =>
+                            import('@/pages/ProfilePage/AvatarsPage/AvatarsPage.vue'),
+                        meta: { title: 'Аватарка' },
+                    },
+                    {
                         path: 'profileAchievements/:id',
                         name: 'profileAchievements',
                         component: () =>

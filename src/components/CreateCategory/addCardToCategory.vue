@@ -244,7 +244,6 @@ watch(
 
 const showPreview = ref(false);
 const showPreviewModal = ref(false);
-const previewFlipped = ref({});
 
 const openPreviewModal = () => {
     showPreviewModal.value = true;
@@ -261,12 +260,6 @@ const previewCategory = () => {
 };
 const closePreview = () => {
     showPreview.value = false;
-};
-const togglePreviewFlip = (id) => {
-    previewFlipped.value[id] = !previewFlipped.value[id];
-};
-const playAudio = (src) => {
-    if (src) new Audio(src).play().catch(console.error);
 };
 
 const publishCategory = () => {

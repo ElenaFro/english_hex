@@ -1,6 +1,6 @@
 <template>
     <section class="user-item-section">
-        <img :src="userImg(user.gender)" class="user-avatar-small" :alt="user.name" />
+        <img :src="getUserAvatarSrc(user)" class="user-avatar-small" :alt="user.name" />
         <span class="user-name">{{ user.name }}</span>
         <div class="user-info">
             <span class="user-stars">{{ user.rating }}</span>
@@ -10,17 +10,11 @@
 </template>
 
 <script setup>
-import maleAvatar from '@/assets/img/DefaultUserAvatar/male.webp';
-import femaleAvatar from '@/assets/img/DefaultUserAvatar/female.svg';
+import { getUserAvatarSrc } from '@/shared/utils/avatarMap';
 
 defineProps({
     user: { type: Object, required: true },
 });
-const userImg = (gender) => {
-    const normalizedGender = gender ? gender.toLowerCase() : '';
-    if (normalizedGender === 'male') return maleAvatar;
-    else return femaleAvatar;
-};
 </script>
 
 <style scoped lang="scss">

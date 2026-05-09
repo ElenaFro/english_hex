@@ -21,6 +21,7 @@
 <script setup>
 import { useRouter } from 'vue-router';
 import StatusCircle from './StatusCircle.vue';
+import { useSubscriptionStore } from '@/stores/subscription';
 import closedLockIcon from '@/assets/img/closed-lock_icon.svg';
 import openLockIcon from '@/assets/img/open-lock_icon.svg';
 import subtract1 from '@/assets/categori/Subtract_1.svg';
@@ -39,6 +40,7 @@ const props = defineProps({
 });
 
 const router = useRouter();
+const subscriptionStore = useSubscriptionStore();
 const classList = ['image_1', 'image_2', 'image_3', 'image_4'];
 const randomClass = ref('');
 
@@ -48,6 +50,10 @@ onMounted(() => {
 });
 
 const goToLearningPage = () => {
+    if (props.locked && !subscriptionStore.hasActiveSubscription) {
+        router.push({ name: 'profileSubscriptions' });
+        return;
+    }
     router.push({ name: 'learning', params: { id: props.id }, query: { name: props.sectionName } });
 };
 

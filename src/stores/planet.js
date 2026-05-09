@@ -3,9 +3,39 @@ import { computed, ref } from 'vue';
 import apiClient from '../api/axios';
 import { push } from 'notivue';
 
+const DECORATION_LEVELS = ['trees', 'mountains', 'rivers', 'stars', 'clouds'];
+
 export const usePlanetStore = defineStore('planet', () => {
     const planetSkinsOptions = ref(null);
     const planetSkins = ref([]);
+    const decorations = ref([]);
+
+    // Возвращает ключ декорации с максимальным уровнем (для обратной совместимости)
+    const activeDecoration = computed(() => {
+        if (!decorations.value?.length) return null;
+        for (let i = DECORATION_LEVELS.length - 1; i >= 0; i--) {
+            if (decorations.value.includes(DECORATION_LEVELS[i])) {
+                return DECORATION_LEVELS[i];
+            }
+        }
+        return null;
+    });
+
+    // Возвращает все активные уровни декораций по порядку (от низшего к высшему)
+    // т.к. уровни включают друг друга, берём все уровни до максимального включительно
+    const activeDecorations = computed(() => {
+        if (!decorations.value?.length) return [];
+        let maxIndex = -1;
+        for (let i = DECORATION_LEVELS.length - 1; i >= 0; i--) {
+            if (decorations.value.includes(DECORATION_LEVELS[i])) {
+                maxIndex = i;
+                break;
+            }
+        }
+        if (maxIndex === -1) return [];
+        return DECORATION_LEVELS.slice(0, maxIndex + 1);
+    });
+
     const selectedSkin = computed(() => {
         const selectedId = planetSkinsOptions.value?.selected_skin;
         if (selectedId == null) {
@@ -32,6 +62,7 @@ export const usePlanetStore = defineStore('planet', () => {
 
             planetSkinsOptions.value = response.data;
             planetSkins.value = planetSkinsOptions.value.rows;
+            decorations.value = response.data.decorations ?? [];
         } catch (error) {
             console.error('Fetch users error:', error);
         }
@@ -52,6 +83,9 @@ export const usePlanetStore = defineStore('planet', () => {
     return {
         planetSkinsOptions,
         planetSkins,
+        decorations,
+        activeDecoration,
+        activeDecorations,
         selectedSkin,
         getPlanetSkins,
         selectSkin,

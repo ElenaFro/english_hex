@@ -30,7 +30,7 @@
                 />
             </div>
             <b-button
-                v-if="isSelfProfile && !profileAchievementsPage"
+                v-if="isSelfProfile && !profileAchievementsPage && userStore.user?.ever_played_game"
                 label="Звёзды сегодня"
                 label-class="text-white"
                 class="button d-mt-34 full_width button-dark_blue"
@@ -43,9 +43,8 @@
 
 <script setup>
 import { computed, ref } from 'vue';
-import BoyIcon from '@/assets/img/DefaultUserAvatar/male.webp';
-import GirlIcon from '@/assets/img/DefaultUserAvatar/female.svg';
 import yellowStarIcon from '@/assets/icons/yelow_star.svg';
+import { getUserAvatarSrc } from '@/shared/utils/avatarMap';
 import BButton from '../components/BaseButton.vue';
 import { useUserStore } from '@/stores/user';
 import { useTeacherStore } from '@/stores/teacher';
@@ -73,7 +72,7 @@ const selectedClassId = computed(() => teacherStore.currentClass?.id ?? route.qu
 const displayName = computed(() => props.user.name || 'Пользователь');
 const displayRating = computed(() => props.user.rating ?? 0);
 const avatarIcon = computed(() =>
-    props.avatarSrc ? props.avatarSrc : props.user.gender === 'male' ? BoyIcon : GirlIcon
+    props.avatarSrc ? props.avatarSrc : getUserAvatarSrc(props.user)
 );
 
 const isSelfProfile = computed(() => (route.params.id || props.user.id) == userStore.user.id);

@@ -18,6 +18,13 @@
                             class="achievement-card"
                             :class="`achievement-card--${item.color || item.tone}`"
                         >
+                            <img
+                                v-if="item.type === 'premium'"
+                                :src="PremiumBg"
+                                class="achievement-card__bg"
+                                alt=""
+                                aria-hidden="true"
+                            />
                             <div class="achievement-card__content">
                                 <h3 class="achievement-card__title">{{ item.label }}</h3>
                                 <p class="achievement-card__date">{{ item.achieved_at }}</p>
@@ -57,6 +64,8 @@ import Loader from '@/shared/components/Loader.vue';
 import GirlPlanet from '@/assets/Di_avatar/girl_with_planet.svg';
 import GirlKeychain from '@/assets/Di_avatar/girl_with_keychain.webp';
 import GirlWithCards from '@/assets/Di_avatar/girl-with-cards.webp';
+import GirlWithAchive from '@/assets/Di_avatar/girl-img2.webp';
+import PremiumBg from '@/assets/img/premium_bg.svg';
 
 const route = useRoute();
 const userStore = useUserStore();
@@ -79,6 +88,7 @@ const achievementVisualByType = {
     planet_level: { color: 'blue', image: GirlPlanet },
     words_per_day: { color: 'pink', image: GirlKeychain },
     category_completed: { color: 'peach', image: GirlWithCards },
+    premium: { color: 'premium', image: GirlWithAchive },
 };
 
 const mapAchievementsWithColor = (achievements = []) => {
@@ -115,9 +125,16 @@ const mapAchievementsWithColor = (achievements = []) => {
     });
 };
 
-const achievementsList = computed(() =>
-    Array.isArray(userProfile.value?.achievements) ? userProfile.value.achievements : []
-);
+const achievementsList = computed(() => {
+    const list = Array.isArray(userProfile.value?.achievements)
+        ? userProfile.value.achievements
+        : [];
+    return list.sort((a, b) => {
+        if (a.type === 'premium') return -1;
+        if (b.type === 'premium') return 1;
+        return 0;
+    });
+});
 
 const refetchUser = async () => {
     userProfile.value =
@@ -205,22 +222,24 @@ onMounted(async () => {
     align-items: center;
     justify-content: space-between;
     border-radius: 20px;
-    padding: 12px;
+    padding: 7px;
     min-height: 118px;
     overflow: hidden;
 
     &__content {
+        position: relative;
+        z-index: 1;
         display: flex;
         flex-direction: column;
         gap: 10px;
-        padding-right: 126px;
+        padding-right: 60px;
     }
 
     &__title {
         margin: 0;
-        font-size: 18px;
+        font-size: 16px;
         font-weight: 800;
-        line-height: 1.3;
+        line-height: 1.2;
         color: #311d5d;
     }
 
@@ -232,7 +251,8 @@ onMounted(async () => {
 
     &__image {
         position: absolute;
-        right: 20px;
+        z-index: 1;
+        right: 2px;
         bottom: -100%;
         transform: translateY(-50%);
         width: 110px;
@@ -256,6 +276,21 @@ onMounted(async () => {
 
     &--sky {
         background: #9bd5ff;
+    }
+
+    &--premium {
+        background: #ffb453cc;
+    }
+
+    &__bg {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        object-position: center;
+        pointer-events: none;
+        border-radius: inherit;
     }
 }
 </style>

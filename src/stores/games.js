@@ -45,9 +45,10 @@ export const useGamesStore = defineStore('games', () => {
 
     async function finishInfinityMode(wordsRepeated) {
         try {
-            await apiClient.post('/games/infinity-mode/finish', {
+            const response = await apiClient.post('/games/infinity-mode/finish', {
                 words_repeated: wordsRepeated,
             });
+            return response.data;
         } catch (error) {
             console.error('Ошибка получения infinity mode:', error);
             throw error;

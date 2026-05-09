@@ -2,6 +2,12 @@
     <CongratulationPopup v-if="dataLoaded && !popupShowed && !everPlayedGame" @next="handlePopup" />
     <myNewPlanetPopup v-if="showNewPlanet" @goToMain="handlePopup" />
     <goToMainPopup v-if="showGoToMain" />
+    <AchievementPopup
+        v-if="showAchievement && achievementData"
+        :isVisible="showAchievement"
+        :achievement="achievementData"
+        @close="showAchievement = false"
+    />
     <div class="page-content">
         <div v-if="myPlanet" class="content-container">
             <div class="img-container" @click="goToEditPlanet">
@@ -11,6 +17,12 @@
                     alt=""
                     class="img-container__planet-img"
                     :class="overlayClass"
+                />
+                <div
+                    v-for="key in planetStore.activeDecorations"
+                    :key="key"
+                    class="img-container__decoration"
+                    :style="getDecorationStyle(key)"
                 />
             </div>
             <div
@@ -40,6 +52,7 @@ import { useRoute, useRouter } from 'vue-router';
 import CongratulationPopup from '@/components/myPlanetPopup/CongratulationPopup.vue';
 import myNewPlanetPopup from '@/components/myPlanetPopup/myNewPlanetPopup.vue';
 import goToMainPopup from '@/components/myPlanetPopup/goToMainPopup.vue';
+import AchievementPopup from '@/shared/components/popups/AchievementPopup.vue';
 import { useUserStore } from '@/stores/user';
 import { useCategoriesStore } from '@/stores/categories';
 import { usePlanetStore } from '@/stores/planet';
@@ -52,6 +65,8 @@ const popupShowed = ref(false);
 const myPlanet = ref(false);
 const showNewPlanet = ref(false);
 const showGoToMain = ref(false);
+const showAchievement = ref(false);
+const achievementData = ref(null);
 const everPlayedGame = ref(null);
 const dataLoaded = ref(false);
 const animateStars = ref(false);
@@ -85,6 +100,17 @@ const closePlanetHint = () => {
 };
 
 onMounted(async () => {
+    const categoriesStore = useCategoriesStore();
+    const achievement =
+        categoriesStore.pendingAchievement ??
+        JSON.parse(localStorage.getItem('pendingAchievement') ?? 'null');
+    if (achievement) {
+        achievementData.value = achievement;
+        showAchievement.value = true;
+        categoriesStore.pendingAchievement = null;
+        localStorage.removeItem('pendingAchievement');
+    }
+
     try {
         await planetStore.getPlanetSkins();
         queryStars.value = route.query.earnedStars || 0;
@@ -176,6 +202,38 @@ const resolvePlanetImage = (skinKey) => {
 
 const planetImg = computed(() => resolvePlanetImage(planetStore.selectedSkin));
 
+const decorationImages = import.meta.glob('@/assets/planets_decorations/*.svg', {
+    eager: true,
+    import: 'default',
+});
+
+const getDecorationSrc = (key) => {
+    if (!key) return null;
+    const match = Object.entries(decorationImages).find(([path]) => path.endsWith(`/${key}.svg`));
+    return match ? match[1] : null;
+};
+
+const DECORATION_STYLE_MAP = {
+    trees: { width: '232px', height: '232px', top: '53%', left: '50%', zIndex: '4' },
+    mountains: { width: '246px', height: '246px', top: '40%', left: '43%' },
+    rivers: { width: '80px', height: '80px', top: '56%', left: '76%' },
+    stars: { width: '267px', height: '283px', top: '45%', left: '45%' },
+    clouds: { width: '300px', height: '153px', top: '19%', left: '46%' },
+};
+
+const getDecorationStyle = (key) => {
+    const src = getDecorationSrc(key);
+    const cfg = DECORATION_STYLE_MAP[key] ?? { width: '350px', height: '350px', marginTop: '0px' };
+    return {
+        backgroundImage: src ? `url(${src})` : undefined,
+        width: cfg.width,
+        height: cfg.height,
+        top: cfg.top,
+        left: cfg.left,
+        zIndex: cfg.zIndex,
+    };
+};
+
 const goToEditPlanet = () => {
     router.push({ name: 'editPlanet' });
 };
@@ -191,16 +249,37 @@ const goToEditPlanet = () => {
         margin-top: 126px;
 
         .img-container {
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 225px;
+            height: 225px;
             margin-bottom: 15px;
             cursor: pointer;
+            overflow: visible;
         }
 
         .img-container__planet-img {
             border-radius: 50%;
             object-fit: cover;
             display: block;
-            position: relative;
             width: 225px;
+            height: 225px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .img-container__decoration {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-size: contain;
+            background-position: center;
+            background-repeat: no-repeat;
+            pointer-events: none;
+            z-index: 2;
         }
 
         .stars-container {

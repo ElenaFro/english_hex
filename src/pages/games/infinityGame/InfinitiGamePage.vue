@@ -12,6 +12,7 @@
             <div v-else class="infinity-game__empty">Нет заданий для бесконечного режима</div>
         </template>
     </section>
+
 </template>
 
 <script setup>
@@ -151,16 +152,20 @@ const handleFinish = async (payload = {}) => {
         return;
     }
 
+    let rewardState = null;
     try {
-        await gamesStore.finishInfinityMode(totalCorrect.value);
+        const result = await gamesStore.finishInfinityMode(totalCorrect.value);
+        const reward = result?.reward;
+        if (reward?.type === 'avatars') {
+            rewardState = {
+                avatarKeys: reward.avatars?.map((a) => a.image_key) ?? null,
+            };
+        }
     } catch (error) {
-        console.error(
-            'Ошибка отправки прогресса бесконечного режима',
-            error
-        );
+        console.error('Ошибка отправки прогресса бесконечного режима', error);
     }
 
-    router.push({ name: 'DailyReward' });
+    router.push({ name: 'DailyReward', state: { avatarReward: rewardState } });
 };
 
 onMounted(async () => {
@@ -202,4 +207,3 @@ onBeforeUnmount(() => {
     font-weight: 600;
 }
 </style>
-

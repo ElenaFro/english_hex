@@ -179,7 +179,11 @@ const handleNextOrFinish = async () => {
     if (isLastCard.value) {
         if (props.propsCards.length > 0) return emit('closePreview');
         if (!selectedCategory.value.completed_category) localStorage.setItem('earnedStars', 20);
-        await categoriesStore.updateComplateCategory(selectedCategory.value.id);
+        const result = await categoriesStore.updateComplateCategory(selectedCategory.value.id);
+        if (result?.achievement) {
+            categoriesStore.pendingAchievement = result.achievement;
+            localStorage.setItem('pendingAchievement', JSON.stringify(result.achievement));
+        }
         finishCard();
         router.push({ name: 'games', query: { id: selectedCategory.value.id } });
         return;

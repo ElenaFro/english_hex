@@ -7,6 +7,7 @@ export const useCategoriesStore = defineStore('categories', () => {
     const categories = ref([]);
     const selectedCategory = ref({});
     const favoriteCards = ref([]);
+    const pendingAchievement = ref(null);
 
     async function getCategories() {
         const token = localStorage.getItem('access_token');
@@ -33,7 +34,8 @@ export const useCategoriesStore = defineStore('categories', () => {
 
     async function updateComplateCategory(id) {
         try {
-            await apiClient.patch(`/category/finish/${id}`);
+            const response = await apiClient.patch(`/category/finish/${id}`);
+            return response.data;
         } catch (error) {
             console.error(error);
             throw error;
@@ -239,6 +241,7 @@ export const useCategoriesStore = defineStore('categories', () => {
         categories,
         selectedCategory,
         favoriteCards,
+        pendingAchievement,
         getCategories,
         setChosedCategories,
         getCategoryById,

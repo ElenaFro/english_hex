@@ -10,7 +10,7 @@
             </div>
             <div class="full_width flex justify-between full-height items-end">
                 <div class="flex items-end">
-                    <button class="arrow_btn" @click="$emit('arrowClick')">
+                    <button class="arrow_btn" @click="handleArrow">
                         <img src="@/assets/img/arrow_icon.svg" alt="arrow" />
                     </button>
                 </div>
@@ -28,7 +28,8 @@
 </template>
 
 <script setup>
-import { ref } from 'vue';
+import { ref, onUnmounted } from 'vue';
+import { useAudio } from '@/shared/composables/useAudio';
 
 const props = defineProps({
     title: { type: String, default: '' },
@@ -36,46 +37,31 @@ const props = defineProps({
     soundMp3: { type: String, default: '' },
 });
 
-const emit = defineEmits(['close']);
+const emit = defineEmits(['close', 'arrowClick']);
+
+const { playAudio, stopAudio } = useAudio();
 
 const lastPlayed = ref(0);
 const COOLDOWN_MS = 15 * 1000;
 
-const currentAudio = ref(null);
-
 const playSound = () => {
     const currentTime = Date.now();
     if (currentTime - lastPlayed.value < COOLDOWN_MS) return;
-
-    if (currentAudio.value) {
-        currentAudio.value.pause();
-        currentAudio.value.currentTime = 0;
-    }
-
-    const audio = new Audio(props.soundMp3);
-    currentAudio.value = audio;
-    audio
-        .play()
-        .then(() => {
-            lastPlayed.value = currentTime;
-        })
-        .catch((error) => {
-            console.error('Ошибка воспроизведения звука:', error);
-        });
-
-    audio.onended = () => {
-        currentAudio.value = null;
-    };
+    lastPlayed.value = currentTime;
+    playAudio(props.soundMp3);
 };
 
 const stopAndClose = () => {
-    if (currentAudio.value) {
-        currentAudio.value.pause();
-        currentAudio.value.currentTime = 0;
-        currentAudio.value = null;
-    }
+    stopAudio();
     emit('close');
 };
+
+const handleArrow = () => {
+    stopAudio();
+    emit('arrowClick');
+};
+
+onUnmounted(stopAudio);
 </script>
 
 <style scoped lang="scss">
