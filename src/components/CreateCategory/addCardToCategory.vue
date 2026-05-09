@@ -9,7 +9,7 @@
             />
         </div>
         <div v-else>
-            <div v-if="!createCardOpen" class="form-group">
+            <div class="form-group">
                 <div class="header">
                     <label class="header-text">Добавить новые карточки</label>
                     <img
@@ -49,14 +49,6 @@
                 </div>
             </div>
 
-            <card-create-form
-                v-else
-                :model-value="editingCard"
-                @update:model-value="updateEditingCard"
-                @save="handleCardSave"
-                @close="closeCardForm"
-            />
-
             <default-popup
                 :is-visible="showDeleteModal"
                 title="Вы уверены что хотете удалить выбранные элементы?"
@@ -88,7 +80,6 @@
 <script setup>
 import { ref, computed, watch } from 'vue';
 import { useFormValidation } from '@/composables/useFormValidation';
-import cardCreateForm from '../CreateCategory/cardCreateForm.vue';
 import DefaultPopup from '@/shared/components/popups/defaultPopup.vue';
 import LessonsPage from '../Learning/LessonsPage.vue';
 
@@ -96,7 +87,7 @@ const props = defineProps({
     modelValue: { type: Object, default: () => ({ cards: [] }) },
     loading: { type: Boolean, default: false },
 });
-const emit = defineEmits(['update:modelValue', 'publish']);
+const emit = defineEmits(['update:modelValue', 'publish', 'open-card']);
 
 const cards = computed({
     get: () => props.modelValue.cards,
@@ -113,24 +104,16 @@ const { errors, validateForm } = useFormValidation(
 const showDeleteModal = ref(false);
 const showPublishModal = ref(false);
 const cardToDelete = ref(null);
-const createCardOpen = ref(false);
-const editingIndex = ref(null);
-const editingCard = ref({});
 
 const isSelectionMode = ref(false);
 const selectedCards = ref(new Set());
 
 const addCard = () => {
-    editingIndex.value = null;
-    editingCard.value = {
-        card_photo: null,
-        video: null,
-        translation_word: '',
-        word: '',
-        audio: null,
-    };
-    createCardOpen.value = true;
     exitSelectionMode();
+    emit('open-card', {
+        index: null,
+        card: { card_photo: null, video: null, translation_word: '', word: '', audio: null },
+    });
 };
 
 const editCard = (index) => {
@@ -138,34 +121,8 @@ const editCard = (index) => {
         toggleCardSelection(cards.value[index].id);
         return;
     }
-    editingIndex.value = index;
-    editingCard.value = { ...cards.value[index] };
-    createCardOpen.value = true;
     exitSelectionMode();
-};
-
-const updateEditingCard = (updated) => {
-    editingCard.value = updated;
-};
-
-const handleCardSave = () => {
-    const saved = {
-        ...editingCard.value,
-        id: editingIndex.value === null ? Date.now() : editingCard.value.id,
-    };
-    if (editingIndex.value !== null) {
-        cards.value[editingIndex.value] = saved;
-    } else {
-        cards.value.push(saved);
-    }
-    closeCardForm();
-    validateForm();
-};
-
-const closeCardForm = () => {
-    createCardOpen.value = false;
-    editingIndex.value = null;
-    editingCard.value = {};
+    emit('open-card', { index, card: { ...cards.value[index] } });
 };
 
 const closeDeleteModal = () => {

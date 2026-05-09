@@ -1,6 +1,7 @@
 <template>
     <div class="page-container">
-        <div v-if="!showAddCard" class="categoryAddContainer">
+        <!-- Шаг 1: Информация о категории -->
+        <div v-if="step === '1'" class="categoryAddContainer">
             <div class="cover-upload">
                 <label class="cover-box" :class="{ error: errors.category_photo }">
                     <input
@@ -33,12 +34,24 @@
                 <button class="continue-btn" @click="submitForm">Продолжить</button>
             </div>
         </div>
+
+        <!-- Шаг 2: Список карточек -->
         <add-card-to-category
-            v-else
+            v-else-if="step === '2'"
             :model-value="{ cards: form.cards }"
             :loading="loading"
             @update:model-value="(val) => (form.cards = val.cards)"
+            @open-card="openCardForm"
             @publish="saveAction"
+        />
+
+        <!-- Шаг 3: Форма создания/редактирования карточки -->
+        <card-create-form
+            v-else-if="step === '3'"
+            :model-value="editingCard"
+            @update:model-value="updateEditingCard"
+            @save="handleCardSave"
+            @close="handleCardClose"
         />
     </div>
 </template>
@@ -46,28 +59,65 @@
 <script setup>
 //vue
 import { reactive, ref, onUnmounted, computed, watch } from 'vue';
-//comonents
+import { useRoute, useRouter } from 'vue-router';
+//components
 import addCardToCategory from './addCardToCategory.vue';
+import cardCreateForm from './cardCreateForm.vue';
 //composables
 import { useFormValidation } from '@/composables/useFormValidation';
 import { useFileUpload } from '@/composables/useFileUpload';
 import { useImageValidation } from '@/composables/useImageValidation';
 import { useCategoriesStore } from '@/stores/categories';
-import { Notivue, Notification, push } from 'notivue';
-import { useRouter } from 'vue-router';
+import { push } from 'notivue';
 
 const props = defineProps({
     updating: { type: Boolean, default: false },
 });
 
+const route = useRoute();
 const router = useRouter();
-const showAddCard = ref(false);
 const categoryStore = useCategoriesStore();
 const currentCategory = computed(() => categoryStore.selectedCategory);
 const loading = ref(false);
 const originalCategory = ref(null);
 const originalCards = ref([]);
 
+// ─── Навигация по шагам ──────────────────────────────────────────────────────
+const step = computed(() => route.query.step ?? '1');
+
+const goToStep = (s) => router.push({ query: { step: s } });
+
+// ─── Состояние формы карточки (поднято из addCardToCategory) ─────────────────
+const editingIndex = ref(null);
+const editingCard = ref({});
+
+const openCardForm = ({ index = null, card = {} }) => {
+    editingIndex.value = index;
+    editingCard.value = { ...card };
+    goToStep('3');
+};
+
+const updateEditingCard = (updated) => {
+    editingCard.value = { ...updated };
+};
+
+const handleCardSave = (savedCard) => {
+    const saved = {
+        ...savedCard,
+        id: editingIndex.value === null ? Date.now() : savedCard.id,
+    };
+    if (editingIndex.value !== null) {
+        form.cards[editingIndex.value] = saved;
+    } else {
+        form.cards.push(saved);
+    }
+};
+
+const handleCardClose = () => {
+    goToStep('2');
+};
+
+// ─── Форма категории ──────────────────────────────────────────────────────────
 const saveAction = computed(() => (props.updating ? updateCategory : publishCategory));
 
 const form = reactive({
@@ -98,7 +148,6 @@ const handleCoverUpload = async (e) => {
     if (!isValid) return;
 
     form.category_photo_preview = URL.createObjectURL(file);
-
     form.category_photo = file;
 };
 
@@ -115,53 +164,35 @@ const { errors, validateForm, isValid } = useFormValidation(form, {
 
 const submitForm = () => {
     validateForm();
-    if (isValid.value) {
-        showAddCard.value = true;
-    }
+    if (isValid.value) goToStep('2');
 };
 
+// ─── Diff-логика для редактирования ──────────────────────────────────────────
 const getCategoryDiff = () => {
     const diff = {};
-
-    if (form.name !== originalCategory.value.name) {
-        diff.name = form.name;
-    }
-
-    if (form.description !== originalCategory.value.description) {
+    if (form.name !== originalCategory.value.name) diff.name = form.name;
+    if (form.description !== originalCategory.value.description)
         diff.description = form.description;
-    }
-
-    if (form.category_photo instanceof File) {
-        diff.category_photo = form.category_photo;
-    }
-
+    if (form.category_photo instanceof File) diff.category_photo = form.category_photo;
     return diff;
 };
 
 const CARD_DB_FIELDS = ['id', 'word', 'translation_word', 'card_photo', 'audio', 'video'];
-
 const CARD_IGNORED_FIELDS = ['card_photo_preview', 'video_preview', 'audio_preview'];
 
 const getCardDiff = (current, original) => {
     const diff = {};
-
     CARD_DB_FIELDS.forEach((key) => {
         if (key === 'id') return;
         if (CARD_IGNORED_FIELDS.includes(key)) return;
-
         const currentValue = current[key];
         const originalValue = original[key];
-
         if (currentValue instanceof File) {
             diff[key] = currentValue;
             return;
         }
-
-        if (currentValue !== originalValue) {
-            diff[key] = currentValue;
-        }
+        if (currentValue !== originalValue) diff[key] = currentValue;
     });
-
     return diff;
 };
 
@@ -175,13 +206,11 @@ const getCardsDiff = () => {
     for (const card of form.cards) {
         if (!card.id || !originalMap.has(card.id)) {
             const payload = {};
-
             CARD_DB_FIELDS.forEach((key) => {
                 if (key === 'id') return;
                 if (card[key] instanceof File) payload[key] = card[key];
                 else payload[key] = card[key] ?? null;
             });
-
             toCreate.push(payload);
             continue;
         }
@@ -190,24 +219,17 @@ const getCardsDiff = () => {
         if (!original) continue;
 
         const diff = getCardDiff(card, original);
-
-        if (Object.keys(diff).length) {
-            toUpdate.push({
-                id: card.id,
-                ...diff,
-            });
-        }
+        if (Object.keys(diff).length) toUpdate.push({ id: card.id, ...diff });
 
         originalMap.delete(card.id);
     }
 
-    for (const [id] of originalMap) {
-        toDelete.push(id);
-    }
+    for (const [id] of originalMap) toDelete.push(id);
 
     return { toCreate, toUpdate, toDelete };
 };
 
+// ─── Сохранение / обновление ──────────────────────────────────────────────────
 const publishCategory = async () => {
     loading.value = true;
     validateForm();
@@ -222,24 +244,16 @@ const publishCategory = async () => {
 
         const categoryId = response?.category?.id;
         if (!categoryId) {
-            push.error({
-                title: 'Ошибка создания категории',
-                message: 'Категория не создана',
-            });
+            push.error({ title: 'Ошибка создания категории', message: 'Категория не создана' });
             throw new Error('Не удалось создать категорию');
         }
 
         await Promise.all(form.cards.map((card) => categoryStore.createCard(categoryId, card)));
-        push.success({
-            message: 'Категория успешно создана',
-        });
+        push.success({ message: 'Категория успешно создана' });
         router.push({ name: 'mainPage' });
     } catch (error) {
         console.error(error);
-        push.error({
-            title: 'Ошибка создания категории',
-            message: 'Категория не создана',
-        });
+        push.error({ title: 'Ошибка создания категории', message: 'Категория не создана' });
     } finally {
         loading.value = false;
     }
@@ -252,16 +266,11 @@ const updateCategory = async () => {
         if (!isValid.value) return;
 
         const categoryDiff = getCategoryDiff();
-
         if (Object.keys(categoryDiff).length) {
-            await categoryStore.updateCategory({
-                id: currentCategory.value.id,
-                ...categoryDiff,
-            });
+            await categoryStore.updateCategory({ id: currentCategory.value.id, ...categoryDiff });
         }
 
         const { toCreate, toUpdate, toDelete } = getCardsDiff();
-
         await Promise.all([
             ...toCreate.map((card) => categoryStore.createCard(currentCategory.value.id, card)),
             ...toUpdate.map((card) => categoryStore.updateCard(card)),
@@ -272,15 +281,13 @@ const updateCategory = async () => {
         router.push({ name: 'mainPage' });
     } catch (error) {
         console.error(error);
-        push.error({
-            title: 'Ошибка обновления категории',
-            message: 'Категория не обновлена',
-        });
+        push.error({ title: 'Ошибка обновления категории', message: 'Категория не обновлена' });
     } finally {
         loading.value = false;
     }
 };
 
+// ─── Watchers ─────────────────────────────────────────────────────────────────
 watch(
     () => props.updating,
     (isUpdating) => {
@@ -309,11 +316,9 @@ watch(
 
         originalCards.value = category.cards.map((card) => {
             const clean = {};
-
             CARD_DB_FIELDS.forEach((key) => {
                 clean[key] = card[key] ?? null;
             });
-
             return clean;
         });
     },
