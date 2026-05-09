@@ -213,7 +213,7 @@ export const useCategoriesStore = defineStore('categories', () => {
         try {
             const response = await apiClient.delete('/favorite/delete/', {
                 params: {
-                    card_id: id,
+                    favorite_id: id,
                 },
             });
             await getFavoriteCards();

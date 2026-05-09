@@ -136,7 +136,8 @@ const login = async () => {
         subscribePopup.value =
             userStore.isSubscribed === 'unsubscribe' ? true : !userStore.isSubscribed;
         const dailyStreak = userStore.user?.daily_streak ?? null;
-        if (userStore.user?.ever_played_game && shouldShowDailyReward(dailyStreak)) {
+        const everPlayedGame = userStore.user?.ever_played_game;
+        if (everPlayedGame && shouldShowDailyReward(dailyStreak, everPlayedGame)) {
             await router.push({ name: 'DailyReward' });
             return;
         }

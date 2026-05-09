@@ -33,7 +33,7 @@ const props = defineProps({
     videoUrl: String,
 });
 
-const emit = defineEmits(['showHintLike', 'showRetryHint', 'showPreviousHint', 'videoEnded']);
+const emit = defineEmits(['videoEnded']);
 
 const isOnboardingShoved = ref(false);
 const isSoundHintShow = ref(false);
@@ -86,10 +86,6 @@ const closeHint = () => {
 };
 
 const onVideoEnded = () => {
-    if (!isOnboardingShoved.value && !isSoundHintShow.value) {
-        emit('showRetryHint');
-        emit('showPreviousHint');
-    }
     emit('videoEnded');
 };
 

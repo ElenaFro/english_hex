@@ -8,8 +8,6 @@
             :onTransitionEnd="handleTransitionEnd"
             :getVideoUrl="getVideoUrl"
             :getAudioUrl="getAudioUrl"
-            :showRetryHint="showRetryHint"
-            :openPreviousHint="openPreviousHint"
         />
         <div class="button-container" :class="btnContainerClass">
             <button
@@ -248,36 +246,53 @@ const getAudioUrl = (card) => {
     return `${import.meta.env.VITE_STORAGE_URI}/${selectedCategory.value.id}/cards/${card.id}/audio/${card.audio}`;
 };
 
-function showRetryHint() {
-    if (!isRetryHintShowed.value) {
+// Запускает следующий хинт в цепочке: назад → повторить → лайк
+const showNextSequentialHint = () => {
+    if (isShowPreviousHint.value || isShowRetryHint.value) return;
+
+    if (!isPreviousHintShowed.value) {
+        calculatePrevious();
+        isShowPreviousHint.value = true;
+    } else if (!isRetryHintShowed.value) {
         calculatePositionDelayed();
         isShowRetryHint.value = true;
     }
-}
-
-const closeRetryHint = () => {
-    isRetryHintShowed.value = true;
-    isShowRetryHint.value = false;
-    replayAgain();
-    useUserStore().markAsShowHint('card_retry_hint');
 };
 
+// При переходе на карточку 2 запускаем цепочку хинтов
+watch(currentCardIndex, async (newIndex) => {
+    if (props.propsCards.length > 0) return;
+    if (newIndex !== 1) return;
+    await nextTick();
+    setTimeout(() => {
+        showNextSequentialHint();
+    }, 300);
+});
+
+// Хинт «назад» закрыт → показываем хинт «повторить»
 const closePreviousHint = () => {
     isPreviousHintShowed.value = true;
     isShowPreviousHint.value = false;
     useUserStore().markAsShowHint('card_back_hint');
     setTimeout(() => {
-        emit('showLikeHint');
-    }, 500);
+        if (!isRetryHintShowed.value) {
+            calculatePositionDelayed();
+            isShowRetryHint.value = true;
+        } else {
+            emit('showLikeHint');
+        }
+    }, 400);
 };
 
-const openPreviousHint = async () => {
-    if (currentCardIndex.value !== 1) return;
-    await nextTick();
-    if (currentCardIndex.value === 1 && !isPreviousHintShowed.value && !isShowPreviousHint.value) {
-        calculatePrevious();
-        isShowPreviousHint.value = true;
-    }
+// Хинт «повторить» закрыт → показываем хинт с лайком
+const closeRetryHint = () => {
+    isRetryHintShowed.value = true;
+    isShowRetryHint.value = false;
+    replayAgain();
+    useUserStore().markAsShowHint('card_retry_hint');
+    setTimeout(() => {
+        emit('showLikeHint');
+    }, 400);
 };
 
 watch(

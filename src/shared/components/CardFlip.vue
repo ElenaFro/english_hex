@@ -5,8 +5,6 @@
                 <VideoPage
                     ref="videoRef"
                     :videoUrl="getVideoUrl(currentCard)"
-                    @show-retry-hint="showRetryHint"
-                    @show-previous-hint="openPreviousHint"
                     @video-ended="$emit('videoEnded')"
                 />
             </div>
@@ -35,8 +33,6 @@ const props = defineProps({
     onTransitionEnd: { type: Function, required: true },
     getVideoUrl: { type: Function, required: true },
     getAudioUrl: { type: Function, required: true },
-    showRetryHint: { type: Function, default: () => ({}) },
-    openPreviousHint: { type: Function, default: () => ({}) },
 });
 
 const videoRef = ref(null);
