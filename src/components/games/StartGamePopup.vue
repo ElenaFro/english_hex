@@ -14,7 +14,7 @@
     </section>
 </template>
 <script setup>
-import { useRouter } from 'vue-router';
+import { useRouter, useRoute } from 'vue-router';
 
 const props = defineProps({
     title: { type: String, default: '' },
@@ -27,14 +27,22 @@ const props = defineProps({
 const emit = defineEmits(['start']);
 
 const router = useRouter();
+const route = useRoute();
 
 const start = () => {
-    router.push({ name: 'flyAnimation', query: { name: props.gameName, id: props.id } });
+    const query = { name: props.gameName };
+    if (route.query.allCategories) {
+        query.allCategories = route.query.allCategories;
+    } else {
+        query.id = props.id;
+    }
+    router.push({ name: 'flyAnimation', query });
 };
 </script>
 <style scoped lang="scss">
 .page-container {
-    overflow: visible;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
     display: flex;
     flex-direction: column;
     justify-content: space-between;

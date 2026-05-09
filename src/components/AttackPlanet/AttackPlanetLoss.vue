@@ -34,11 +34,13 @@
     </div>
 </template>
 <script setup>
-import { useRouter } from 'vue-router';
+import { useRouter, useRoute } from 'vue-router';
 import { useCategoriesStore } from '@/stores/categories';
 
 const router = useRouter();
+const route = useRoute();
 const goToGamesPage = () => {
+    if (route.query.allCategories === 'true') return router.push({ name: 'allGames' });
     router.push({ name: 'games', query: { id: useCategoriesStore().selectedCategory?.id } });
 };
 const goToGamePage = () => {

@@ -12,18 +12,26 @@
         </div>
         <div class="result-popup">
             <h1 class="result-popup__header">{{ resultHeader }}</h1>
-            <p class="result-popup__text">{{ resultText }}</p>
-            <p class="result-popup__const-text">Награда:</p>
-            <div class="stars-container">
-                <p class="stars-container__prize">+{{ totalStars }}</p>
-                <img
-                    height="41px"
-                    width="41px"
-                    src="@/assets/img/star-img.svg"
-                    alt=""
-                    class="stars-container__stars-img"
-                />
-            </div>
+            <p class="result-popup__text">
+                {{
+                    isAllCategories
+                        ? 'Не останавливайтесь на достигнутом, продолжайте изучение слов вместе с Di!'
+                        : resultText
+                }}
+            </p>
+            <template v-if="!isAllCategories">
+                <p class="result-popup__const-text">Награда:</p>
+                <div class="stars-container">
+                    <p class="stars-container__prize">+{{ totalStars }}</p>
+                    <img
+                        height="41px"
+                        width="41px"
+                        src="@/assets/img/star-img.svg"
+                        alt=""
+                        class="stars-container__stars-img"
+                    />
+                </div>
+            </template>
             <div class="button-container">
                 <button @click="repeatGame" v-if="showButton" class="button button--purple">
                     {{ buttonText }}
@@ -72,11 +80,12 @@ const maxStarsForGame = ref(50);
 const fromGame = route.query.from;
 const gameSource = route.query.gameSource;
 
+const isAllCategories = route.query.allCategories === 'true';
 const categoryId = computed(() => route.query.id || useCategoriesStore().selectedCategory.id);
 
 onMounted(async () => {
     loading.value = true;
-    if (categoryId.value) {
+    if (categoryId.value && !isAllCategories) {
         const currentStarsForCategory = await useCategoriesStore().getCategoryStars(
             categoryId.value
         );
@@ -84,6 +93,7 @@ onMounted(async () => {
         const currentStars = maxStarsForGame.value - alreadyEarnedForGame;
         maxStarsForGame.value = currentStars < 0 ? 0 : currentStars;
     }
+    if (isAllCategories) maxStarsForGame.value = 0;
     loading.value = false;
 });
 
@@ -130,10 +140,14 @@ const totalStars = computed(() => {
 });
 
 const repeatGame = () => {
-    router.push({ name: fromGame, query: { startGame: true } });
+    const query = isAllCategories
+        ? { allCategories: 'true', startGame: true }
+        : { startGame: true };
+    router.push({ name: fromGame, query });
 };
 
 const goToMainPage = () => {
+    if (isAllCategories) return router.push({ name: 'allGames' });
     if (totalStars.value <= 0)
         return router.push({
             name: 'games',
@@ -182,7 +196,7 @@ const goToMainPage = () => {
     .result-popup {
         position: relative;
         width: 326px;
-        height: 422px;
+        height: auto;
         background-color: #ffffff;
         border-radius: 20px;
         padding: 39px 18px 34px;

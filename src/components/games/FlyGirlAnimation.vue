@@ -55,10 +55,16 @@ function onImageError(event) {
 }
 
 function goToNextPage() {
-    if (route.query.name && route.query.id) {
+    if (!route.query.name) {
+        console.error('Missing route.query.name');
+        return;
+    }
+    if (route.query.allCategories) {
+        router.push({ name: route.query.name, query: { allCategories: route.query.allCategories, startGame: true } });
+    } else if (route.query.id) {
         router.push({ name: route.query.name, query: { id: route.query.id, startGame: true } });
     } else {
-        console.error('Missing route.query.name or route.query.id');
+        console.error('Missing route.query.id or allCategories');
     }
 }
 

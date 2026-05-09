@@ -105,9 +105,14 @@ onMounted(async () => {
         answerList.value = props.questions;
     } else {
         try {
-            answerList.value = await useGamesStore().getWordForTwinkleGame(
-                selectedCategoryId.value
-            );
+            const isAllCategories = route.query.allCategories === 'true';
+            const raw = isAllCategories
+                ? await useGamesStore().getWordForTwinkleAllCategories()
+                : await useGamesStore().getWordForTwinkleGame(selectedCategoryId.value);
+            answerList.value = (Array.isArray(raw) ? raw : []).map((item) => ({
+                ...item,
+                category_id: item.category_id ?? item.categoryId ?? item.category ?? null,
+            }));
         } catch (error) {
             console.error('Error fetching game data:', error);
         }
@@ -164,15 +169,14 @@ const goToResult = () => {
         emit('finish', { correctCount: correctCount.value, wrongCount: wrongCount.value });
         return;
     }
-    router.push({
-        name: 'gameResult',
-        query: {
-            wrong: wrongCount.value,
-            from: 'wordTwinkle',
-            gameSource: 'flickering_words',
-            id: route.query.id || useCategoriesStore().selectedCategory.id,
-        },
-    });
+    const resultQuery = {
+        wrong: wrongCount.value,
+        from: 'wordTwinkle',
+        gameSource: 'flickering_words',
+        id: route.query.id || useCategoriesStore().selectedCategory.id,
+    };
+    if (route.query.allCategories) resultQuery.allCategories = route.query.allCategories;
+    router.push({ name: 'gameResult', query: resultQuery });
 };
 
 const getOptionState = (option) => {

@@ -45,6 +45,7 @@ import { useUserStore } from '@/stores/user';
 import { computed, onBeforeUnmount, onMounted, ref } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { useCategoriesStore } from '@/stores/categories';
+import { useGamesStore } from '@/stores/games';
 import AnswerOptionButton from '@/components/ui/AnswerOptionButton.vue';
 import girlHead from '@/assets/Di_avatar/girl_head.png';
 
@@ -72,32 +73,30 @@ onBeforeUnmount(() => {
 
 const questions = ref([]);
 
-onMounted(() => {
+const normalizeQuestion = (item) => ({
+    id: item.id,
+    ru: item.ru ?? item.word ?? '',
+    en: item.en ?? item.translation_word ?? '',
+    correct: item.correct ?? item.correct_answer ?? '',
+    options: item.options ?? [],
+});
+
+onMounted(async () => {
     if (props.questions?.length) {
-        questions.value = props.questions.map((item) => ({
-            id: item.id,
-            ru: item.ru ?? item.word ?? '',
-            en: item.en ?? item.translation_word ?? '',
-            correct: item.correct ?? item.correct_answer ?? '',
-            options: item.options ?? [],
-        }));
-    } else {
-        questions.value = [
-            {
-                id: 1,
-                ru: 'РЇ РёРґСѓ РІ С€РєРѕР»Сѓ',
-                en: "I'm going to",
-                correct: 'School',
-                options: ['School', 'House', 'Street', 'CafГ©'],
-            },
-            {
-                id: 2,
-                ru: 'РЇ РїСЊСЋ РєРѕС„Рµ',
-                en: "I'm drinking",
-                correct: 'CafГ©',
-                options: ['School', 'CafГ©', 'House', 'Street'],
-            },
-        ];
+        questions.value = props.questions.map(normalizeQuestion);
+        return;
+    }
+    try {
+        const isAllCategories = route.query.allCategories === 'true';
+        const categoryId = route.query.id || useCategoriesStore().selectedCategory?.id;
+        const data = isAllCategories
+            ? await useGamesStore().getWordForGalaxyPhrasesAllCategories()
+            : categoryId
+              ? await useGamesStore().getWordForGalaxyPhrasesGame(categoryId)
+              : [];
+        questions.value = (Array.isArray(data) ? data : []).map(normalizeQuestion);
+    } catch (error) {
+        console.error('Ошибка загрузки данных для Галактики фраз:', error);
     }
 });
 
@@ -152,15 +151,14 @@ const goToResult = () => {
         emit('finish', { correctCount: correctCount.value, wrongCount: wrongCount.value });
         return;
     }
-    router.push({
-        name: 'gameResult',
-        query: {
-            wrong: wrongCount.value,
-            from: 'galaxyPhrasesGame',
-            gameSource: 'galaxy_phrases',
-            id: categoryId.value,
-        },
-    });
+    const resultQuery = {
+        wrong: wrongCount.value,
+        from: 'galaxyPhrasesGame',
+        gameSource: 'galaxy_phrases',
+        id: categoryId.value,
+    };
+    if (route.query.allCategories) resultQuery.allCategories = route.query.allCategories;
+    router.push({ name: 'gameResult', query: resultQuery });
 };
 
 const onPick = (option) => {

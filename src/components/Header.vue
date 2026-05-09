@@ -168,7 +168,11 @@ const gameExitRoutes = new Set([
 
 function goBack() {
     if (gameExitRoutes.has(route.name)) {
-        router.push({ name: 'games' });
+        if (route.query.allCategories === 'true') {
+            router.push({ name: 'allGames' });
+        } else {
+            router.push({ name: 'games', query: route.query.id ? { id: route.query.id } : {} });
+        }
         return;
     }
     router.back();

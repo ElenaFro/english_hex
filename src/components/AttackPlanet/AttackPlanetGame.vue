@@ -140,7 +140,7 @@ const sendAnswer = (answer) => {
 
             emit('update:lives', lives.value);
             if (lives.value <= 0) {
-                emit('switch-component', 'AttackPlanetLoss');
+                emit('switch-component', 'AttackPlanetLoss', wrongCount.value);
             }
         }
     }
@@ -169,7 +169,7 @@ const nextQuestion = () => {
     ) {
         earnedStars.value = 0;
         emit('update:earnedStars', earnedStars.value);
-        emit('switch-component', 'AttackPlanetAllStarsGiven');
+        emit('switch-component', 'AttackPlanetAllStarsGiven', wrongCount.value);
     } else if (
         lives.value === 5 &&
         currentQuestionIndex.value >= questions.value.length - 1 &&
@@ -177,7 +177,7 @@ const nextQuestion = () => {
     ) {
         earnedStars.value = 50;
         emit('update:earnedStars', earnedStars.value);
-        emit('switch-component', 'AttackPlanetWin');
+        emit('switch-component', 'AttackPlanetWin', wrongCount.value);
     } else if (
         lives.value > 0 &&
         lives.value <= 5 &&
@@ -188,9 +188,9 @@ const nextQuestion = () => {
         earnedStars.value =
             starsForLives > maxStarsForGame.value ? maxStarsForGame.value : starsForLives;
         emit('update:earnedStars', earnedStars.value);
-        emit('switch-component', 'AttackPlanetResult');
+        emit('switch-component', 'AttackPlanetResult', wrongCount.value);
     } else if (lives.value <= 0) {
-        emit('switch-component', 'AttackPlanetLoss');
+        emit('switch-component', 'AttackPlanetLoss', wrongCount.value);
     }
 };
 
@@ -210,18 +210,26 @@ onMounted(async () => {
         return;
     }
 
-    if (!selectedCategory.value?.id) useCategoriesStore().getCategoryById(route.query.id);
-    try {
+    const isAllCategories = route.query.allCategories === 'true';
+
+    if (!isAllCategories) {
+        if (!selectedCategory.value?.id) useCategoriesStore().getCategoryById(route.query.id);
         if (!selectedCategory.value) return;
-        const response = await useGamesStore().fetchDataForPlanetAttack(categoryId.value);
+    }
+
+    try {
+        const response = isAllCategories
+            ? await useGamesStore().fetchDataForPlanetAttackAllCategories()
+            : await useGamesStore().fetchDataForPlanetAttack(categoryId.value);
 
         questions.value = response.map((question) => ({
             id: question.id,
             audio: question.audio,
             correctAnswer: question.correctAnswer,
             options: question.options,
+            category_id: question.category_id ?? question.categoryId ?? null,
         }));
-        if (categoryId.value) {
+        if (!isAllCategories && categoryId.value) {
             const currentStarsForCategory = await useCategoriesStore().getCategoryStars(
                 categoryId.value
             );

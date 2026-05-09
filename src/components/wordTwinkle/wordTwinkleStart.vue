@@ -22,16 +22,23 @@
 </template>
 
 <script setup>
-import { useRouter } from 'vue-router';
+import { useRouter, useRoute } from 'vue-router';
 const props = defineProps({
     gameName: { type: String, default: '' },
     id: { type: String, default: '' },
 });
 
 const router = useRouter();
+const route = useRoute();
 
 const start = () => {
-    router.push({ name: 'flyAnimation', query: { name: props.gameName, id: props.id } });
+    const query = { name: props.gameName };
+    if (route.query.allCategories) {
+        query.allCategories = route.query.allCategories;
+    } else {
+        query.id = props.id;
+    }
+    router.push({ name: 'flyAnimation', query });
 };
 </script>
 
@@ -87,7 +94,7 @@ const start = () => {
         width: 230px;
         height: 230px;
         position: absolute;
-        bottom: 150px;
+        bottom: 115px;
         left: 30%;
     }
 }
