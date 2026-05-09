@@ -69,6 +69,12 @@
     <teleport to="body">
         <div v-if="showHint" class="hint-overlay" @click="closeHint"></div>
     </teleport>
+
+    <AvatarRewardPopup
+        :isVisible="showAvatarReward"
+        :avatarKeys="avatarRewardKeys"
+        @close="showAvatarReward = false"
+    />
 </template>
 
 <script setup>
@@ -76,6 +82,7 @@ import { computed, ref, onMounted, watch } from 'vue';
 import { useRouter } from 'vue-router';
 import { useUserStore } from '@/stores/user';
 import { useGamesStore } from '@/stores/games';
+import AvatarRewardPopup from '@/shared/components/popups/AvatarRewardPopup.vue';
 
 const closeHint = () => {
     showHint.value = false;
@@ -83,6 +90,8 @@ const closeHint = () => {
 };
 
 const showHint = ref(false);
+const showAvatarReward = ref(false);
+const avatarRewardKeys = ref(null);
 const currentDay = ref(1);
 const completedDays = ref([]);
 const learnedWords = ref(0);
@@ -131,6 +140,12 @@ const sendInfinityFinish = async (words) => {
 };
 
 onMounted(async () => {
+    const avatarReward = history.state?.avatarReward ?? null;
+    if (avatarReward) {
+        avatarRewardKeys.value = avatarReward.avatarKeys ?? null;
+        showAvatarReward.value = true;
+    }
+
     if (!userStore.hintsArray.daily_reward) {
         setTimeout(() => {
             showHint.value = true;
