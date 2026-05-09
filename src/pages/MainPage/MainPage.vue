@@ -56,9 +56,8 @@ import InstallAppPopup from '@/pages/MainPage/popups/InstallAppPopup.vue';
 import SubscribePushNotify from '@/pages/MainPage/popups/SubscribePushNotify.vue';
 import AddCategoriesCard from '@/components/categories/AddCategoriesCard.vue';
 //source
-import BoyIcon from '@/assets/img/DefaultUserAvatar/male.webp';
-import GirlIcon from '@/assets/img/DefaultUserAvatar/female.svg';
 import SoundForPopup from '@/assets/audio/helloFromDi.wav';
+import { getUserAvatarSrc } from '@/shared/utils/avatarMap';
 //store
 import { useUserStore } from '@/stores/user';
 import { useCategoriesStore } from '@/stores/categories';
@@ -127,7 +126,7 @@ const randomColor = (id) => colorsForSections.value[id];
 
 const currentUser = computed(() => userStore.getCurrentUser());
 const userName = computed(() => currentUser.value.name);
-const avatarIcon = computed(() => (currentUser.value.gender === 'male' ? BoyIcon : GirlIcon));
+const avatarIcon = computed(() => getUserAvatarSrc(currentUser.value));
 const sections = computed(() => useCategoriesStore().categories);
 
 const colorsForSections = computed(() => {

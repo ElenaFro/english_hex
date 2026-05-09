@@ -9,7 +9,7 @@
                     :class="`rank-${index + 1} ${user.id === currentUser?.id ? 'active-user' : ''}`"
                     @click="goToProfile(user.id)"
                 >
-                    <img :src="userImg(user.gender)" class="user-avatar" :alt="user.name" />
+                    <img :src="userImg(user)" class="user-avatar" :alt="user.name" />
                     <div>
                         <span class="name_top">{{ user.name }}</span>
                     </div>
@@ -35,9 +35,8 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue';
 import { useUserStore } from '@/stores/user';
-import maleAvatar from '@/assets/img/DefaultUserAvatar/male.webp';
-import femaleAvatar from '@/assets/img/DefaultUserAvatar/female.svg';
 import UserCardWithStar from '@/shared/ui/UserCardWithStar.vue';
+import { getUserAvatarSrc } from '@/shared/utils/avatarMap';
 import { useRouter } from 'vue-router';
 
 const router = useRouter();
@@ -64,11 +63,7 @@ const otherUsers = computed(() => {
     return sortedUsers.value.filter((user) => !topUserIds.includes(user.id));
 });
 
-const userImg = (gender) => {
-    const normalizedGender = gender ? gender.toLowerCase() : '';
-    if (normalizedGender === 'male') return maleAvatar;
-    else return femaleAvatar;
-};
+const userImg = (user) => getUserAvatarSrc(user);
 
 const goToProfile = (userId) => {
     router.push({ name: 'profileAchievements', params: { id: userId } });

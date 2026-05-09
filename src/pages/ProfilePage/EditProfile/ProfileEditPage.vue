@@ -161,9 +161,8 @@
 
 <script setup>
 import { ref, computed, onMounted } from 'vue';
-import BoyIcon from '@/assets/img/DefaultUserAvatar/male.webp';
-import GirlIcon from '@/assets/img/DefaultUserAvatar/female.svg';
 import { useUserStore } from '@/stores/user';
+import { getUserAvatarSrc } from '@/shared/utils/avatarMap';
 import apiClient from '@/api/axios';
 import { compareObjects } from '@/shared/compareObject';
 import defaultPopup from '@/shared/components/popups/defaultPopup.vue';
@@ -191,19 +190,7 @@ const isSaving = ref(false);
 const showPopup = ref(false);
 const edit = ref(true);
 
-const avatarIcon = computed(() => {
-    const avatar = form.value?.avatar;
-    if (typeof avatar === 'string' && avatar.trim()) {
-        if (avatar === 'male' || avatar === 'male.webp' || avatar.endsWith('/male.webp'))
-            return BoyIcon;
-        if (avatar === 'female' || avatar === 'female.svg' || avatar.endsWith('/female.svg'))
-            return GirlIcon;
-        // Если с бэка приходит уже готовый url/путь
-        return avatar;
-    }
-
-    return form.value?.gender === 'male' ? BoyIcon : GirlIcon;
-});
+const avatarIcon = computed(() => getUserAvatarSrc(form.value));
 
 const basicAvatars = computed(() =>
     Array.from({ length: 8 }, (_, index) => ({
