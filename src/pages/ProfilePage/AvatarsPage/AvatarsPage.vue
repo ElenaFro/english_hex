@@ -7,7 +7,7 @@
         </div>
 
         <Loader v-if="avatarsLoading" />
-        <div v-else class="avatars-scroll">
+        <div v-else class="scroll-area">
             <section class="avatar-edit-card">
                 <p class="avatar-edit-card__title">Базовые</p>
                 <div class="avatar-grid avatar-grid--basic">
@@ -16,7 +16,7 @@
                         :key="item.image_key"
                         type="button"
                         class="avatar-tile"
-                        :class="{ 'avatar-tile--selected': currentAvatarKey === item.image_key }"
+                        :class="{ 'avatar-tile--selected': previewKey === item.image_key }"
                         :disabled="!item.is_unlocked || avatarSaving"
                         :aria-label="item.name"
                         @click="selectAvatar(item.id, item.image_key)"
@@ -38,7 +38,7 @@
                         :key="item.image_key"
                         type="button"
                         class="avatar-tile"
-                        :class="{ 'avatar-tile--selected': currentAvatarKey === item.image_key }"
+                        :class="{ 'avatar-tile--selected': previewKey === item.image_key }"
                         :disabled="!item.is_unlocked || avatarSaving"
                         :aria-label="item.name"
                         @click="selectAvatar(item.id, item.image_key)"
@@ -51,8 +51,25 @@
                     </button>
                 </div>
             </section>
+
+            <div class="button-section">
+                <button
+                    class="action-button"
+                    :disabled="!hasChanges || avatarSaving"
+                    @click="openPopup"
+                >
+                    Сохранить изменения
+                </button>
+            </div>
         </div>
     </div>
+
+    <defaultPopup
+        :isVisible="showPopup"
+        title="Сохранить изменения?"
+        @confirm="confirmSave"
+        @update:isVisible="showPopup = $event"
+    />
 </template>
 
 <script setup>
@@ -65,18 +82,27 @@ import {
 } from '@/shared/utils/avatarMap';
 import { getAvatars, setAvatar } from '@/api/avatars';
 import Loader from '@/shared/components/Loader.vue';
+import defaultPopup from '@/shared/components/popups/defaultPopup.vue';
+import { push } from 'notivue';
 
 const userStore = useUserStore();
 
 const avatarsLoading = ref(false);
 const avatarSaving = ref(false);
+const showPopup = ref(false);
 const freeAvatarsList = ref([]);
 const premiumAvatarsList = ref([]);
 const currentAvatarKey = ref(null);
+const selectedAvatarKey = ref(null);
+const selectedAvatarId = ref(null);
+
+const previewKey = computed(() => selectedAvatarKey.value ?? currentAvatarKey.value);
 const currentAvatarSrc = computed(() =>
-    currentAvatarKey.value
-        ? getAvatarSrc(currentAvatarKey.value)
-        : getUserAvatarSrc(userStore.getCurrentUser())
+    previewKey.value ? getAvatarSrc(previewKey.value) : getUserAvatarSrc(userStore.getCurrentUser())
+);
+
+const hasChanges = computed(
+    () => selectedAvatarKey.value !== null && selectedAvatarKey.value !== currentAvatarKey.value
 );
 
 const loadAvatars = async () => {
@@ -86,6 +112,8 @@ const loadAvatars = async () => {
         freeAvatarsList.value = data.avatars?.basic ?? [];
         premiumAvatarsList.value = data.avatars?.premium ?? [];
         currentAvatarKey.value = data.current_avatar?.image_key ?? null;
+        selectedAvatarKey.value = null;
+        selectedAvatarId.value = null;
     } catch (e) {
         console.error('Ошибка загрузки аватарок:', e);
     } finally {
@@ -93,17 +121,30 @@ const loadAvatars = async () => {
     }
 };
 
-const selectAvatar = async (avatarId, imageKey) => {
-    if (avatarSaving.value || currentAvatarKey.value === imageKey) return;
+const selectAvatar = (avatarId, imageKey) => {
+    if (avatarSaving.value) return;
+    selectedAvatarId.value = avatarId;
+    selectedAvatarKey.value = imageKey;
+};
+
+const openPopup = () => {
+    showPopup.value = true;
+};
+
+const confirmSave = async () => {
     avatarSaving.value = true;
     try {
-        await setAvatar(avatarId);
-        currentAvatarKey.value = imageKey;
+        await setAvatar(selectedAvatarId.value);
+        currentAvatarKey.value = selectedAvatarKey.value;
+        selectedAvatarKey.value = null;
+        selectedAvatarId.value = null;
         userStore.fetchUser();
     } catch (e) {
         console.error('Ошибка смены аватарки:', e);
+        push.error({ message: e.message });
     } finally {
         avatarSaving.value = false;
+        showPopup.value = false;
     }
 };
 
@@ -111,6 +152,31 @@ onMounted(loadAvatars);
 </script>
 
 <style scoped lang="scss">
+.scroll-area {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    overflow-y: auto;
+    flex: 1;
+    min-height: 0;
+    padding-bottom: 12dvh;
+    scrollbar-width: none;
+    &::-webkit-scrollbar {
+        display: none;
+    }
+}
+
+.button-section {
+    display: flex;
+    width: 100%;
+    justify-content: flex-start;
+    align-items: start;
+}
+
+.action-button {
+    max-width: 240px;
+}
+
 .avatar-preview {
     display: flex;
     justify-content: flex-start;
@@ -131,20 +197,6 @@ onMounted(loadAvatars);
     border-radius: 50%;
     width: 100%;
     height: 100%;
-}
-
-.avatars-scroll {
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
-    overflow-y: auto;
-    flex: 1;
-    min-height: 0;
-    padding-bottom: 120px;
-    scrollbar-width: none;
-    &::-webkit-scrollbar {
-        display: none;
-    }
 }
 
 .avatar-edit-card {
