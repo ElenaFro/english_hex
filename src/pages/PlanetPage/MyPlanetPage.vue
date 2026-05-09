@@ -2,6 +2,12 @@
     <CongratulationPopup v-if="dataLoaded && !popupShowed && !everPlayedGame" @next="handlePopup" />
     <myNewPlanetPopup v-if="showNewPlanet" @goToMain="handlePopup" />
     <goToMainPopup v-if="showGoToMain" />
+    <AchievementPopup
+        v-if="showAchievement && achievementData"
+        :isVisible="showAchievement"
+        :achievement="achievementData"
+        @close="showAchievement = false"
+    />
     <div class="page-content">
         <div v-if="myPlanet" class="content-container">
             <div class="img-container" @click="goToEditPlanet">
@@ -40,6 +46,7 @@ import { useRoute, useRouter } from 'vue-router';
 import CongratulationPopup from '@/components/myPlanetPopup/CongratulationPopup.vue';
 import myNewPlanetPopup from '@/components/myPlanetPopup/myNewPlanetPopup.vue';
 import goToMainPopup from '@/components/myPlanetPopup/goToMainPopup.vue';
+import AchievementPopup from '@/shared/components/popups/AchievementPopup.vue';
 import { useUserStore } from '@/stores/user';
 import { useCategoriesStore } from '@/stores/categories';
 import { usePlanetStore } from '@/stores/planet';
@@ -52,6 +59,8 @@ const popupShowed = ref(false);
 const myPlanet = ref(false);
 const showNewPlanet = ref(false);
 const showGoToMain = ref(false);
+const showAchievement = ref(false);
+const achievementData = ref(null);
 const everPlayedGame = ref(null);
 const dataLoaded = ref(false);
 const animateStars = ref(false);
@@ -85,6 +94,17 @@ const closePlanetHint = () => {
 };
 
 onMounted(async () => {
+    const categoriesStore = useCategoriesStore();
+    const achievement =
+        categoriesStore.pendingAchievement ??
+        JSON.parse(localStorage.getItem('pendingAchievement') ?? 'null');
+    if (achievement) {
+        achievementData.value = achievement;
+        showAchievement.value = true;
+        categoriesStore.pendingAchievement = null;
+        localStorage.removeItem('pendingAchievement');
+    }
+
     try {
         await planetStore.getPlanetSkins();
         queryStars.value = route.query.earnedStars || 0;
