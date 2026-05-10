@@ -79,7 +79,7 @@
         <div class="task-form__footer">
             <button
                 class="audio-btn"
-                :class="{ 'audio-btn--filled': form.sound, 'audio-btn--error': errors.sound }"
+                :class="{ 'audio-btn--filled': form.audio, 'audio-btn--error': errors.audio }"
                 @click="triggerAudio"
             >
                 <img src="@/assets/img/sound-icon.svg" alt="audio" />
@@ -116,7 +116,7 @@ const form = reactive({
     wrong_answers: props.modelValue?.wrong_answers?.length
         ? [...props.modelValue.wrong_answers]
         : ['', '', ''],
-    sound: props.modelValue?.sound ?? null,
+    audio: props.modelValue?.audio ?? null,
 });
 
 const errors = reactive({
@@ -124,7 +124,7 @@ const errors = reactive({
     sentence_ru: false,
     correct_answer: false,
     wrong_answers: false,
-    sound: false,
+    audio: false,
 });
 
 const blankCount = () => form.sentence_en.split(BLANK).length - 1;
@@ -303,7 +303,7 @@ const validate = () => {
     errors.sentence_ru = !form.sentence_ru.trim();
     errors.correct_answer = !form.correct_answer.trim();
     errors.wrong_answers = form.wrong_answers.some((w) => !w.trim());
-    errors.sound = !form.sound;
+    errors.audio = !form.audio;
 
     return !Object.values(errors).some(Boolean);
 };
@@ -314,8 +314,8 @@ const triggerAudio = () => audioInput.value?.click();
 const handleAudioUpload = (e) => {
     const file = e.target.files?.[0];
     if (!file) return;
-    form.sound = file;
-    errors.sound = false;
+    form.audio = file;
+    errors.audio = false;
 };
 
 const submit = () => {

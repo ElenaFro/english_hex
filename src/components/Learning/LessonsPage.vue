@@ -334,6 +334,7 @@ defineExpose({
     height: 90dvh;
     box-sizing: border-box;
     overflow: hidden;
+    width: 100%;
 }
 
 .button-container {

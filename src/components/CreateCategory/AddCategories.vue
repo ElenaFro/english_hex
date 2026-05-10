@@ -80,7 +80,7 @@
             @add-task="openTaskForm(null)"
             @edit-task="(i) => openTaskForm(i)"
             @delete-task="(i) => form.tasks.splice(i, 1)"
-            @preview="() => {}"
+            @preview="goToStep('6')"
         />
 
         <!-- Шаг 5: Форма создания/редактирования задания -->
@@ -89,6 +89,40 @@
             :model-value="editingTask"
             @save="handleTaskSave"
             @close="goToStep('4')"
+        />
+
+        <!-- Шаг 6: Обзор категории перед публикацией -->
+        <add-category-overview
+            v-else-if="step === '6'"
+            :name="form.name"
+            :description="form.description"
+            :cards="form.cards"
+            :loading="loading"
+            @preview-deck="goToStep('7')"
+            @preview-game="goToStep('8')"
+            @edit="goToStep('9')"
+            @publish="publishCategory"
+        />
+
+        <!-- Шаг 7: Предпросмотр колоды -->
+        <lessons-page
+            v-else-if="step === '7'"
+            :props-cards="form.cards"
+            is-preview
+            @close-preview="goToStep('6')"
+        />
+
+        <!-- Шаг 8: Предпросмотр игры (TODO: подключить нужный компонент) -->
+        <div v-else-if="step === '8'" class="game-preview-placeholder">
+            <p>Предпросмотр игры</p>
+            <button @click="goToStep('6')">Назад</button>
+        </div>
+
+        <!-- Шаг 9: Выбор что редактировать -->
+        <add-category-edit-select
+            v-else-if="step === '9'"
+            @edit-category="goToStep('2')"
+            @edit-game="goToStep('4')"
         />
     </div>
 </template>
@@ -102,6 +136,9 @@ import addCardToCategory from './addCardToCategory.vue';
 import cardCreateForm from './cardCreateForm.vue';
 import addCategoryGame from './AddCategoryGame.vue';
 import addCategoryTask from './AddCategoryTask.vue';
+import addCategoryOverview from './AddCategoryOverview.vue';
+import addCategoryEditSelect from './AddCategoryEditSelect.vue';
+import lessonsPage from '@/components/Learning/LessonsPage.vue';
 //composables
 import { useFormValidation } from '@/composables/useFormValidation';
 import { useFileUpload } from '@/composables/useFileUpload';
@@ -328,7 +365,16 @@ const publishCategory = async () => {
             throw new Error('Не удалось создать категорию');
         }
 
+        // Создаём карточки колоды
         await Promise.all(form.cards.map((card) => categoryStore.createCard(categoryId, card)));
+
+        // Создаём задания игры с привязкой category_id
+        if (form.tasks.length > 0) {
+            await Promise.all(
+                form.tasks.map((task) => categoryStore.createGameTask(categoryId, task))
+            );
+        }
+
         push.success({ message: 'Категория успешно создана' });
         router.push({ name: 'mainPage' });
     } catch (error) {
@@ -524,6 +570,7 @@ textarea {
 
 .plus {
     font-size: 4rem;
+    color: #fff;
 }
 .card-placeholder {
     width: 100%;
