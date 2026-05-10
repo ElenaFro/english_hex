@@ -25,9 +25,7 @@
                 {{ isLastCard ? 'Закончить' : 'Продолжить' }}
             </button>
         </div>
-        <div v-if="isPreview && propsCards.length > 1" class="button-container center">
-            <button class="button publish-btn" @click="emit('publish')">Опубликовать</button>
-        </div>
+
         <defaultPopup
             :isVisible="isNotEndedLearn"
             :message="beforLeaveMessage"
@@ -182,7 +180,7 @@ const handleNextOrFinish = async () => {
             categoriesStore.pendingAchievement = result.achievement;
             localStorage.setItem('pendingAchievement', JSON.stringify(result.achievement));
         }
-        finishCard();
+        if (!props.isPreview) finishCard();
         router.push({ name: 'games', query: { id: selectedCategory.value.id } });
         return;
     }
@@ -192,7 +190,7 @@ const handleNextOrFinish = async () => {
     } else {
         isTransitioning.value = true;
         activeComponent.value = 'VideoPage';
-        finishCard();
+        if (!props.isPreview) finishCard();
     }
 };
 
@@ -372,23 +370,6 @@ defineExpose({
 
 .button.arrow {
     padding: 6px;
-}
-
-.publish-btn {
-    background: #2e236d;
-    color: white;
-    padding: 9px 24px;
-    font-family: Mulish;
-    font-weight: 600;
-    font-style: SemiBold;
-    font-size: 18px;
-    line-height: 120%;
-    letter-spacing: 0%;
-}
-
-.center {
-    align-content: center;
-    max-width: fit-content;
 }
 
 @media (max-width: 480px) {
