@@ -34,7 +34,12 @@
                     </div>
                 </div>
                 <div v-if="cards.length > 0" class="btn_container">
-                    <button class="btn publish-btn" @click="emit('add-game')">Добавить игру</button>
+                    <button v-if="showSave" class="btn publish-btn" @click="emit('save')">
+                        Сохранить
+                    </button>
+                    <button v-else class="btn publish-btn" @click="emit('add-game')">
+                        Добавить игру
+                    </button>
                 </div>
             </div>
 
@@ -57,8 +62,9 @@ import DefaultPopup from '@/shared/components/popups/defaultPopup.vue';
 const props = defineProps({
     modelValue: { type: Object, default: () => ({ cards: [] }) },
     loading: { type: Boolean, default: false },
+    showSave: { type: Boolean, default: false },
 });
-const emit = defineEmits(['update:modelValue', 'publish', 'open-card', 'add-game']);
+const emit = defineEmits(['update:modelValue', 'publish', 'open-card', 'add-game', 'save']);
 
 const cards = computed({
     get: () => props.modelValue.cards,

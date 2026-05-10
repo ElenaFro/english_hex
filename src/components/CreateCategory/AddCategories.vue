@@ -52,9 +52,14 @@
             </div>
         </div>
 
-        <!-- Шаг 2: Список карточек -->
+        <!-- Шаг 2: editing → меню выбора редактирования; creating → список карточек -->
+        <add-category-edit-select
+            v-else-if="step === '2' && props.updating"
+            @edit-category="goToStep('9')"
+            @edit-game="goToStep('4')"
+        />
         <add-card-to-category
-            v-else-if="step === '2'"
+            v-else-if="step === '2' && !props.updating"
             :model-value="{ cards: form.cards }"
             :loading="loading"
             @update:model-value="(val) => (form.cards = val.cards)"
@@ -118,9 +123,19 @@
             <button @click="goToStep('6')">Назад</button>
         </div>
 
-        <!-- Шаг 9: Выбор что редактировать -->
+        <!-- Шаг 9: editing → список карточек; creating → меню выбора редактирования -->
+        <add-card-to-category
+            v-else-if="step === '9' && props.updating"
+            :model-value="{ cards: form.cards }"
+            :loading="loading"
+            :show-save="true"
+            @update:model-value="(val) => (form.cards = val.cards)"
+            @open-card="openCardForm"
+            @save="handleCardsSave"
+            @publish="saveAction"
+        />
         <add-category-edit-select
-            v-else-if="step === '9'"
+            v-else-if="step === '9' && !props.updating"
             @edit-category="goToStep('2')"
             @edit-game="goToStep('4')"
         />
@@ -218,7 +233,28 @@ const handleCardSave = (savedCard) => {
 };
 
 const handleCardClose = () => {
-    goToStep('2');
+    // editing: список карточек на шаге 9; creating: на шаге 2
+    goToStep(props.updating ? '9' : '2');
+};
+
+// Сохранение карточек в режиме редактирования → возврат к меню редактирования
+const handleCardsSave = async () => {
+    loading.value = true;
+    try {
+        const { toCreate, toUpdate, toDelete } = getCardsDiff();
+        await Promise.all([
+            ...toCreate.map((card) => categoryStore.createCard(currentCategory.value.id, card)),
+            ...toUpdate.map((card) => categoryStore.updateCard(card)),
+            ...toDelete.map((id) => categoryStore.deleteCard(id)),
+        ]);
+        push.success({ message: 'Карточки обновлены' });
+        goToStep('2'); // возврат к меню выбора редактирования
+    } catch (error) {
+        console.error(error);
+        push.error({ title: 'Ошибка', message: 'Не удалось обновить карточки' });
+    } finally {
+        loading.value = false;
+    }
 };
 
 // ─── Шаг 4-5: задания игры ────────────────────────────────────────────────────
