@@ -168,6 +168,24 @@ export const useCategoriesStore = defineStore('categories', () => {
         }
     }
 
+    async function getGameTasks(categoryId) {
+        const tasks = [];
+        let page = 1;
+        let hasMore = true;
+
+        while (hasMore) {
+            const response = await apiClient.get('/phrase-galaxy-sentences/get', {
+                params: { category_id: categoryId, page },
+            });
+            const data = response.data;
+            tasks.push(...(data.data ?? []));
+            hasMore = Boolean(data.next_page_url);
+            page++;
+        }
+
+        return tasks;
+    }
+
     async function createGameTask(categoryId, task) {
         try {
             const response = await apiClient.post(
@@ -278,6 +296,7 @@ export const useCategoriesStore = defineStore('categories', () => {
         createCard,
         updateCard,
         deleteCard,
+        getGameTasks,
         createGameTask,
         finishCard,
         addCardInFavorite,

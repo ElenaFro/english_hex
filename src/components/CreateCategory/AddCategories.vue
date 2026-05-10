@@ -488,8 +488,16 @@ watch(
     { immediate: true }
 );
 
-onMounted(() => {
+onMounted(async () => {
     userStore.setHeaderTitle(props.updating ? 'Редактирование' : 'Создание');
+
+    if (props.updating && currentCategory.value?.id) {
+        try {
+            form.tasks = await categoryStore.getGameTasks(currentCategory.value.id);
+        } catch (e) {
+            console.error('Не удалось загрузить задания игры', e);
+        }
+    }
 });
 
 onUnmounted(() => {
