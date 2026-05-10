@@ -1,8 +1,15 @@
 <template>
     <div class="page-container">
-        <div v-if="!showAddCard" class="categoryAddContainer">
+        <!-- Шаг 1: Информация о категории -->
+        <div v-if="step === '1'" class="categoryAddContainer">
             <div class="cover-upload">
-                <label class="cover-box" :class="{ error: errors.category_photo }">
+                <label
+                    class="cover-box"
+                    :class="{
+                        error: errors.category_photo,
+                        'cover-box--filled': form.category_photo,
+                    }"
+                >
                     <input
                         type="file"
                         accept="image/*"
@@ -29,54 +36,253 @@
                 <span v-if="errors.description" class="error-msg">Поле заполнено некорректно</span>
             </div>
 
+            <div class="radio-group">
+                <label class="radio-label">
+                    <input type="radio" v-model="form.is_paid" :value="false" />
+                    <span>Бесплатная</span>
+                </label>
+                <label class="radio-label">
+                    <input type="radio" v-model="form.is_paid" :value="true" />
+                    <span>Платная</span>
+                </label>
+            </div>
+
             <div class="btn_container">
                 <button class="continue-btn" @click="submitForm">Продолжить</button>
             </div>
         </div>
+
+        <!-- Шаг 2: editing → меню выбора редактирования; creating → список карточек -->
+        <add-category-edit-select
+            v-else-if="step === '2' && props.updating"
+            @edit-category="goToStep('9')"
+            @edit-game="goToStep('4')"
+        />
         <add-card-to-category
-            v-else
+            v-else-if="step === '2' && !props.updating"
             :model-value="{ cards: form.cards }"
             :loading="loading"
             @update:model-value="(val) => (form.cards = val.cards)"
+            @open-card="openCardForm"
+            @add-game="goToStep('4')"
             @publish="saveAction"
+        />
+
+        <!-- Шаг 3: Форма создания/редактирования карточки -->
+        <card-create-form
+            v-else-if="step === '3'"
+            :model-value="editingCard"
+            @update:model-value="updateEditingCard"
+            @save="handleCardSave"
+            @close="handleCardClose"
+        />
+
+        <!-- Шаг 4: Меню создания игры -->
+        <add-category-game
+            v-else-if="step === '4'"
+            :tasks="form.tasks"
+            :loading="loading"
+            @add-task="openTaskForm(null)"
+            @edit-task="(i) => openTaskForm(i)"
+            @delete-task="(i) => form.tasks.splice(i, 1)"
+            @preview="goToStep('6')"
+        />
+
+        <!-- Шаг 5: Форма создания/редактирования задания -->
+        <add-category-task
+            v-else-if="step === '5'"
+            :model-value="editingTask"
+            @save="handleTaskSave"
+            @close="goToStep('4')"
+        />
+
+        <!-- Шаг 6: Обзор категории перед публикацией -->
+        <add-category-overview
+            v-else-if="step === '6'"
+            :name="form.name"
+            :description="form.description"
+            :cards="form.cards"
+            :loading="loading"
+            :progress="publishProgress"
+            @preview-deck="goToStep('7')"
+            @preview-game="goToStep('8')"
+            @edit="goToStep('9')"
+            @publish="publishCategory"
+        />
+
+        <!-- Шаг 7: Предпросмотр колоды -->
+        <lessons-page
+            v-else-if="step === '7'"
+            :props-cards="form.cards"
+            is-preview
+            @close-preview="goToStep('6')"
+        />
+
+        <!-- Шаг 8: Предпросмотр игры -->
+        <galaxy-phrases-game
+            v-else-if="step === '8'"
+            :questions="form.tasks"
+            is-preview
+            @finish="goToStep('6')"
+        />
+
+        <!-- Шаг 9: editing → список карточек; creating → меню выбора редактирования -->
+        <add-card-to-category
+            v-else-if="step === '9' && props.updating"
+            :model-value="{ cards: form.cards }"
+            :loading="loading"
+            :show-save="true"
+            @update:model-value="(val) => (form.cards = val.cards)"
+            @open-card="openCardForm"
+            @save="handleCardsSave"
+            @publish="saveAction"
+        />
+        <add-category-edit-select
+            v-else-if="step === '9' && !props.updating"
+            @edit-category="goToStep('2')"
+            @edit-game="goToStep('4')"
         />
     </div>
 </template>
 
 <script setup>
 //vue
-import { reactive, ref, onUnmounted, computed, watch } from 'vue';
-//comonents
+import { reactive, ref, onMounted, onUnmounted, computed, watch } from 'vue';
+import { useRoute, useRouter } from 'vue-router';
+//components
 import addCardToCategory from './addCardToCategory.vue';
+import cardCreateForm from './cardCreateForm.vue';
+import addCategoryGame from './AddCategoryGame.vue';
+import addCategoryTask from './AddCategoryTask.vue';
+import addCategoryOverview from './AddCategoryOverview.vue';
+import addCategoryEditSelect from './AddCategoryEditSelect.vue';
+import lessonsPage from '@/components/Learning/LessonsPage.vue';
+import galaxyPhrasesGame from '@/pages/games/galaxyPhrases/components/GalaxyPhrasesGame.vue';
 //composables
 import { useFormValidation } from '@/composables/useFormValidation';
 import { useFileUpload } from '@/composables/useFileUpload';
 import { useImageValidation } from '@/composables/useImageValidation';
 import { useCategoriesStore } from '@/stores/categories';
-import { Notivue, Notification, push } from 'notivue';
-import { useRouter } from 'vue-router';
+import { useUserStore } from '@/stores/user';
+import { push } from 'notivue';
 
 const props = defineProps({
     updating: { type: Boolean, default: false },
 });
 
+const route = useRoute();
 const router = useRouter();
-const showAddCard = ref(false);
 const categoryStore = useCategoriesStore();
+const userStore = useUserStore();
 const currentCategory = computed(() => categoryStore.selectedCategory);
 const loading = ref(false);
+const publishProgress = ref(0);
 const originalCategory = ref(null);
 const originalCards = ref([]);
-
-const saveAction = computed(() => (props.updating ? updateCategory : publishCategory));
 
 const form = reactive({
     name: props.updating ? currentCategory.value.name : '',
     description: props.updating ? currentCategory.value.description : '',
     category_photo: props.updating ? currentCategory.value?.category_photo : null,
     category_photo_preview: null,
+    is_paid: props.updating ? (currentCategory.value?.is_paid ?? false) : false,
     cards: props.updating ? currentCategory.value.cards : [],
+    tasks: props.updating ? (currentCategory.value?.tasks ?? []) : [],
 });
+
+// ─── Навигация по шагам ──────────────────────────────────────────────────────
+const step = computed(() => route.query.step ?? '1');
+
+const goToStep = (s) => router.push({ query: { step: s } });
+
+const isFormFilled = computed(() =>
+    props.updating
+        ? Boolean(currentCategory.value?.id)
+        : Boolean(form.name && form.description && form.category_photo)
+);
+
+watch(
+    step,
+    (newStep) => {
+        if (newStep !== '1' && !isFormFilled.value) {
+            router.replace({ query: { step: '1' } });
+        }
+    },
+    { immediate: true }
+);
+
+// ─── Состояние формы карточки (поднято из addCardToCategory) ─────────────────
+const editingIndex = ref(null);
+const editingCard = ref({});
+
+const openCardForm = ({ index = null, card = {} }) => {
+    editingIndex.value = index;
+    editingCard.value = { ...card };
+    goToStep('3');
+};
+
+const updateEditingCard = (updated) => {
+    editingCard.value = { ...updated };
+};
+
+const handleCardSave = (savedCard) => {
+    const saved = {
+        ...savedCard,
+        id: editingIndex.value === null ? Date.now() : savedCard.id,
+    };
+    if (editingIndex.value !== null) {
+        form.cards[editingIndex.value] = saved;
+    } else {
+        form.cards.push(saved);
+    }
+};
+
+const handleCardClose = () => {
+    // editing: список карточек на шаге 9; creating: на шаге 2
+    goToStep(props.updating ? '9' : '2');
+};
+
+// Сохранение карточек в режиме редактирования → возврат к меню редактирования
+const handleCardsSave = async () => {
+    loading.value = true;
+    try {
+        const { toCreate, toUpdate, toDelete } = getCardsDiff();
+        await Promise.all([
+            ...toCreate.map((card) => categoryStore.createCard(currentCategory.value.id, card)),
+            ...toUpdate.map((card) => categoryStore.updateCard(card)),
+            ...toDelete.map((id) => categoryStore.deleteCard(id)),
+        ]);
+        push.success({ message: 'Карточки обновлены' });
+        goToStep('2'); // возврат к меню выбора редактирования
+    } catch (error) {
+        console.error(error);
+        push.error({ title: 'Ошибка', message: 'Не удалось обновить карточки' });
+    } finally {
+        loading.value = false;
+    }
+};
+
+// ─── Шаг 4-5: задания игры ────────────────────────────────────────────────────
+const editingTaskIndex = ref(null);
+const editingTask = ref(null);
+
+const openTaskForm = (index = null) => {
+    editingTaskIndex.value = index;
+    editingTask.value = index !== null ? { ...form.tasks[index] } : null;
+    goToStep('5');
+};
+
+const handleTaskSave = (task) => {
+    if (editingTaskIndex.value !== null) {
+        form.tasks[editingTaskIndex.value] = task;
+    } else {
+        form.tasks.push(task);
+    }
+    goToStep('4');
+};
+
+// ─── Форма категории ──────────────────────────────────────────────────────────
+const saveAction = computed(() => (props.updating ? updateCategory : publishCategory));
 
 if (props.updating && currentCategory.value?.category_photo) {
     form.category_photo_preview = `${import.meta.env.VITE_STORAGE_URI}/${currentCategory.value.id}/images/${currentCategory.value.category_photo}`;
@@ -98,7 +304,6 @@ const handleCoverUpload = async (e) => {
     if (!isValid) return;
 
     form.category_photo_preview = URL.createObjectURL(file);
-
     form.category_photo = file;
 };
 
@@ -115,53 +320,36 @@ const { errors, validateForm, isValid } = useFormValidation(form, {
 
 const submitForm = () => {
     validateForm();
-    if (isValid.value) {
-        showAddCard.value = true;
-    }
+    if (isValid.value) goToStep('2');
 };
 
+// ─── Diff-логика для редактирования ──────────────────────────────────────────
 const getCategoryDiff = () => {
     const diff = {};
-
-    if (form.name !== originalCategory.value.name) {
-        diff.name = form.name;
-    }
-
-    if (form.description !== originalCategory.value.description) {
+    if (form.name !== originalCategory.value.name) diff.name = form.name;
+    if (form.description !== originalCategory.value.description)
         diff.description = form.description;
-    }
-
-    if (form.category_photo instanceof File) {
-        diff.category_photo = form.category_photo;
-    }
-
+    if (form.category_photo instanceof File) diff.category_photo = form.category_photo;
+    if (form.is_paid !== originalCategory.value.is_paid) diff.is_paid = form.is_paid;
     return diff;
 };
 
 const CARD_DB_FIELDS = ['id', 'word', 'translation_word', 'card_photo', 'audio', 'video'];
-
 const CARD_IGNORED_FIELDS = ['card_photo_preview', 'video_preview', 'audio_preview'];
 
 const getCardDiff = (current, original) => {
     const diff = {};
-
     CARD_DB_FIELDS.forEach((key) => {
         if (key === 'id') return;
         if (CARD_IGNORED_FIELDS.includes(key)) return;
-
         const currentValue = current[key];
         const originalValue = original[key];
-
         if (currentValue instanceof File) {
             diff[key] = currentValue;
             return;
         }
-
-        if (currentValue !== originalValue) {
-            diff[key] = currentValue;
-        }
+        if (currentValue !== originalValue) diff[key] = currentValue;
     });
-
     return diff;
 };
 
@@ -175,13 +363,11 @@ const getCardsDiff = () => {
     for (const card of form.cards) {
         if (!card.id || !originalMap.has(card.id)) {
             const payload = {};
-
             CARD_DB_FIELDS.forEach((key) => {
                 if (key === 'id') return;
                 if (card[key] instanceof File) payload[key] = card[key];
                 else payload[key] = card[key] ?? null;
             });
-
             toCreate.push(payload);
             continue;
         }
@@ -190,58 +376,71 @@ const getCardsDiff = () => {
         if (!original) continue;
 
         const diff = getCardDiff(card, original);
-
-        if (Object.keys(diff).length) {
-            toUpdate.push({
-                id: card.id,
-                ...diff,
-            });
-        }
+        if (Object.keys(diff).length) toUpdate.push({ id: card.id, ...diff });
 
         originalMap.delete(card.id);
     }
 
-    for (const [id] of originalMap) {
-        toDelete.push(id);
-    }
+    for (const [id] of originalMap) toDelete.push(id);
 
     return { toCreate, toUpdate, toDelete };
 };
 
+// ─── Сохранение / обновление ──────────────────────────────────────────────────
 const publishCategory = async () => {
-    loading.value = true;
     validateForm();
     if (!isValid.value) return;
+
+    loading.value = true;
+    publishProgress.value = 0;
+
+    // Считаем общее количество операций: 1 (категория) + карточки + задания
+    const totalOps = 1 + form.cards.length + form.tasks.length;
+    let completed = 0;
+    const tick = () => {
+        completed++;
+        publishProgress.value = Math.round((completed / totalOps) * 100);
+    };
 
     try {
         const response = await categoryStore.createCategory({
             name: form.name,
             description: form.description,
             category_photo: form.category_photo,
+            is_paid: form.is_paid,
         });
+        tick();
 
         const categoryId = response?.category?.id;
         if (!categoryId) {
-            push.error({
-                title: 'Ошибка создания категории',
-                message: 'Категория не создана',
-            });
+            push.error({ title: 'Ошибка создания категории', message: 'Категория не создана' });
             throw new Error('Не удалось создать категорию');
         }
 
-        await Promise.all(form.cards.map((card) => categoryStore.createCard(categoryId, card)));
-        push.success({
-            message: 'Категория успешно создана',
-        });
+        // Создаём карточки колоды — каждая обновляет прогресс
+        await Promise.all(
+            form.cards.map((card) =>
+                categoryStore.createCard(categoryId, card).then((r) => { tick(); return r; })
+            )
+        );
+
+        // Создаём задания игры — каждое обновляет прогресс
+        if (form.tasks.length > 0) {
+            await Promise.all(
+                form.tasks.map((task) =>
+                    categoryStore.createGameTask(categoryId, task).then((r) => { tick(); return r; })
+                )
+            );
+        }
+
+        push.success({ message: 'Категория успешно создана' });
         router.push({ name: 'mainPage' });
     } catch (error) {
         console.error(error);
-        push.error({
-            title: 'Ошибка создания категории',
-            message: 'Категория не создана',
-        });
+        push.error({ title: 'Ошибка создания категории', message: 'Категория не создана' });
     } finally {
         loading.value = false;
+        publishProgress.value = 0;
     }
 };
 
@@ -252,16 +451,11 @@ const updateCategory = async () => {
         if (!isValid.value) return;
 
         const categoryDiff = getCategoryDiff();
-
         if (Object.keys(categoryDiff).length) {
-            await categoryStore.updateCategory({
-                id: currentCategory.value.id,
-                ...categoryDiff,
-            });
+            await categoryStore.updateCategory({ id: currentCategory.value.id, ...categoryDiff });
         }
 
         const { toCreate, toUpdate, toDelete } = getCardsDiff();
-
         await Promise.all([
             ...toCreate.map((card) => categoryStore.createCard(currentCategory.value.id, card)),
             ...toUpdate.map((card) => categoryStore.updateCard(card)),
@@ -272,15 +466,13 @@ const updateCategory = async () => {
         router.push({ name: 'mainPage' });
     } catch (error) {
         console.error(error);
-        push.error({
-            title: 'Ошибка обновления категории',
-            message: 'Категория не обновлена',
-        });
+        push.error({ title: 'Ошибка обновления категории', message: 'Категория не обновлена' });
     } finally {
         loading.value = false;
     }
 };
 
+// ─── Watchers ─────────────────────────────────────────────────────────────────
 watch(
     () => props.updating,
     (isUpdating) => {
@@ -305,22 +497,34 @@ watch(
             name: category.name,
             description: category.description,
             category_photo: category.category_photo,
+            is_paid: category.is_paid ?? false,
         };
 
         originalCards.value = category.cards.map((card) => {
             const clean = {};
-
             CARD_DB_FIELDS.forEach((key) => {
                 clean[key] = card[key] ?? null;
             });
-
             return clean;
         });
     },
     { immediate: true }
 );
 
+onMounted(async () => {
+    userStore.setHeaderTitle(props.updating ? 'Редактирование' : 'Создание');
+
+    if (props.updating && currentCategory.value?.id) {
+        try {
+            form.tasks = await categoryStore.getGameTasks(currentCategory.value.id);
+        } catch (e) {
+            console.error('Не удалось загрузить задания игры', e);
+        }
+    }
+});
+
 onUnmounted(() => {
+    userStore.setHeaderTitle(null);
     if (form.category_photo_preview?.startsWith('blob:')) {
         URL.revokeObjectURL(form.category_photo_preview);
     }
@@ -350,6 +554,10 @@ onUnmounted(() => {
     color: white;
     font-size: 32px;
     cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+.cover-box--filled {
+    background: #79bbfb;
 }
 .cover-preview img {
     width: 100%;
@@ -361,7 +569,7 @@ onUnmounted(() => {
     display: none;
 }
 .form-group {
-    margin-bottom: 20px;
+    margin-bottom: 16px;
     display: flex;
     flex-direction: column;
     width: 100%;
@@ -429,6 +637,7 @@ textarea {
 
 .plus {
     font-size: 4rem;
+    color: #fff;
 }
 .card-placeholder {
     width: 100%;
@@ -476,5 +685,52 @@ textarea {
     width: 100%;
     height: auto;
     padding: 0 20px;
+}
+
+.radio-group {
+    display: flex;
+    gap: 20px;
+    margin-bottom: 16px;
+}
+
+.radio-label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    font-family: Mulish;
+    font-weight: 600;
+    font-size: 16px;
+    color: #262060;
+}
+
+.radio-label input[type='radio'] {
+    appearance: none;
+    -webkit-appearance: none;
+    width: 18px;
+    height: 18px;
+    border: 2px solid #262060;
+    border-radius: 50%;
+    outline: none;
+    cursor: pointer;
+    flex-shrink: 0;
+    position: relative;
+    transition: border-color 0.2s;
+}
+
+.radio-label input[type='radio']:checked {
+    border-color: #2e236d;
+}
+
+.radio-label input[type='radio']:checked::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    background-color: #2e236d;
 }
 </style>

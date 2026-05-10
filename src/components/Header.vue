@@ -374,6 +374,7 @@ watch(
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+    padding: 0 10px;
 }
 
 .live-icon {

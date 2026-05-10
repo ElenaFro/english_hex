@@ -132,7 +132,7 @@ const activeProps = computed(() => {
         case 'planet_attack':
         case 'planet-attack':
         case 'attackplanet':
-        case 'galaxy_phrases':
+        case 'phrase_galaxy':
         case 'galaxy-phrases':
         case 'galaxyphrases':
             return { questions: items, isInfinity: true };
