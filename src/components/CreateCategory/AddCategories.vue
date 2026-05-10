@@ -117,11 +117,13 @@
             @close-preview="goToStep('6')"
         />
 
-        <!-- Шаг 8: Предпросмотр игры (TODO: подключить нужный компонент) -->
-        <div v-else-if="step === '8'" class="game-preview-placeholder">
-            <p>Предпросмотр игры</p>
-            <button @click="goToStep('6')">Назад</button>
-        </div>
+        <!-- Шаг 8: Предпросмотр игры -->
+        <galaxy-phrases-game
+            v-else-if="step === '8'"
+            :questions="form.tasks"
+            is-preview
+            @finish="goToStep('6')"
+        />
 
         <!-- Шаг 9: editing → список карточек; creating → меню выбора редактирования -->
         <add-card-to-category
@@ -154,6 +156,7 @@ import addCategoryTask from './AddCategoryTask.vue';
 import addCategoryOverview from './AddCategoryOverview.vue';
 import addCategoryEditSelect from './AddCategoryEditSelect.vue';
 import lessonsPage from '@/components/Learning/LessonsPage.vue';
+import galaxyPhrasesGame from '@/pages/games/galaxyPhrases/components/GalaxyPhrasesGame.vue';
 //composables
 import { useFormValidation } from '@/composables/useFormValidation';
 import { useFileUpload } from '@/composables/useFileUpload';
