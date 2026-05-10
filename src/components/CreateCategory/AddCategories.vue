@@ -103,6 +103,7 @@
             :description="form.description"
             :cards="form.cards"
             :loading="loading"
+            :progress="publishProgress"
             @preview-deck="goToStep('7')"
             @preview-game="goToStep('8')"
             @edit="goToStep('9')"
@@ -175,6 +176,7 @@ const categoryStore = useCategoriesStore();
 const userStore = useUserStore();
 const currentCategory = computed(() => categoryStore.selectedCategory);
 const loading = ref(false);
+const publishProgress = ref(0);
 const originalCategory = ref(null);
 const originalCards = ref([]);
 
@@ -386,9 +388,19 @@ const getCardsDiff = () => {
 
 // ─── Сохранение / обновление ──────────────────────────────────────────────────
 const publishCategory = async () => {
-    loading.value = true;
     validateForm();
     if (!isValid.value) return;
+
+    loading.value = true;
+    publishProgress.value = 0;
+
+    // Считаем общее количество операций: 1 (категория) + карточки + задания
+    const totalOps = 1 + form.cards.length + form.tasks.length;
+    let completed = 0;
+    const tick = () => {
+        completed++;
+        publishProgress.value = Math.round((completed / totalOps) * 100);
+    };
 
     try {
         const response = await categoryStore.createCategory({
@@ -397,6 +409,7 @@ const publishCategory = async () => {
             category_photo: form.category_photo,
             is_paid: form.is_paid,
         });
+        tick();
 
         const categoryId = response?.category?.id;
         if (!categoryId) {
@@ -404,13 +417,19 @@ const publishCategory = async () => {
             throw new Error('Не удалось создать категорию');
         }
 
-        // Создаём карточки колоды
-        await Promise.all(form.cards.map((card) => categoryStore.createCard(categoryId, card)));
+        // Создаём карточки колоды — каждая обновляет прогресс
+        await Promise.all(
+            form.cards.map((card) =>
+                categoryStore.createCard(categoryId, card).then((r) => { tick(); return r; })
+            )
+        );
 
-        // Создаём задания игры с привязкой category_id
+        // Создаём задания игры — каждое обновляет прогресс
         if (form.tasks.length > 0) {
             await Promise.all(
-                form.tasks.map((task) => categoryStore.createGameTask(categoryId, task))
+                form.tasks.map((task) =>
+                    categoryStore.createGameTask(categoryId, task).then((r) => { tick(); return r; })
+                )
             );
         }
 
@@ -421,6 +440,7 @@ const publishCategory = async () => {
         push.error({ title: 'Ошибка создания категории', message: 'Категория не создана' });
     } finally {
         loading.value = false;
+        publishProgress.value = 0;
     }
 };
 

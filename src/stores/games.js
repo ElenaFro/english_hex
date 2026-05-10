@@ -75,7 +75,7 @@ export const useGamesStore = defineStore('games', () => {
 
     async function getWordForGalaxyPhrasesAllCategories() {
         try {
-            const response = await apiClient.get('/games/galaxy-phrases/infinity');
+            const response = await apiClient.get('/games/phrase-galaxy/infinity');
             return response.data;
         } catch (error) {
             console.error(error);

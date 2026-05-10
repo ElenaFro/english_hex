@@ -31,24 +31,50 @@
                 </button>
             </div>
 
-            <button class="button button--publish" :disabled="loading" @click="emit('publish')">
-                {{ loading ? 'Публикация...' : 'Опубликовать' }}
+            <button
+                class="button button--publish"
+                :class="{ 'button--publishing': loading }"
+                :style="loading ? { '--progress': progress + '%' } : {}"
+                :disabled="loading"
+                @click="showConfirm = true"
+            >
+                <span class="publish-label">
+                    {{ loading ? `${Math.round(progress)}%` : 'Опубликовать' }}
+                </span>
             </button>
         </section>
+
+        <default-popup
+            :is-visible="showConfirm"
+            title="Опубликовать категорию?"
+            message="После публикации категория станет доступна пользователям."
+            confirm-text="Опубликовать"
+            @close="showConfirm = false"
+            @confirm="onConfirm"
+        />
     </div>
 </template>
 
 <script setup>
-import { computed } from 'vue';
+import { computed, ref } from 'vue';
+import DefaultPopup from '@/shared/components/popups/defaultPopup.vue';
 
 const props = defineProps({
     name: { type: String, default: '' },
     description: { type: String, default: '' },
     cards: { type: Array, default: () => [] },
     loading: { type: Boolean, default: false },
+    progress: { type: Number, default: 0 },
 });
 
 const emit = defineEmits(['preview-deck', 'preview-game', 'edit', 'publish']);
+
+const showConfirm = ref(false);
+
+const onConfirm = () => {
+    showConfirm.value = false;
+    emit('publish');
+};
 
 // Берём превью первых 3 карточек (blob URL или уже загруженный preview)
 const previewImages = computed(() =>
@@ -174,11 +200,40 @@ const previewImages = computed(() =>
     font-size: 18px;
     font-weight: 600;
     background: #262060;
+    color: #fff;
     line-height: normal;
+    width: 100%;
+    max-width: 312px;
+    position: relative;
+    overflow: hidden;
+    transition:
+        background 0.3s,
+        color 0.3s,
+        border 0.3s;
 
-    &:disabled {
-        opacity: 0.6;
+    .publish-label {
+        position: relative;
+        z-index: 1;
+        color: #fff;
+    }
+
+    // Прогресс-бар режим
+    &.button--publishing {
+        background: transparent;
+        border: 2px solid #262060;
+        color: #262060;
         cursor: not-allowed;
+
+        &::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: var(--progress, 0%);
+            background: #262060;
+            transition: width 0.4s ease;
+        }
     }
 }
 </style>
