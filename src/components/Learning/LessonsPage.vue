@@ -331,7 +331,7 @@ defineExpose({
     display: flex;
     flex-direction: column;
     align-items: center;
-    height: 100dvh;
+    height: 90dvh;
     box-sizing: border-box;
     overflow: hidden;
 }

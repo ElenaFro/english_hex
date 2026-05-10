@@ -1,14 +1,6 @@
 <template>
     <div class="w-100">
-        <div v-if="showPreview" class="bg-image-preview">
-            <lessons-page
-                :props-cards="cards"
-                is-preview
-                @close-preview="closePreview"
-                @publish="openPublishModal"
-            />
-        </div>
-        <div v-else>
+        <div>
             <div class="form-group">
                 <div class="header">
                     <label class="header-text">Добавить новые карточки</label>
@@ -19,7 +11,7 @@
                         @click.stop="handleHeaderDeleteClick"
                     />
                 </div>
-                <div class="cards" :class="{ error: errors.cards }">
+                <div class="cards">
                     <button v-if="cards.length < 20" class="card-box add" @click="addCard">
                         +
                     </button>
@@ -41,11 +33,8 @@
                         </div>
                     </div>
                 </div>
-                <span v-if="errors.cards" class="error-msg">Добавьте хотя бы одну карточку</span>
-
-                <div class="btn_container">
-                    <button class="btn publish-btn" @click="openPublishModal">Опубликовать</button>
-                    <button class="btn continue-btn" @click="openPreviewModal">Предпросмотр</button>
+                <div v-if="cards.length > 0" class="btn_container">
+                    <button class="btn publish-btn" @click="emit('add-game')">Добавить игру</button>
                 </div>
             </div>
 
@@ -57,52 +46,26 @@
                 @confirm="deleteSelectedCards"
             />
 
-            <default-popup
-                :is-visible="showPreviewModal"
-                title="Перейти к просмотру карточек?"
-                confirm-text="Продолжить"
-                @close="closePreviewModal"
-                @confirm="previewCategory"
-            />
-
-            <default-popup
-                :is-visible="showPublishModal"
-                title="Вы уверены что хотете Опубликовать?"
-                confirm-text="Продолжить"
-                :loading="loading"
-                @close="closePublishModal"
-                @confirm="publishCategory"
-            />
         </div>
     </div>
 </template>
 
 <script setup>
 import { ref, computed, watch } from 'vue';
-import { useFormValidation } from '@/composables/useFormValidation';
 import DefaultPopup from '@/shared/components/popups/defaultPopup.vue';
-import LessonsPage from '../Learning/LessonsPage.vue';
 
 const props = defineProps({
     modelValue: { type: Object, default: () => ({ cards: [] }) },
     loading: { type: Boolean, default: false },
 });
-const emit = defineEmits(['update:modelValue', 'publish', 'open-card']);
+const emit = defineEmits(['update:modelValue', 'publish', 'open-card', 'add-game']);
 
 const cards = computed({
     get: () => props.modelValue.cards,
     set: (val) => emit('update:modelValue', { ...props.modelValue, cards: val }),
 });
 
-const { errors, validateForm } = useFormValidation(
-    { cards },
-    {
-        cards: (val) => val.length === 0,
-    }
-);
-
 const showDeleteModal = ref(false);
-const showPublishModal = ref(false);
 const cardToDelete = ref(null);
 
 const isSelectionMode = ref(false);
@@ -128,15 +91,6 @@ const editCard = (index) => {
 const closeDeleteModal = () => {
     showDeleteModal.value = false;
     cardToDelete.value = null;
-};
-
-const closePublishModal = () => {
-    showPublishModal.value = false;
-};
-
-const openPublishModal = () => {
-    closePreview();
-    showPublishModal.value = true;
 };
 
 const enterSelectionMode = () => {
@@ -174,7 +128,6 @@ const deleteSelectedCards = () => {
 
     selectedCards.value.clear();
     isSelectionMode.value = false;
-    validateForm();
     closeDeleteModal();
 };
 
@@ -199,33 +152,7 @@ watch(
     { deep: true }
 );
 
-const showPreview = ref(false);
-const showPreviewModal = ref(false);
 
-const openPreviewModal = () => {
-    showPreviewModal.value = true;
-};
-
-const closePreviewModal = () => {
-    showPreviewModal.value = false;
-};
-
-const previewCategory = () => {
-    closePreviewModal();
-    showPreview.value = true;
-    exitSelectionMode();
-};
-const closePreview = () => {
-    showPreview.value = false;
-};
-
-const publishCategory = () => {
-    validateForm();
-    if (Object.values(errors).every((e) => !e)) {
-        emit('publish');
-        closePublishModal();
-    }
-};
 </script>
 
 <style scoped lang="scss">

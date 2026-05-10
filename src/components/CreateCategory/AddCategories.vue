@@ -59,6 +59,7 @@
             :loading="loading"
             @update:model-value="(val) => (form.cards = val.cards)"
             @open-card="openCardForm"
+            @add-game="goToStep('4')"
             @publish="saveAction"
         />
 
@@ -70,6 +71,25 @@
             @save="handleCardSave"
             @close="handleCardClose"
         />
+
+        <!-- Шаг 4: Меню создания игры -->
+        <add-category-game
+            v-else-if="step === '4'"
+            :tasks="form.tasks"
+            :loading="loading"
+            @add-task="openTaskForm(null)"
+            @edit-task="(i) => openTaskForm(i)"
+            @delete-task="(i) => form.tasks.splice(i, 1)"
+            @preview="() => {}"
+        />
+
+        <!-- Шаг 5: Форма создания/редактирования задания -->
+        <add-category-task
+            v-else-if="step === '5'"
+            :model-value="editingTask"
+            @save="handleTaskSave"
+            @close="goToStep('4')"
+        />
     </div>
 </template>
 
@@ -80,6 +100,8 @@ import { useRoute, useRouter } from 'vue-router';
 //components
 import addCardToCategory from './addCardToCategory.vue';
 import cardCreateForm from './cardCreateForm.vue';
+import addCategoryGame from './AddCategoryGame.vue';
+import addCategoryTask from './AddCategoryTask.vue';
 //composables
 import { useFormValidation } from '@/composables/useFormValidation';
 import { useFileUpload } from '@/composables/useFileUpload';
@@ -108,6 +130,7 @@ const form = reactive({
     category_photo_preview: null,
     is_paid: props.updating ? (currentCategory.value?.is_paid ?? false) : false,
     cards: props.updating ? currentCategory.value.cards : [],
+    tasks: props.updating ? (currentCategory.value?.tasks ?? []) : [],
 });
 
 // ─── Навигация по шагам ──────────────────────────────────────────────────────
@@ -159,6 +182,25 @@ const handleCardSave = (savedCard) => {
 
 const handleCardClose = () => {
     goToStep('2');
+};
+
+// ─── Шаг 4-5: задания игры ────────────────────────────────────────────────────
+const editingTaskIndex = ref(null);
+const editingTask = ref(null);
+
+const openTaskForm = (index = null) => {
+    editingTaskIndex.value = index;
+    editingTask.value = index !== null ? { ...form.tasks[index] } : null;
+    goToStep('5');
+};
+
+const handleTaskSave = (task) => {
+    if (editingTaskIndex.value !== null) {
+        form.tasks[editingTaskIndex.value] = task;
+    } else {
+        form.tasks.push(task);
+    }
+    goToStep('4');
 };
 
 // ─── Форма категории ──────────────────────────────────────────────────────────
