@@ -110,8 +110,13 @@ const shuffle = (arr) => [...arr].sort(() => Math.random() - 0.5);
 const normalizeQuestion = (item) => {
     const [enBefore, enAfter] = splitSentence(item.sentence_en ?? item.en ?? '');
     const correct = item.correct_answer ?? item.correct ?? '';
-    const wrong = Array.isArray(item.wrong_answers) ? item.wrong_answers : [];
-    const options = shuffle([correct, ...wrong]).filter(Boolean);
+    const options =
+        Array.isArray(item.options) && item.options.length
+            ? shuffle(item.options).filter(Boolean)
+            : shuffle([
+                  correct,
+                  ...(Array.isArray(item.wrong_answers) ? item.wrong_answers : []),
+              ]).filter(Boolean);
 
     // Аудио URL: File/Blob → objectURL, http-строка → as is, иначе строим путь
     let audioUrl = null;
@@ -121,7 +126,7 @@ const normalizeQuestion = (item) => {
         } else if (String(item.audio).startsWith('http')) {
             audioUrl = item.audio;
         } else {
-            audioUrl = `${import.meta.env.VITE_STORAGE_URI}/phrase-galaxy-sentences/${item.id}/audio/${item.audio}`;
+            audioUrl = `${import.meta.env.VITE_STORAGE_GALAXY_URI}/phrase_galaxy/${item.id}/audio/${item.audio}`;
         }
     }
 

@@ -110,6 +110,7 @@ const emit = defineEmits(['save', 'close']);
 const isEditing = computed(() => Boolean(props.modelValue?.sentence_en));
 
 const form = reactive({
+    id: props.modelValue?.id ?? null,
     sentence_en: props.modelValue?.sentence_en ?? '',
     sentence_ru: props.modelValue?.sentence_ru ?? '',
     correct_answer: props.modelValue?.correct_answer ?? '',
