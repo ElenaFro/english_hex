@@ -43,11 +43,13 @@ const routes = [
                 path: 'addCategories',
                 name: 'addCategories',
                 component: () => import('@/pages/AddCategoriesPage.vue'),
+                meta: { requiresAdmin: true },
             },
             {
                 path: 'editCategory/:id',
                 name: 'editCategory',
                 component: () => import('@/pages/EditCategoryPage.vue'),
+                meta: { requiresAdmin: true },
             },
             {
                 path: 'users',
@@ -181,7 +183,7 @@ const routes = [
                 path: 'createNotification',
                 name: 'createNotification',
                 component: () => import('@/pages/CreateNotificationPage.vue'),
-                meta: { title: 'Уведомления' },
+                meta: { title: 'Уведомления', requiresAdmin: true },
             },
             {
                 path: 'learning/:id',
