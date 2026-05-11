@@ -104,10 +104,13 @@
             :cards="form.cards"
             :loading="loading"
             :progress="publishProgress"
+            :failed-count="failedCount"
+            :is-updating="props.updating"
             @preview-deck="goToStep('7')"
             @preview-game="goToStep('8')"
             @edit="goToStep('9')"
-            @publish="publishCategory"
+            @publish="saveAction"
+            @retry="saveAction"
         />
 
         <!-- Шаг 7: Предпросмотр колоды -->
@@ -177,8 +180,22 @@ const userStore = useUserStore();
 const currentCategory = computed(() => categoryStore.selectedCategory);
 const loading = ref(false);
 const publishProgress = ref(0);
+const createdCategoryId = ref(null);
+const failedCards = ref([]);
+const failedTasks = ref([]);
+const pendingRetry = ref(null); 
+const failedCount = computed(() => {
+    if (pendingRetry.value) {
+        const { categoryDiff, toCreate, toUpdate, toDelete, toCreateTasks, toUpdateTasks, toDeleteTaskIds } = pendingRetry.value;
+        return (Object.keys(categoryDiff ?? {}).length ? 1 : 0)
+            + toCreate.length + toUpdate.length + toDelete.length
+            + toCreateTasks.length + toUpdateTasks.length + toDeleteTaskIds.length;
+    }
+    return failedCards.value.length + failedTasks.value.length;
+});
 const originalCategory = ref(null);
 const originalCards = ref([]);
+const originalTasks = ref([]);
 
 const form = reactive({
     name: props.updating ? currentCategory.value.name : '',
@@ -386,6 +403,34 @@ const getCardsDiff = () => {
     return { toCreate, toUpdate, toDelete };
 };
 
+const getTasksDiff = () => {
+    const toCreate = [];
+    const toUpdate = [];
+    const toDeleteIds = [];
+
+    const originalMap = new Map(originalTasks.value.map((t) => [t.id, t]));
+
+    for (const task of form.tasks) {
+        if (!task.id || !originalMap.has(task.id)) {
+            toCreate.push(task);
+            continue;
+        }
+        const original = originalMap.get(task.id);
+        const changed =
+            task.sentence_en !== original.sentence_en ||
+            task.sentence_ru !== original.sentence_ru ||
+            task.correct_answer !== original.correct_answer ||
+            JSON.stringify(task.wrong_answers) !== JSON.stringify(original.wrong_answers) ||
+            task.audio instanceof File;
+        if (changed) toUpdate.push(task);
+        originalMap.delete(task.id);
+    }
+
+    for (const [id] of originalMap) toDeleteIds.push(id);
+
+    return { toCreate, toUpdate, toDeleteIds };
+};
+
 // ─── Сохранение / обновление ──────────────────────────────────────────────────
 const publishCategory = async () => {
     validateForm();
@@ -394,47 +439,72 @@ const publishCategory = async () => {
     loading.value = true;
     publishProgress.value = 0;
 
-    // Считаем общее количество операций: 1 (категория) + карточки + задания
-    const totalOps = 1 + form.cards.length + form.tasks.length;
+    const isRetry = !!createdCategoryId.value;
+    const cardsToProcess = isRetry ? [...failedCards.value] : form.cards;
+    const tasksToProcess = isRetry ? [...failedTasks.value] : form.tasks;
+
+    if (isRetry) {
+        failedCards.value = [];
+        failedTasks.value = [];
+    }
+
+    const totalOps = (isRetry ? 0 : 1) + cardsToProcess.length + tasksToProcess.length;
     let completed = 0;
     const tick = () => {
         completed++;
-        publishProgress.value = Math.round((completed / totalOps) * 100);
+        publishProgress.value = totalOps > 0 ? Math.round((completed / totalOps) * 100) : 100;
     };
 
     try {
-        const response = await categoryStore.createCategory({
-            name: form.name,
-            description: form.description,
-            category_photo: form.category_photo,
-            is_paid: form.is_paid,
-        });
-        tick();
+        if (!isRetry) {
+            const response = await categoryStore.createCategory({
+                name: form.name,
+                description: form.description,
+                category_photo: form.category_photo,
+                is_paid: form.is_paid,
+            });
+            tick();
 
-        const categoryId = response?.category?.id;
-        if (!categoryId) {
-            push.error({ title: 'Ошибка создания категории', message: 'Категория не создана' });
-            throw new Error('Не удалось создать категорию');
+            const categoryId = response?.category?.id;
+            if (!categoryId) {
+                push.error({ title: 'Ошибка создания категории', message: 'Категория не создана' });
+                return;
+            }
+            createdCategoryId.value = categoryId;
         }
 
-        // Создаём карточки колоды — каждая обновляет прогресс
-        await Promise.all(
-            form.cards.map((card) =>
+        const categoryId = createdCategoryId.value;
+
+        const cardResults = await Promise.allSettled(
+            cardsToProcess.map((card) =>
                 categoryStore.createCard(categoryId, card).then((r) => { tick(); return r; })
             )
         );
+        cardResults.forEach((result, i) => {
+            if (result.status === 'rejected') failedCards.value.push(cardsToProcess[i]);
+        });
 
-        // Создаём задания игры — каждое обновляет прогресс
-        if (form.tasks.length > 0) {
-            await Promise.all(
-                form.tasks.map((task) =>
+        if (tasksToProcess.length > 0) {
+            const taskResults = await Promise.allSettled(
+                tasksToProcess.map((task) =>
                     categoryStore.createGameTask(categoryId, task).then((r) => { tick(); return r; })
                 )
             );
+            taskResults.forEach((result, i) => {
+                if (result.status === 'rejected') failedTasks.value.push(tasksToProcess[i]);
+            });
         }
 
-        push.success({ message: 'Категория успешно создана' });
-        router.push({ name: 'mainPage' });
+        if (failedCards.value.length || failedTasks.value.length) {
+            push.error({
+                title: 'Часть данных не сохранена',
+                message: `${failedCount.value} элемент(ов) не загружено. Нажмите «Повторить» для повторной попытки.`,
+            });
+        } else {
+            push.success({ message: 'Категория успешно создана' });
+            createdCategoryId.value = null;
+            router.push({ name: 'mainPage' });
+        }
     } catch (error) {
         console.error(error);
         push.error({ title: 'Ошибка создания категории', message: 'Категория не создана' });
@@ -446,29 +516,97 @@ const publishCategory = async () => {
 
 const updateCategory = async () => {
     loading.value = true;
-    try {
-        validateForm();
-        if (!isValid.value) return;
+    publishProgress.value = 0;
 
-        const categoryDiff = getCategoryDiff();
+    const isRetry = !!pendingRetry.value;
+    let categoryDiff, toCreate, toUpdate, toDelete, toCreateTasks, toUpdateTasks, toDeleteTaskIds;
+
+    if (isRetry) {
+        ({ categoryDiff, toCreate, toUpdate, toDelete, toCreateTasks, toUpdateTasks, toDeleteTaskIds } = pendingRetry.value);
+        pendingRetry.value = null;
+    } else {
+        validateForm();
+        if (!isValid.value) { loading.value = false; return; }
+        categoryDiff = getCategoryDiff();
+        ({ toCreate, toUpdate, toDelete } = getCardsDiff());
+        ({ toCreate: toCreateTasks, toUpdate: toUpdateTasks, toDeleteIds: toDeleteTaskIds } = getTasksDiff());
+    }
+
+    const opsCount =
+        (Object.keys(categoryDiff).length ? 1 : 0)
+        + toCreate.length + toUpdate.length + toDelete.length
+        + toCreateTasks.length + toUpdateTasks.length + toDeleteTaskIds.length;
+    let completed = 0;
+    const tick = () => {
+        completed++;
+        publishProgress.value = opsCount > 0 ? Math.round((completed / opsCount) * 100) : 100;
+    };
+
+    try {
+        let failedCategoryDiff = {};
         if (Object.keys(categoryDiff).length) {
-            await categoryStore.updateCategory({ id: currentCategory.value.id, ...categoryDiff });
+            try {
+                await categoryStore.updateCategory({ id: currentCategory.value.id, ...categoryDiff });
+                tick();
+            } catch (e) {
+                console.error(e);
+                failedCategoryDiff = categoryDiff;
+            }
         }
 
-        const { toCreate, toUpdate, toDelete } = getCardsDiff();
-        await Promise.all([
-            ...toCreate.map((card) => categoryStore.createCard(currentCategory.value.id, card)),
-            ...toUpdate.map((card) => categoryStore.updateCard(card)),
-            ...toDelete.map((id) => categoryStore.deleteCard(id)),
-        ]);
+        const failedCreate = [];
+        const failedUpdate = [];
+        const failedDelete = [];
+        const failedCreateTasks = [];
+        const failedUpdateTasks = [];
+        const failedDeleteTaskIds = [];
 
-        push.success({ message: 'Категория успешно обновлена' });
-        router.push({ name: 'mainPage' });
+        const [createResults, updateResults, deleteResults, createTaskResults, updateTaskResults, deleteTaskResults] =
+            await Promise.all([
+                Promise.allSettled(toCreate.map((card) => categoryStore.createCard(currentCategory.value.id, card).then((r) => { tick(); return r; }))),
+                Promise.allSettled(toUpdate.map((card) => categoryStore.updateCard(card).then((r) => { tick(); return r; }))),
+                Promise.allSettled(toDelete.map((id) => categoryStore.deleteCard(id).then((r) => { tick(); return r; }))),
+                Promise.allSettled(toCreateTasks.map((task) => categoryStore.createGameTask(currentCategory.value.id, task).then((r) => { tick(); return r; }))),
+                Promise.allSettled(toUpdateTasks.map((task) => categoryStore.updateGameTask(task).then((r) => { tick(); return r; }))),
+                Promise.allSettled(toDeleteTaskIds.map((id) => categoryStore.deleteGameTask(id).then((r) => { tick(); return r; }))),
+            ]);
+
+        createResults.forEach((r, i) => { if (r.status === 'rejected') failedCreate.push(toCreate[i]); });
+        updateResults.forEach((r, i) => { if (r.status === 'rejected') failedUpdate.push(toUpdate[i]); });
+        deleteResults.forEach((r, i) => { if (r.status === 'rejected') failedDelete.push(toDelete[i]); });
+        createTaskResults.forEach((r, i) => { if (r.status === 'rejected') failedCreateTasks.push(toCreateTasks[i]); });
+        updateTaskResults.forEach((r, i) => { if (r.status === 'rejected') failedUpdateTasks.push(toUpdateTasks[i]); });
+        deleteTaskResults.forEach((r, i) => { if (r.status === 'rejected') failedDeleteTaskIds.push(toDeleteTaskIds[i]); });
+
+        const totalFailed =
+            (Object.keys(failedCategoryDiff).length ? 1 : 0)
+            + failedCreate.length + failedUpdate.length + failedDelete.length
+            + failedCreateTasks.length + failedUpdateTasks.length + failedDeleteTaskIds.length;
+
+        if (totalFailed > 0) {
+            pendingRetry.value = {
+                categoryDiff: failedCategoryDiff,
+                toCreate: failedCreate,
+                toUpdate: failedUpdate,
+                toDelete: failedDelete,
+                toCreateTasks: failedCreateTasks,
+                toUpdateTasks: failedUpdateTasks,
+                toDeleteTaskIds: failedDeleteTaskIds,
+            };
+            push.error({
+                title: 'Часть данных не сохранена',
+                message: `${totalFailed} операций не выполнено. Нажмите «Повторить» для повторной попытки.`,
+            });
+        } else {
+            push.success({ message: 'Категория успешно обновлена' });
+            router.push({ name: 'mainPage' });
+        }
     } catch (error) {
         console.error(error);
         push.error({ title: 'Ошибка обновления категории', message: 'Категория не обновлена' });
     } finally {
         loading.value = false;
+        publishProgress.value = 0;
     }
 };
 
@@ -516,7 +654,13 @@ onMounted(async () => {
 
     if (props.updating && currentCategory.value?.id) {
         try {
-            form.tasks = await categoryStore.getGameTasks(currentCategory.value.id);
+            const raw = await categoryStore.getGameTasks(currentCategory.value.id);
+            const tasks = raw.map((t) => ({
+                ...t,
+                wrong_answers: (t.options ?? []).filter((o) => o !== t.correct_answer),
+            }));
+            form.tasks = tasks;
+            originalTasks.value = tasks.map((t) => ({ ...t, wrong_answers: [...t.wrong_answers] }));
         } catch (e) {
             console.error('Не удалось загрузить задания игры', e);
         }

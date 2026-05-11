@@ -32,6 +32,7 @@
             </div>
 
             <button
+                v-if="!failedCount"
                 class="button button--publish"
                 :class="{ 'button--publishing': loading }"
                 :style="loading ? { '--progress': progress + '%' } : {}"
@@ -39,16 +40,43 @@
                 @click="showConfirm = true"
             >
                 <span class="publish-label">
-                    {{ loading ? `${Math.round(progress)}%` : 'Опубликовать' }}
+                    {{
+                        loading
+                            ? `${Math.round(progress)}%`
+                            : isUpdating
+                              ? 'Сохранить'
+                              : 'Опубликовать'
+                    }}
                 </span>
             </button>
+
+            <div v-if="failedCount" class="retry-block">
+                <p class="retry-block__message">
+                    {{ failedCount }} элемент(ов) не удалось сохранить
+                </p>
+                <button
+                    class="button button--publish"
+                    :class="{ 'button--publishing': loading }"
+                    :style="loading ? { '--progress': progress + '%' } : {}"
+                    :disabled="loading"
+                    @click="emit('retry')"
+                >
+                    <span class="publish-label">
+                        {{ loading ? `${Math.round(progress)}%` : 'Повторить' }}
+                    </span>
+                </button>
+            </div>
         </section>
 
         <default-popup
             :is-visible="showConfirm"
-            title="Опубликовать категорию?"
-            message="После публикации категория станет доступна пользователям."
-            confirm-text="Опубликовать"
+            :title="isUpdating ? 'Сохранить изменения?' : 'Опубликовать категорию?'"
+            :message="
+                isUpdating
+                    ? 'Будут сохранены только изменённые данные.'
+                    : 'После публикации категория станет доступна пользователям.'
+            "
+            :confirm-text="isUpdating ? 'Сохранить' : 'Опубликовать'"
             @close="showConfirm = false"
             @confirm="onConfirm"
         />
@@ -65,9 +93,11 @@ const props = defineProps({
     cards: { type: Array, default: () => [] },
     loading: { type: Boolean, default: false },
     progress: { type: Number, default: 0 },
+    failedCount: { type: Number, default: 0 },
+    isUpdating: { type: Boolean, default: false },
 });
 
-const emit = defineEmits(['preview-deck', 'preview-game', 'edit', 'publish']);
+const emit = defineEmits(['preview-deck', 'preview-game', 'edit', 'publish', 'retry']);
 
 const showConfirm = ref(false);
 
@@ -203,7 +233,6 @@ const previewImages = computed(() =>
     color: #fff;
     line-height: normal;
     width: 100%;
-    max-width: 312px;
     position: relative;
     overflow: hidden;
     transition:
@@ -215,6 +244,23 @@ const previewImages = computed(() =>
         position: relative;
         z-index: 1;
         color: #fff;
+    }
+
+    .retry-block {
+        margin-top: 40px;
+        max-width: 312px;
+
+        .button--publish {
+            margin-top: 0;
+            width: 100%;
+        }
+    }
+
+    .retry-block__message {
+        font-size: 13px;
+        color: #c0392b;
+        margin-bottom: 8px;
+        font-weight: 500;
     }
 
     // Прогресс-бар режим

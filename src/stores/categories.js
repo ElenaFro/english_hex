@@ -209,6 +209,38 @@ export const useCategoriesStore = defineStore('categories', () => {
         }
     }
 
+    async function updateGameTask(task) {
+        try {
+            const response = await apiClient.post(
+                `/phrase-galaxy-sentences/update/${task.id}`,
+                {
+                    sentence_en: task.sentence_en,
+                    sentence_ru: task.sentence_ru,
+                    correct_answer: task.correct_answer,
+                    wrong_answers: task.wrong_answers,
+                    audio: task.audio instanceof File ? task.audio : undefined,
+                },
+                {
+                    headers: { 'Content-Type': 'multipart/form-data' },
+                }
+            );
+            return response.data;
+        } catch (error) {
+            console.error(error);
+            throw error;
+        }
+    }
+
+    async function deleteGameTask(id) {
+        try {
+            const response = await apiClient.delete(`/phrase-galaxy-sentences/delete/${id}`);
+            return response.data;
+        } catch (error) {
+            console.error(error);
+            throw error;
+        }
+    }
+
     async function deleteCard(id) {
         try {
             const response = await apiClient.delete(`/admin/card/delete/${id}`);
@@ -298,6 +330,8 @@ export const useCategoriesStore = defineStore('categories', () => {
         deleteCard,
         getGameTasks,
         createGameTask,
+        updateGameTask,
+        deleteGameTask,
         finishCard,
         addCardInFavorite,
         deleteCardFromFavorite,
