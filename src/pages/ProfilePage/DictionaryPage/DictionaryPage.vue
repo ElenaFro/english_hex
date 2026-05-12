@@ -23,7 +23,10 @@
                                 {{ word.card.word }}</span
                             >
                         </div>
-                        <button class="dictionary-item__delete-btn" @click="removeWord(word.id)">
+                        <button
+                            class="dictionary-item__delete-btn"
+                            @click="removeWord(word.card.id)"
+                        >
                             <img
                                 src="@/assets/icons/delete_icon.svg"
                                 alt="Удалить"
