@@ -23,7 +23,11 @@
                         <img src="@/assets/img/arrow_icon.svg" alt="arrow" />
                     </button>
                 </div>
-                <img src="@/assets/Di_avatar/girl_fly_win.png" alt="Di" class="avatar_result" />
+                <img
+                    src="@/assets/Di_avatar/girl_with_keychain.webp"
+                    alt="Di"
+                    class="avatar_result"
+                />
             </section>
         </section>
     </div>
@@ -123,9 +127,10 @@ const goToPlanet = () => {
 }
 .avatar_result {
     position: absolute;
-    bottom: -210px;
-    right: 21%;
+    bottom: -165px;
+    right: 24%;
     z-index: 200;
+    max-width: 166px;
 }
 
 @media (max-height: 810px) {

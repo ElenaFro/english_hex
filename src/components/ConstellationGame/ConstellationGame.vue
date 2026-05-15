@@ -43,9 +43,10 @@ const route = useRoute();
 const props = defineProps({
     items: { type: Array, default: null },
     isInfinity: { type: Boolean, default: false },
+    initialSeconds: { type: Number, default: 0 },
 });
 const emit = defineEmits(['finish']);
-const timer = ref(0);
+const timer = ref(props.initialSeconds);
 const loading = ref(true);
 const errorCount = ref(0);
 const selectedCards = ref([]);
@@ -116,6 +117,7 @@ const checkMatch = () => {
                         emit('finish', {
                             correctCount: matchedPairs.value.length,
                             wrongCount: wrongCount.value,
+                            finalSeconds: timer.value,
                         });
                     } else {
                         const resultQuery = {

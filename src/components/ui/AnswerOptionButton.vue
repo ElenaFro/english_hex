@@ -48,6 +48,7 @@ const sizeClass = computed(() => (props.size === 'sm' ? 'answer-option--sm' : 'a
     background-color: #ffffff;
     color: #262060;
     cursor: pointer;
+    height: auto;
 
     &:disabled {
         cursor: default;
@@ -56,14 +57,12 @@ const sizeClass = computed(() => (props.size === 'sm' ? 'answer-option--sm' : 'a
 }
 
 .answer-option--sm {
-    height: 40px;
     padding: 8px 14px;
     font-size: 16px;
     line-height: 1.2;
 }
 
 .answer-option--md {
-    height: 44px;
     padding: min(2dvh, 8px) min(10dvw, 24px);
     font-size: 18px;
     line-height: 1.2;
@@ -81,4 +80,3 @@ const sizeClass = computed(() => (props.size === 'sm' ? 'answer-option--sm' : 'a
     color: #ffffff;
 }
 </style>
-

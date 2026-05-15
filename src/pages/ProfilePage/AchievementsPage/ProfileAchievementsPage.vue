@@ -31,6 +31,7 @@
                             </div>
                             <img
                                 class="achievement-card__image"
+                                :class="{ 'achievement-card__image--keychain': item.image === GirlKeychain }"
                                 :src="item.image"
                                 alt=""
                                 aria-hidden="true"
@@ -232,7 +233,7 @@ onMounted(async () => {
         display: flex;
         flex-direction: column;
         gap: 10px;
-        padding-right: 60px;
+        padding-right: 95px;
     }
 
     &__title {
@@ -260,6 +261,10 @@ onMounted(async () => {
         object-fit: contain;
         object-position: center;
         pointer-events: none;
+
+        &--keychain {
+            bottom: -125%;
+        }
     }
 
     &--peach {

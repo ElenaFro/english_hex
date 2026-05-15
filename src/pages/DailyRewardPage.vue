@@ -46,7 +46,7 @@
 
         <p class="block-title task">Задание на сегодня:</p>
 
-        <div ref="taskWrapperRef" class="task-wrapper" :class="overlayClass">
+        <div ref="taskWrapperRef" class="task-wrapper" :class="overlayClass" @click="closeHint">
             <!-- Текст подсказки -->
             <div v-if="showHint">
                 <div class="hint-text-above">
@@ -62,7 +62,7 @@
                     <div class="progress-bar__fill" :style="{ width: percentOfFill }" />
                     <span class="progress-bar__label"> {{ progressWords }} / 20 </span>
                 </div>
-                <button class="start-btn" @click="goToInfinityGame">Начать</button>
+                <button class="start-btn" @click.stop="goToInfinityGame">Начать</button>
             </div>
         </div>
     </div>
@@ -111,7 +111,7 @@ const overlayClass = computed(() => ({ 'index-up': showHint.value }));
 
 const goToInfinityGame = () => {
     router.push({ name: 'infinityGame' });
-    localStorage.setItem('task_hint_shown', 'true');
+    closeHint();
 };
 
 const applyDailyStreak = (dailyStreak) => {

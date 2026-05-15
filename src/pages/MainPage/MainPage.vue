@@ -13,9 +13,10 @@
         <div v-else class="scroll-container" :class="{ content_blur: !popupShowed }">
             <add-categories-card v-if="isAdmin" />
             <CategoryChoice
-                v-for="section in sections"
+                v-for="(section, idx) in sections"
                 :key="section.id"
                 :id="section.id"
+                :index="idx"
                 :sectionName="section.name"
                 :imgUrl="section.category_photo"
                 :backgroundColor="randomColor(section.id)"

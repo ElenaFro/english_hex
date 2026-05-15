@@ -19,18 +19,19 @@
 </template>
 
 <script setup>
-import { onMounted, ref } from 'vue';
+import { ref } from 'vue';
 import { useRouter } from 'vue-router';
 import gameComponent from '@/components/wordTwinkle/wordTwinkleGameComponent.vue';
 
 const props = defineProps({
     questions: { type: Array, default: null },
     isInfinity: { type: Boolean, default: false },
+    initialSeconds: { type: Number, default: 0 },
 });
 const emit = defineEmits(['finish']);
 
 const router = useRouter();
-const time = ref(0);
+const time = ref(props.initialSeconds);
 const timeWrong = ref(0);
 const isVisible = ref(false);
 let timer = null;
@@ -61,9 +62,6 @@ const addTime = () => {
     }
 };
 
-onMounted(() => {
-    startTimer();
-});
 
 const onGameFinished = () => {
     stopTimer();
@@ -74,7 +72,7 @@ const onGameFinished = () => {
 
 const onFinish = (payload) => {
     stopTimer();
-    emit('finish', payload);
+    emit('finish', { ...payload, finalSeconds: time.value });
 };
 
 const timeCalcul = () => {
