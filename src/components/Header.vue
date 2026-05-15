@@ -134,7 +134,6 @@ const gameExitRoutes = new Set([
     'wordTwinkleGame',
     'constellationGame',
     'galaxyPhrasesGame',
-    'infinityGame',
     'gameResult',
     'flyAnimation',
 ]);
