@@ -203,7 +203,7 @@ const { errors, validateForm } = useFormValidation(localForm, {
     word: (val) => {
         const trimmed = val?.trim() || '';
         if (!trimmed) return true;
-        const englishRegex = /^[а-яА-Я\s]+$/;
+        const englishRegex = /^[а-яА-ЯёЁ\s]+$/;
         return !englishRegex.test(trimmed);
     },
     card_photo: (val) => !val,
