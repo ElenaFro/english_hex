@@ -77,7 +77,6 @@ const start = () => {
         font-size: 18px;
         font-weight: 500;
         line-height: 120%;
-        text-align: justify;
         color: #262060;
         margin-bottom: 30px;
     }
