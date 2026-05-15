@@ -4,7 +4,7 @@
             <div v-for="item in notifications" :key="item.id" ref="notificationItems">
                 <notification-item
                     :notification-text="item.message"
-                    notification-title="Напоминание"
+                    :notification-title="item.title ?? 'Напоминание'"
                     :send-data="item.created_at"
                     :readed="item.was_read"
                 />
