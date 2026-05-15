@@ -44,6 +44,15 @@ const emit = defineEmits(['add-task', 'edit-task', 'delete-task', 'preview']);
     flex-direction: column;
     gap: 16px;
     width: 100%;
+    overflow-y: auto;
+    max-height: 100%;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    padding-bottom: 160px;
+}
+
+.game-step::-webkit-scrollbar {
+    display: none;
 }
 
 .game-step__title {
