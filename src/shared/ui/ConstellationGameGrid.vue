@@ -60,6 +60,7 @@ const isCorrect = computed(() => (card) => {
     transition: all 0.5s;
     border-radius: 20px;
     margin: 0 auto;
+    text-align: center;
 }
 
 .selected {

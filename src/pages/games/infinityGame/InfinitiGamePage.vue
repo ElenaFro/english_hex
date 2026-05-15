@@ -12,7 +12,6 @@
             <div v-else class="infinity-game__empty">Нет заданий для бесконечного режима</div>
         </template>
     </section>
-
 </template>
 
 <script setup>
@@ -23,7 +22,6 @@ import { useGamesStore } from '@/stores/games';
 import { useUserStore } from '@/stores/user';
 import ConstellationGame from '@/components/ConstellationGame/ConstellationGame.vue';
 import WordTwinkleGame from '@/components/wordTwinkle/wordTwinkleGame.vue';
-import AttackPlanetGame from '@/components/AttackPlanet/AttackPlanetGame.vue';
 import GalaxyPhrasesGame from '@/pages/games/galaxyPhrases/components/GalaxyPhrasesGame.vue';
 
 const router = useRouter();
@@ -34,63 +32,51 @@ const loading = ref(true);
 const groups = ref([]);
 const activeGroupIndex = ref(0);
 const totalCorrect = ref(0);
+const totalSeconds = ref(0);
 
 const normalizeGameKey = (value) => (value || '').toString().toLowerCase();
 
-const groupBySequence = (items) => {
-    const result = [];
-    let current = null;
-
-    for (const item of items) {
-        const key = normalizeGameKey(item?.game);
-        if (!current || current.game !== key) {
-            current = { game: key, items: [] };
-            result.push(current);
-        }
-        current.items.push(item);
+const shuffle = (arr) => {
+    for (let i = arr.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [arr[i], arr[j]] = [arr[j], arr[i]];
     }
-
-    return result;
+    return arr;
 };
 
-const splitConstellationGroups = (groupsList, chunkSize = 4) => {
-    const result = [];
-    let buffer = [];
-
-    const flushBufferToPrevious = () => {
-        if (!buffer.length) return;
-        const last = result[result.length - 1];
-        if (last && last.game === 'constellation') {
-            last.items.push(...buffer);
-            buffer = [];
-        }
-    };
-
-    for (const group of groupsList) {
-        if (group.game === 'constellation') {
-            buffer.push(...(group.items || []));
-            while (buffer.length >= chunkSize) {
-                result.push({
-                    game: 'constellation',
-                    items: buffer.slice(0, chunkSize),
-                });
-                buffer = buffer.slice(chunkSize);
-            }
-            continue;
-        }
-
-        // Перед не-констелляцией пытаемся приклеить остаток к предыдущей констелляции
-        flushBufferToPrevious();
-        result.push(group);
+const buildInterleavedGroups = (items, constellationChunkSize = 4) => {
+    const byType = {};
+    for (const item of items) {
+        const key = normalizeGameKey(item?.game);
+        if (!byType[key]) byType[key] = [];
+        byType[key].push(item);
     }
 
-    // Хвост: если есть куда приклеить — приклеиваем, иначе оставляем как есть
-    if (buffer.length) {
-        const last = result[result.length - 1];
-        if (last && last.game === 'constellation') {
-            last.items.push(...buffer);
-        } else {
-            result.push({ game: 'constellation', items: buffer });
+    const buckets = [];
+
+    const constellations = byType['constellation'] || [];
+    if (constellations.length) {
+        const groups = [];
+        for (let i = 0; i < constellations.length; i += constellationChunkSize) {
+            groups.push({ game: 'constellation', items: constellations.slice(i, i + constellationChunkSize) });
+        }
+        buckets.push({ game: 'constellation', groups: shuffle(groups) });
+    }
+
+    for (const [game, gameItems] of Object.entries(byType)) {
+        if (game === 'constellation') continue;
+        buckets.push({ game, groups: shuffle(gameItems.map((item) => ({ game, items: [item] }))) });
+    }
+
+    // Round-robin: каждый тип получает ход поочерёдно
+    shuffle(buckets);
+    const result = [];
+
+    while (buckets.some((b) => b.groups.length > 0)) {
+        for (const bucket of buckets) {
+            if (bucket.groups.length > 0) {
+                result.push(bucket.groups.shift());
+            }
         }
     }
 
@@ -100,15 +86,7 @@ const splitConstellationGroups = (groupsList, chunkSize = 4) => {
 const gameComponentMap = {
     constellation: ConstellationGame,
     flickering: WordTwinkleGame,
-    'flickering-words': WordTwinkleGame,
-    'word-twinkle': WordTwinkleGame,
-    wordtwinkle: WordTwinkleGame,
-    planet_attack: AttackPlanetGame,
-    'planet-attack': AttackPlanetGame,
-    attackplanet: AttackPlanetGame,
-    galaxy_phrases: GalaxyPhrasesGame,
-    'galaxy-phrases': GalaxyPhrasesGame,
-    galaxyphrases: GalaxyPhrasesGame,
+    phrase_galaxy: GalaxyPhrasesGame,
 };
 
 const activeGroup = computed(() => groups.value[activeGroupIndex.value] || null);
@@ -121,23 +99,16 @@ const activeKey = computed(() => `${activeGroupIndex.value}-${activeGroup.value?
 const activeProps = computed(() => {
     if (!activeGroup.value) return {};
     const items = activeGroup.value.items;
+    const initialSeconds = totalSeconds.value;
 
     switch (activeGroup.value.game) {
         case 'constellation':
-            return { items, isInfinity: true };
+            return { items, isInfinity: true, initialSeconds };
         case 'flickering':
-        case 'flickering-words':
-        case 'word-twinkle':
-        case 'wordtwinkle':
-        case 'planet_attack':
-        case 'planet-attack':
-        case 'attackplanet':
         case 'phrase_galaxy':
-        case 'galaxy-phrases':
-        case 'galaxyphrases':
-            return { questions: items, isInfinity: true };
+            return { questions: items, isInfinity: true, initialSeconds };
         default:
-            return { isInfinity: true };
+            return { isInfinity: true, initialSeconds };
     }
 });
 
@@ -146,6 +117,7 @@ const handleFinish = async (payload = {}) => {
     totalCorrect.value += Number.isFinite(correctCount)
         ? correctCount
         : (activeGroup.value?.items?.length ?? 0);
+    totalSeconds.value = Number(payload.finalSeconds ?? totalSeconds.value);
 
     if (activeGroupIndex.value < groups.value.length - 1) {
         activeGroupIndex.value += 1;
@@ -181,7 +153,7 @@ onMounted(async () => {
         if (filtered.length !== list.length) {
             console.warn('Infinity mode: неизвестные типы игр', list);
         }
-        groups.value = splitConstellationGroups(groupBySequence(filtered), 4);
+        groups.value = buildInterleavedGroups(filtered, 4);
     } catch (error) {
         console.error('Ошибка загрузки бесконечного режима', error);
         groups.value = [];
@@ -198,6 +170,7 @@ onBeforeUnmount(() => {
 <style scoped>
 .infinity-game {
     min-height: 100dvh;
+    width: 100%;
 }
 
 .infinity-game__empty {

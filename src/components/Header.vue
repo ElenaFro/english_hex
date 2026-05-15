@@ -31,7 +31,7 @@
                 />
             </button>
         </template>
-        <p ref="titleEl" class="header-title">{{ currentTitle }}</p>
+        <p class="header-title">{{ currentTitle }}</p>
         <template v-if="isLightPage">
             <button
                 class="header-item-button header-close-btn"
@@ -74,7 +74,7 @@
 
 <script setup>
 import { RouterLink } from 'vue-router';
-import { ref, watch, computed, onMounted, onUnmounted, nextTick } from 'vue';
+import { ref, watch, computed, onMounted } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { defineProps } from 'vue';
 import { useUserStore } from '@/stores/user';
@@ -92,37 +92,10 @@ const totalStars = computed(() => currentUser.value.rating);
 const props = defineProps(['lives']);
 
 const titleEl = ref(null);
-const TITLE_BASE_PX = 28;
-const TITLE_MIN_PX = 18;
-
-const fitTitle = async () => {
-    await nextTick();
-
-    const el = titleEl.value;
-    if (!el) return;
-
-    el.style.fontSize = `${TITLE_BASE_PX}px`;
-
-    // Если текст шире контейнера — уменьшаем размер шрифта.
-    // scrollWidth учитывает реальную ширину текста, clientWidth — доступную ширину блока.
-    let fontSize = TITLE_BASE_PX;
-    while (el.scrollWidth > el.clientWidth && fontSize > TITLE_MIN_PX) {
-        fontSize -= 1;
-        el.style.fontSize = `${fontSize}px`;
-    }
-};
 
 onMounted(async () => {
-    // На reload у vue-router route.name может быть пустым до готовности роутера,
-    // поэтому ждём isReady и только потом синхронизируем заголовок.
     await router.isReady();
     updateTitleFromRoute();
-    fitTitle();
-    window.addEventListener('resize', fitTitle, { passive: true });
-});
-
-onUnmounted(() => {
-    window.removeEventListener('resize', fitTitle);
 });
 
 const isLightPage = computed(() => route.name === 'subscriptionPro');
@@ -249,12 +222,6 @@ watch(
     { immediate: true }
 );
 
-watch(
-    () => currentTitle.value,
-    () => {
-        fitTitle();
-    }
-);
 </script>
 
 <style scoped lang="scss">
@@ -369,6 +336,7 @@ watch(
 .header-title {
     color: #ffff;
     font-weight: 800;
+    font-size: 1.7rem;
     line-height: 35px;
     margin-top: 13px;
     white-space: nowrap;

@@ -71,6 +71,7 @@ const props = defineProps({
     questions: { type: Array, default: null },
     isInfinity: { type: Boolean, default: false },
     isPreview: { type: Boolean, default: false },
+    initialSeconds: { type: Number, default: 0 },
 });
 const emit = defineEmits(['finish']);
 
@@ -177,7 +178,7 @@ const isCorrectAnswered = computed(
 );
 
 // ─── Таймер ───────────────────────────────────────────────────────────────────
-const seconds = ref(0);
+const seconds = ref(props.initialSeconds);
 const showPenalty = ref(false);
 let timerId = null;
 
@@ -291,7 +292,7 @@ const goToResult = () => {
         return;
     }
     if (props.isInfinity) {
-        emit('finish', { correctCount: correctCount.value, wrongCount: wrongCount.value });
+        emit('finish', { correctCount: correctCount.value, wrongCount: wrongCount.value, finalSeconds: seconds.value });
         return;
     }
     const resultQuery = {
