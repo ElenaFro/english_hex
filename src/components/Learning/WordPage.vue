@@ -67,15 +67,13 @@ watch(() => [props.engWord, props.rusWord], resizeText);
     background-position: center;
     max-height: 430px;
     z-index: 100;
+    overflow-y: hidden;
 }
 
 .sound-container__word {
     font-weight: 800;
     text-align: center;
     color: rgba(38, 32, 96, 1);
-
-    white-space: nowrap;
-
     font-size: clamp(2.4rem, 4vw, 2rem);
 }
 
