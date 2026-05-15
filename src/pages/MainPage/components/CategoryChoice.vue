@@ -78,7 +78,7 @@ const checkedProgress = computed(() => (props.progress ? 100 : 0)); // логи�
 }
 
 .category-img {
-    padding-bottom: 17px;
+    padding-bottom: 12px;
 }
 
 .category-name {
@@ -87,8 +87,7 @@ const checkedProgress = computed(() => (props.progress ? 100 : 0)); // логи�
     line-height: 100%;
     color: rgba(38, 32, 96, 1);
     padding-bottom: 16px;
-    max-width: 100px;
-    overflow-x: hidden;
+    max-width: 108px;
 }
 
 .nav-arrow {
