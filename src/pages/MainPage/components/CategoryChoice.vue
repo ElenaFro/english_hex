@@ -28,10 +28,11 @@ import subtract1 from '@/assets/categori/Subtract_1.svg';
 import subtract2 from '@/assets/categori/Subtract_2.svg';
 import subtract3 from '@/assets/categori/Subtract_3.svg';
 import subtract4 from '@/assets/categori/Subtract_4.svg';
-import { computed, ref, onMounted } from 'vue';
+import { computed } from 'vue';
 
 const props = defineProps({
     id: Number,
+    index: { type: Number, default: 0 },
     sectionName: String,
     imgUrl: String,
     progress: Boolean,
@@ -42,12 +43,7 @@ const props = defineProps({
 const router = useRouter();
 const subscriptionStore = useSubscriptionStore();
 const classList = ['image_1', 'image_2', 'image_3', 'image_4'];
-const randomClass = ref('');
-
-onMounted(() => {
-    const index = Math.floor(Math.random() * classList.length);
-    randomClass.value = classList[index];
-});
+const randomClass = computed(() => classList[props.index % classList.length]);
 
 const goToLearningPage = () => {
     if (props.locked && !subscriptionStore.hasActiveSubscription) {
