@@ -197,7 +197,7 @@ const { errors, validateForm } = useFormValidation(localForm, {
     translation_word: (val) => {
         const trimmed = val?.trim() || '';
         if (!trimmed) return true;
-        const englishRegex = /^[a-zA-Z\s'\-]+$/;
+        const englishRegex = /^[a-zA-Z\s'\-`]+$/;
         return !englishRegex.test(trimmed);
     },
     word: (val) => {

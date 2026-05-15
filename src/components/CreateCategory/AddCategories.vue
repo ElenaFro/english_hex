@@ -328,7 +328,7 @@ const { errors, validateForm, isValid } = useFormValidation(form, {
     name: (val) => {
         const trimmed = val?.trim() || '';
         if (!trimmed) return true;
-        const englishRegex = /^[a-zA-Z\s'\-]+$/;
+        const englishRegex = /^[a-zA-Z\s'\-`]+$/;
         return !englishRegex.test(trimmed);
     },
     description: (val) => !val.trim(),
