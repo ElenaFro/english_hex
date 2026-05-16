@@ -122,21 +122,16 @@ export const useCategoriesStore = defineStore('categories', () => {
 
     async function createCard(categoryId, card) {
         try {
-            const response = await apiClient.post(
-                `/admin/card/create/${categoryId}`,
-                {
-                    word: card.word,
-                    translation_word: card.translation_word,
-                    card_photo: card.card_photo,
-                    video: card.video,
-                    audio: card.audio,
-                },
-                {
-                    headers: {
-                        'Content-Type': 'multipart/form-data',
-                    },
-                }
-            );
+            console.log('card', card);
+
+            const formData = new FormData();
+            formData.append('word', card.word);
+            formData.append('translation_word', card.translation_word);
+            formData.append('card_photo', card.card_photo);
+            formData.append('video', card.video);
+            formData.append('audio', card.audio);
+
+            const response = await apiClient.post(`/admin/card/create/${categoryId}`, formData);
             return response.data;
         } catch (error) {
             console.error(error);
@@ -146,21 +141,14 @@ export const useCategoriesStore = defineStore('categories', () => {
 
     async function updateCard(card) {
         try {
-            const response = await apiClient.post(
-                `/admin/card/update/${card.id}`,
-                {
-                    word: card.word,
-                    translation_word: card.translation_word,
-                    card_photo: card.card_photo,
-                    video: card.video,
-                    audio: card.audio,
-                },
-                {
-                    headers: {
-                        'Content-Type': 'multipart/form-data',
-                    },
-                }
-            );
+            const formData = new FormData();
+            formData.append('word', card.word);
+            formData.append('translation_word', card.translation_word);
+            formData.append('card_photo', card.card_photo);
+            formData.append('video', card.video);
+            formData.append('audio', card.audio);
+
+            const response = await apiClient.post(`/admin/card/update/${card.id}`, formData);
             return response.data;
         } catch (error) {
             console.error(error);

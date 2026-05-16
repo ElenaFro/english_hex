@@ -4,8 +4,7 @@ import router from '@/router';
 
 const apiClient = axios.create({
     baseURL: 'https://dicardz.com/api',
-    headers: { 'Content-Type': 'application/json' },
-    timeout: 10000,
+    timeout: 50000,
 });
 
 // Request interceptor — always reads token fresh from localStorage.
