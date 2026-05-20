@@ -122,15 +122,11 @@ export const useCategoriesStore = defineStore('categories', () => {
 
     async function createCard(categoryId, card) {
         try {
-            console.log('card', card);
-
             const formData = new FormData();
-            formData.append('word', card.word);
-            formData.append('translation_word', card.translation_word);
-            formData.append('card_photo', card.card_photo);
-            formData.append('video', card.video);
-            formData.append('audio', card.audio);
-
+            Object.entries(card).forEach(([key, value]) => {
+                if (value === undefined || value === null) return;
+                formData.append(key, value);
+            });
             const response = await apiClient.post(`/admin/card/create/${categoryId}`, formData);
             return response.data;
         } catch (error) {
@@ -142,11 +138,12 @@ export const useCategoriesStore = defineStore('categories', () => {
     async function updateCard(card) {
         try {
             const formData = new FormData();
-            formData.append('word', card.word);
-            formData.append('translation_word', card.translation_word);
-            formData.append('card_photo', card.card_photo);
-            formData.append('video', card.video);
-            formData.append('audio', card.audio);
+
+            Object.entries(card).forEach(([key, value]) => {
+                if (key === 'id') return;
+                if (value === undefined || value === null) return;
+                formData.append(key, value);
+            });
 
             const response = await apiClient.post(`/admin/card/update/${card.id}`, formData);
             return response.data;
