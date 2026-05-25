@@ -1,6 +1,6 @@
 <template>
     <div class="wrapper">
-        <img src="@/assets/Di_avatar/girl-img2.webp" alt="Девочка" class="character-image" />
+        <img src="@/assets/Di_avatar/girl-img-2.webp" alt="Девочка" class="character-image" />
         <div class="page-container">
             <div class="title">Соедини слова</div>
             <constellation-game-grid
@@ -211,7 +211,7 @@ onMounted(async () => {
 
 .character-image {
     position: relative;
-    top: 45px;
+    top: 24px;
     margin: 0 auto;
     max-width: 159px;
 }

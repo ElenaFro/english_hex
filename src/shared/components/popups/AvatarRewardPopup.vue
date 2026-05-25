@@ -1,7 +1,7 @@
 <template>
     <teleport to="body">
         <div v-if="isVisible" class="reward-overlay">
-            <img class="girl" src="@/assets/Di_avatar/girl-img2.webp" alt="girl" />
+            <img class="girl" src="@/assets/Di_avatar/girl-img-2.webp" alt="girl" />
 
             <div class="reward-card">
                 <h2 class="reward-card__title">Поздравляю с заслуженной наградой!</h2>

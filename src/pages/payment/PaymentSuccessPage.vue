@@ -2,7 +2,7 @@
     <div class="result-page">
         <div class="result-outer">
             <img
-                src="@/assets/Di_avatar/girl-img2.webp"
+                src="@/assets/Di_avatar/girl-img-2.webp"
                 alt=""
                 class="result-avatar"
                 aria-hidden="true"

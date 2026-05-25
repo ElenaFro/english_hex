@@ -7,7 +7,7 @@
             <search-input placeholder="Введи слово" @search="searchFavorite" enable-auto-search />
 
             <div v-if="words.length === 0" class="empty-state">
-                <img src="@/assets/Di_avatar/girl-img2.webp" alt="girl" class="empty-state__img" />
+                <img src="@/assets/Di_avatar/girl-img-2.webp" alt="girl" class="empty-state__img" />
                 <p class="empty-state__text">У тебя пока нет избранных слов</p>
             </div>
 

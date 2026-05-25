@@ -1,6 +1,6 @@
 <template>
     <div class="daily-reward-page">
-        <img class="girl" src="@/assets/Di_avatar/girl-img2.webp" alt="girl" />
+        <img class="girl" src="@/assets/Di_avatar/girl-img-2.webp" alt="girl" />
 
         <div class="card">
             <h2 class="title">Продолжай в том же духе!</h2>

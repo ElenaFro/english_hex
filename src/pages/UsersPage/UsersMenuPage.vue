@@ -29,7 +29,7 @@ import { useRouter } from 'vue-router';
 import { useUserStore } from '@/stores/user';
 
 import ratingAvatar from '@/assets/Di_avatar/girl_with_achive.svg';
-import friendsAvatar from '@/assets/Di_avatar/girl-img2.webp';
+import friendsAvatar from '@/assets/Di_avatar/girl-img-2.webp';
 
 const router = useRouter();
 const userStore = useUserStore();
@@ -44,7 +44,6 @@ const friendsText = computed(() =>
         ? 'Посмотри что нового у\u00A0твоих учеников'
         : 'Посмотри что нового у\u00A0твоих друзей'
 );
-
 </script>
 
 <style scoped lang="scss">

@@ -31,7 +31,10 @@
                             </div>
                             <img
                                 class="achievement-card__image"
-                                :class="{ 'achievement-card__image--keychain': item.image === GirlKeychain }"
+                                :class="{
+                                    'achievement-card__image--keychain':
+                                        item.image === GirlKeychain,
+                                }"
                                 :src="item.image"
                                 alt=""
                                 aria-hidden="true"
@@ -41,7 +44,7 @@
 
                     <div v-else class="empty-state">
                         <img
-                            src="@/assets/Di_avatar/girl-img2.webp"
+                            src="@/assets/Di_avatar/girl-img-2.webp"
                             alt=""
                             aria-hidden="true"
                             class="empty-state__img"
@@ -65,7 +68,7 @@ import Loader from '@/shared/components/Loader.vue';
 import GirlPlanet from '@/assets/Di_avatar/girl_with_planet.svg';
 import GirlKeychain from '@/assets/Di_avatar/girl_with_keychain.webp';
 import GirlWithCards from '@/assets/Di_avatar/girl-with-cards.webp';
-import GirlWithAchive from '@/assets/Di_avatar/girl-img2.webp';
+import GirlWithAchive from '@/assets/Di_avatar/girl-img-2.webp';
 import PremiumBg from '@/assets/img/premium_bg.svg';
 
 const route = useRoute();
