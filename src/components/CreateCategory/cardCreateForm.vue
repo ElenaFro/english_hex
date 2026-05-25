@@ -197,13 +197,13 @@ const { errors, validateForm } = useFormValidation(localForm, {
     translation_word: (val) => {
         const trimmed = val?.trim() || '';
         if (!trimmed) return true;
-        const englishRegex = /^[a-zA-Z\s'\-`]+$/;
+        const englishRegex = /^[^а-яА-ЯёЁ]+$/;
         return !englishRegex.test(trimmed);
     },
     word: (val) => {
         const trimmed = val?.trim() || '';
         if (!trimmed) return true;
-        const englishRegex = /^[а-яА-ЯёЁ\s'\-`]+$/;
+        const englishRegex = /^[^a-zA-Z]+$/;
         return !englishRegex.test(trimmed);
     },
     card_photo: (val) => !val,
