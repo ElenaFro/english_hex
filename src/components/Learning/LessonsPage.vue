@@ -174,7 +174,10 @@ const handleNextOrFinish = async () => {
     if (isTransitioning.value) return;
     if (isLastCard.value) {
         if (props.propsCards.length > 0) return emit('closePreview');
-        if (!selectedCategory.value.completed_category) localStorage.setItem('earnedStars', 20);
+        if (!selectedCategory.value.completed_category) {
+            const current = Number(localStorage.getItem('earnedStars') ?? 0);
+            localStorage.setItem('earnedStars', current + 20);
+        }
         const result = await categoriesStore.updateComplateCategory(selectedCategory.value.id);
         if (result?.achievement?.title) {
             categoriesStore.pendingAchievement = result.achievement;
