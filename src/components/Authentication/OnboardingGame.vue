@@ -211,7 +211,7 @@ onMounted(async () => {
 
 .character-image {
     position: relative;
-    top: 20px;
+    top: 45px;
     margin: 0 auto;
     max-width: 159px;
 }
