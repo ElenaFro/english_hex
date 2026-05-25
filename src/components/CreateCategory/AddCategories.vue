@@ -183,13 +183,27 @@ const publishProgress = ref(0);
 const createdCategoryId = ref(null);
 const failedCards = ref([]);
 const failedTasks = ref([]);
-const pendingRetry = ref(null); 
+const pendingRetry = ref(null);
 const failedCount = computed(() => {
     if (pendingRetry.value) {
-        const { categoryDiff, toCreate, toUpdate, toDelete, toCreateTasks, toUpdateTasks, toDeleteTaskIds } = pendingRetry.value;
-        return (Object.keys(categoryDiff ?? {}).length ? 1 : 0)
-            + toCreate.length + toUpdate.length + toDelete.length
-            + toCreateTasks.length + toUpdateTasks.length + toDeleteTaskIds.length;
+        const {
+            categoryDiff,
+            toCreate,
+            toUpdate,
+            toDelete,
+            toCreateTasks,
+            toUpdateTasks,
+            toDeleteTaskIds,
+        } = pendingRetry.value;
+        return (
+            (Object.keys(categoryDiff ?? {}).length ? 1 : 0) +
+            toCreate.length +
+            toUpdate.length +
+            toDelete.length +
+            toCreateTasks.length +
+            toUpdateTasks.length +
+            toDeleteTaskIds.length
+        );
     }
     return failedCards.value.length + failedTasks.value.length;
 });
@@ -328,7 +342,7 @@ const { errors, validateForm, isValid } = useFormValidation(form, {
     name: (val) => {
         const trimmed = val?.trim() || '';
         if (!trimmed) return true;
-        const englishRegex = /^[a-zA-Z\s'\-`]+$/;
+        const englishRegex = /^[^а-яА-ЯёЁ]+$/;
         return !englishRegex.test(trimmed);
     },
     description: (val) => !val.trim(),
@@ -477,7 +491,10 @@ const publishCategory = async () => {
 
         const cardResults = await Promise.allSettled(
             cardsToProcess.map((card) =>
-                categoryStore.createCard(categoryId, card).then((r) => { tick(); return r; })
+                categoryStore.createCard(categoryId, card).then((r) => {
+                    tick();
+                    return r;
+                })
             )
         );
         cardResults.forEach((result, i) => {
@@ -487,7 +504,10 @@ const publishCategory = async () => {
         if (tasksToProcess.length > 0) {
             const taskResults = await Promise.allSettled(
                 tasksToProcess.map((task) =>
-                    categoryStore.createGameTask(categoryId, task).then((r) => { tick(); return r; })
+                    categoryStore.createGameTask(categoryId, task).then((r) => {
+                        tick();
+                        return r;
+                    })
                 )
             );
             taskResults.forEach((result, i) => {
@@ -522,20 +542,39 @@ const updateCategory = async () => {
     let categoryDiff, toCreate, toUpdate, toDelete, toCreateTasks, toUpdateTasks, toDeleteTaskIds;
 
     if (isRetry) {
-        ({ categoryDiff, toCreate, toUpdate, toDelete, toCreateTasks, toUpdateTasks, toDeleteTaskIds } = pendingRetry.value);
+        ({
+            categoryDiff,
+            toCreate,
+            toUpdate,
+            toDelete,
+            toCreateTasks,
+            toUpdateTasks,
+            toDeleteTaskIds,
+        } = pendingRetry.value);
         pendingRetry.value = null;
     } else {
         validateForm();
-        if (!isValid.value) { loading.value = false; return; }
+        if (!isValid.value) {
+            loading.value = false;
+            return;
+        }
         categoryDiff = getCategoryDiff();
         ({ toCreate, toUpdate, toDelete } = getCardsDiff());
-        ({ toCreate: toCreateTasks, toUpdate: toUpdateTasks, toDeleteIds: toDeleteTaskIds } = getTasksDiff());
+        ({
+            toCreate: toCreateTasks,
+            toUpdate: toUpdateTasks,
+            toDeleteIds: toDeleteTaskIds,
+        } = getTasksDiff());
     }
 
     const opsCount =
-        (Object.keys(categoryDiff).length ? 1 : 0)
-        + toCreate.length + toUpdate.length + toDelete.length
-        + toCreateTasks.length + toUpdateTasks.length + toDeleteTaskIds.length;
+        (Object.keys(categoryDiff).length ? 1 : 0) +
+        toCreate.length +
+        toUpdate.length +
+        toDelete.length +
+        toCreateTasks.length +
+        toUpdateTasks.length +
+        toDeleteTaskIds.length;
     let completed = 0;
     const tick = () => {
         completed++;
@@ -546,7 +585,10 @@ const updateCategory = async () => {
         let failedCategoryDiff = {};
         if (Object.keys(categoryDiff).length) {
             try {
-                await categoryStore.updateCategory({ id: currentCategory.value.id, ...categoryDiff });
+                await categoryStore.updateCategory({
+                    id: currentCategory.value.id,
+                    ...categoryDiff,
+                });
                 tick();
             } catch (e) {
                 console.error(e);
@@ -561,27 +603,91 @@ const updateCategory = async () => {
         const failedUpdateTasks = [];
         const failedDeleteTaskIds = [];
 
-        const [createResults, updateResults, deleteResults, createTaskResults, updateTaskResults, deleteTaskResults] =
-            await Promise.all([
-                Promise.allSettled(toCreate.map((card) => categoryStore.createCard(currentCategory.value.id, card).then((r) => { tick(); return r; }))),
-                Promise.allSettled(toUpdate.map((card) => categoryStore.updateCard(card).then((r) => { tick(); return r; }))),
-                Promise.allSettled(toDelete.map((id) => categoryStore.deleteCard(id).then((r) => { tick(); return r; }))),
-                Promise.allSettled(toCreateTasks.map((task) => categoryStore.createGameTask(currentCategory.value.id, task).then((r) => { tick(); return r; }))),
-                Promise.allSettled(toUpdateTasks.map((task) => categoryStore.updateGameTask(task).then((r) => { tick(); return r; }))),
-                Promise.allSettled(toDeleteTaskIds.map((id) => categoryStore.deleteGameTask(id).then((r) => { tick(); return r; }))),
-            ]);
+        const [
+            createResults,
+            updateResults,
+            deleteResults,
+            createTaskResults,
+            updateTaskResults,
+            deleteTaskResults,
+        ] = await Promise.all([
+            Promise.allSettled(
+                toCreate.map((card) =>
+                    categoryStore.createCard(currentCategory.value.id, card).then((r) => {
+                        tick();
+                        return r;
+                    })
+                )
+            ),
+            Promise.allSettled(
+                toUpdate.map((card) =>
+                    categoryStore.updateCard(card).then((r) => {
+                        tick();
+                        return r;
+                    })
+                )
+            ),
+            Promise.allSettled(
+                toDelete.map((id) =>
+                    categoryStore.deleteCard(id).then((r) => {
+                        tick();
+                        return r;
+                    })
+                )
+            ),
+            Promise.allSettled(
+                toCreateTasks.map((task) =>
+                    categoryStore.createGameTask(currentCategory.value.id, task).then((r) => {
+                        tick();
+                        return r;
+                    })
+                )
+            ),
+            Promise.allSettled(
+                toUpdateTasks.map((task) =>
+                    categoryStore.updateGameTask(task).then((r) => {
+                        tick();
+                        return r;
+                    })
+                )
+            ),
+            Promise.allSettled(
+                toDeleteTaskIds.map((id) =>
+                    categoryStore.deleteGameTask(id).then((r) => {
+                        tick();
+                        return r;
+                    })
+                )
+            ),
+        ]);
 
-        createResults.forEach((r, i) => { if (r.status === 'rejected') failedCreate.push(toCreate[i]); });
-        updateResults.forEach((r, i) => { if (r.status === 'rejected') failedUpdate.push(toUpdate[i]); });
-        deleteResults.forEach((r, i) => { if (r.status === 'rejected') failedDelete.push(toDelete[i]); });
-        createTaskResults.forEach((r, i) => { if (r.status === 'rejected') failedCreateTasks.push(toCreateTasks[i]); });
-        updateTaskResults.forEach((r, i) => { if (r.status === 'rejected') failedUpdateTasks.push(toUpdateTasks[i]); });
-        deleteTaskResults.forEach((r, i) => { if (r.status === 'rejected') failedDeleteTaskIds.push(toDeleteTaskIds[i]); });
+        createResults.forEach((r, i) => {
+            if (r.status === 'rejected') failedCreate.push(toCreate[i]);
+        });
+        updateResults.forEach((r, i) => {
+            if (r.status === 'rejected') failedUpdate.push(toUpdate[i]);
+        });
+        deleteResults.forEach((r, i) => {
+            if (r.status === 'rejected') failedDelete.push(toDelete[i]);
+        });
+        createTaskResults.forEach((r, i) => {
+            if (r.status === 'rejected') failedCreateTasks.push(toCreateTasks[i]);
+        });
+        updateTaskResults.forEach((r, i) => {
+            if (r.status === 'rejected') failedUpdateTasks.push(toUpdateTasks[i]);
+        });
+        deleteTaskResults.forEach((r, i) => {
+            if (r.status === 'rejected') failedDeleteTaskIds.push(toDeleteTaskIds[i]);
+        });
 
         const totalFailed =
-            (Object.keys(failedCategoryDiff).length ? 1 : 0)
-            + failedCreate.length + failedUpdate.length + failedDelete.length
-            + failedCreateTasks.length + failedUpdateTasks.length + failedDeleteTaskIds.length;
+            (Object.keys(failedCategoryDiff).length ? 1 : 0) +
+            failedCreate.length +
+            failedUpdate.length +
+            failedDelete.length +
+            failedCreateTasks.length +
+            failedUpdateTasks.length +
+            failedDeleteTaskIds.length;
 
         if (totalFailed > 0) {
             pendingRetry.value = {

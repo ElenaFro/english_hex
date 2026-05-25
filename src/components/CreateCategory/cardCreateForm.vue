@@ -645,6 +645,8 @@ const deleteElement = () => {
     font-size: 1.5rem;
     font-weight: bold;
     color: #262060;
+    word-break: break-all;
+    overflow-wrap: break-word;
 }
 
 .audio-play-btn {
