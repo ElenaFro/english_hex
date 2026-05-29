@@ -26,11 +26,22 @@
 </template>
 
 <script setup>
+import { onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import { useSubscriptionStore } from '@/stores/subscription';
+import { useUserStore } from '@/stores/user';
 
 const router = useRouter();
-useSubscriptionStore().invalidate(); // сбрасываем кеш — подписка стала активной
+const subscriptionStore = useSubscriptionStore();
+const userStore = useUserStore();
+
+onMounted(async () => {
+    subscriptionStore.invalidate();
+    await Promise.all([
+        subscriptionStore.fetch(),
+        userStore.fetchUser(),
+    ]);
+});
 </script>
 
 <style scoped lang="scss">

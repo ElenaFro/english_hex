@@ -35,11 +35,7 @@
                         </span>
                         <button
                             class="plan-option"
-                            :class="{
-                                'plan-option--selected': selectedPlanId === plan.id,
-                                'plan-option--best':
-                                    plan.is_popular && selectedPlanId === plan.id,
-                            }"
+                            :class="{ 'plan-option--selected': selectedPlanId === plan.id }"
                             type="button"
                             @click="selectedPlanId = plan.id"
                         >
@@ -281,10 +277,6 @@ const pay = async () => {
     transition: border-color 0.15s;
 
     &--selected {
-        border-color: #311d5d;
-    }
-
-    &--best {
         background: #311d5d;
         border-color: #311d5d;
 
