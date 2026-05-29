@@ -129,7 +129,7 @@ const goToProfile = (userId) => {
 }
 
 .podium-item.rank-3 {
-    right: 8%;
+    right: 2%;
     top: 40px;
 }
 
@@ -216,15 +216,14 @@ const goToProfile = (userId) => {
 
 .name_top {
     color: #262060;
-    display: flex;
-    flex-direction: row;
-    white-space: nowrap;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
     max-width: 130px;
     text-align: center;
-    overflow: hidden;
-    text-overflow: ellipsis;
     font-size: 12px;
     font-weight: 600;
-    line-height: 100%;
+    line-height: 1.3;
 }
 </style>
