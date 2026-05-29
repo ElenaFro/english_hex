@@ -64,6 +64,7 @@ export const useCategoriesStore = defineStore('categories', () => {
                     name: category.name,
                     description: category.description,
                     category_photo: category.category_photo,
+                    is_paid: category.is_paid ? 1 : 0,
                 },
                 {
                     headers: {
@@ -86,6 +87,7 @@ export const useCategoriesStore = defineStore('categories', () => {
                     name: category.name,
                     description: category.description,
                     category_photo: category.category_photo,
+                    is_paid: category.is_paid ? 1 : 0,
                 },
                 {
                     headers: {
