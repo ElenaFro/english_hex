@@ -23,6 +23,13 @@
             :message="message"
             @confirm="goToPlanet"
         />
+        <defaultPopup
+            :isVisible="showExitWarning"
+            title="Выйти из игры?"
+            message="Прогресс не сохранится, а заработанные звёзды сгорят."
+            @confirm="confirmExit"
+            @close="cancelExit"
+        />
     </section>
 </template>
 
@@ -32,6 +39,8 @@ import { ref, onMounted, onUnmounted, computed, watch } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 //component
 import CongratulationPopup from '../myPlanetPopup/CongratulationPopup.vue';
+import defaultPopup from '@/shared/components/popups/defaultPopup.vue';
+import { useEarnedStarsGuard } from '@/shared/composables/useEarnedStarsGuard';
 import Loader from '../../shared/components/Loader.vue';
 import ConstellationGameGrid from '@/shared/ui/ConstellationGameGrid.vue';
 //stores
@@ -64,6 +73,17 @@ const maxStarsForGame = ref(50);
 let intervalId;
 
 const data = ref([]);
+
+// Предупреждаем при выходе во время активной игры. Не показываем в бесконечных режимах
+// (общий infinity через props.isInfinity и пер-игровой через allCategories) — там звёзды
+// не начисляются.
+const { showExitWarning, confirmExit, cancelExit } = useEarnedStarsGuard(
+    () =>
+        !props.isInfinity &&
+        route.query.allCategories !== 'true' &&
+        !loading.value &&
+        !allMatched.value
+);
 
 const shuffleArray = (array) => {
     for (let i = array.length - 1; i > 0; i--) {

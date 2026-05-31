@@ -22,6 +22,13 @@
             {{ option }}
         </AnswerOptionButton>
     </div>
+    <defaultPopup
+        :isVisible="showExitWarning"
+        title="Выйти из игры?"
+        message="Прогресс не сохранится, а заработанные звёзды сгорят."
+        @confirm="confirmExit"
+        @close="cancelExit"
+    />
 </template>
 
 <script setup>
@@ -36,6 +43,8 @@ import AnswerOptionButton from '@/components/ui/AnswerOptionButton.vue';
 import { useGamesStore } from '@/stores/games';
 import { useCategoriesStore } from '@/stores/categories';
 import { useUserStore } from '@/stores/user';
+import defaultPopup from '@/shared/components/popups/defaultPopup.vue';
+import { useEarnedStarsGuard } from '@/shared/composables/useEarnedStarsGuard';
 
 const props = defineProps({
     questions: { type: Array, default: null },
@@ -60,6 +69,13 @@ const selectedOption = ref(null);
 const wrongCount = ref(0);
 const correctCount = ref(0);
 const everPlayedGame = ref(currentUser.ever_played_game);
+
+// Предупреждаем при выходе во время активной игры. Не показываем в бесконечных режимах
+// (общий infinity через props.isInfinity и пер-игровой через allCategories) — там звёзды
+// не начисляются. Компонент существует только во время игры — по завершении уходит на gameResult.
+const { showExitWarning, confirmExit, cancelExit } = useEarnedStarsGuard(
+    () => !props.isInfinity && route.query.allCategories !== 'true'
+);
 const selectedCategoryId = computed(
     () => useCategoriesStore().selectedCategory?.id || route.query.id
 );

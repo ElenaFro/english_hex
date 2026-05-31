@@ -7,6 +7,13 @@
             @update:lives="updateLives"
             @update:earnedStars="updateEarnedStars"
         />
+        <defaultPopup
+            :isVisible="showExitWarning"
+            title="Выйти из игры?"
+            message="Прогресс не сохранится, а заработанные звёзды сгорят."
+            @confirm="confirmExit"
+            @close="cancelExit"
+        />
     </div>
 </template>
 
@@ -17,6 +24,8 @@ import AttackPlanetGame from '@/components/AttackPlanet/AttackPlanetGame.vue';
 import AttackPlanetResult from '@/components/AttackPlanet/AttackPlanetResult.vue';
 import AttackPlanetLoss from '@/components/AttackPlanet/AttackPlanetLoss.vue';
 import AttackPlanetWin from '@/components/AttackPlanet/AttackPlanetWin.vue';
+import defaultPopup from '@/shared/components/popups/defaultPopup.vue';
+import { useEarnedStarsGuard } from '@/shared/composables/useEarnedStarsGuard';
 
 const route = useRoute();
 const router = useRouter();
@@ -25,6 +34,16 @@ const emit = defineEmits(['update:lives', 'switch-component']);
 const activeComponent = ref(markRaw(AttackPlanetGame));
 const lives = ref(5);
 const earnedStars = ref(0);
+
+// Предупреждаем при выходе во время активной игры (прогресс) и на экранах
+// победы/результата (earnedStars > 0), пока звёзды не начислены на планете.
+// На экранах проигрыша/уже-начислено терять нечего. В бесконечном (allCategories)
+// режиме звёзды не начисляются — попап не показываем.
+const { showExitWarning, confirmExit, cancelExit } = useEarnedStarsGuard(
+    () =>
+        route.query.allCategories !== 'true' &&
+        (activeComponent.value === AttackPlanetGame || earnedStars.value > 0)
+);
 
 const componentProps = computed(() => ({
     lives: lives.value,

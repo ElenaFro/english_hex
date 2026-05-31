@@ -55,6 +55,13 @@
                 </AnswerOptionButton>
             </section>
         </div>
+        <defaultPopup
+            :isVisible="showExitWarning"
+            title="Выйти из игры?"
+            message="Прогресс не сохранится, а заработанные звёзды сгорят."
+            @confirm="confirmExit"
+            @close="cancelExit"
+        />
     </div>
 </template>
 
@@ -66,6 +73,8 @@ import { useGamesStore } from '@/stores/games';
 import { useUserStore } from '@/stores/user';
 import AnswerOptionButton from '@/components/ui/AnswerOptionButton.vue';
 import girlHead from '@/assets/Di_avatar/girl_head.png';
+import defaultPopup from '@/shared/components/popups/defaultPopup.vue';
+import { useEarnedStarsGuard } from '@/shared/composables/useEarnedStarsGuard';
 
 const props = defineProps({
     questions: { type: Array, default: null },
@@ -78,6 +87,13 @@ const emit = defineEmits(['finish']);
 const userStore = useUserStore();
 const router = useRouter();
 const route = useRoute();
+
+// Предупреждаем при выходе во время активной игры. Не показываем в бесконечных режимах
+// (общий infinity через props.isInfinity и пер-игровой через allCategories), предпросмотре —
+// там звёзды не начисляются.
+const { showExitWarning, confirmExit, cancelExit } = useEarnedStarsGuard(
+    () => !props.isInfinity && !props.isPreview && route.query.allCategories !== 'true'
+);
 
 // ─── Заголовок хедера ────────────────────────────────────────────────────────
 onMounted(() => {

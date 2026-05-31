@@ -1,6 +1,13 @@
 <template>
     <loader v-if="loading" />
-    <div v-else class="page-content">
+    <defaultPopup
+        :isVisible="showExitWarning"
+        title="Выйти из игры?"
+        message="Прогресс не сохранится, а заработанные звёзды сгорят."
+        @confirm="confirmExit"
+        @close="cancelExit"
+    />
+    <div v-if="!loading" class="page-content">
         <div :class="wrong <= 5 ? 'img-container' : 'img-container-loss'">
             <img
                 v-if="wrong <= 5"
@@ -51,6 +58,8 @@
 import { ref, computed, onMounted } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import Loader from '@/shared/components/Loader.vue';
+import defaultPopup from '@/shared/components/popups/defaultPopup.vue';
+import { useEarnedStarsGuard } from '@/shared/composables/useEarnedStarsGuard';
 //stores
 import { useUserStore } from '@/stores/user';
 import { useCategoriesStore } from '@/stores/categories';
@@ -143,7 +152,13 @@ const totalStars = computed(() => {
     return stars <= maxStarsForGame.value ? stars : maxStarsForGame.value;
 });
 
+// Предупреждаем об уходе, пока заработанные звёзды не начислены на планете.
+const { showExitWarning, confirmExit, cancelExit, allowLeave } = useEarnedStarsGuard(
+    () => totalStars.value > 0
+);
+
 const repeatGame = () => {
+    allowLeave(); // повтор — намеренное действие в флоу, без предупреждения
     const query = isAllCategories
         ? { allCategories: 'true', startGame: true }
         : { startGame: true };

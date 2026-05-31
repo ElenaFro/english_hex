@@ -85,7 +85,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted, computed, watch, nextTick } from 'vue';
+import { ref, onMounted, onBeforeUnmount, computed, watch, nextTick } from 'vue';
 import { useRouter, onBeforeRouteLeave } from 'vue-router';
 import CardFlip from '@/shared/components/CardFlip.vue';
 import defaultPopup from '@/shared/components/popups/defaultPopup.vue';
@@ -205,14 +205,26 @@ const goPreviousCard = () => {
     activeComponent.value = 'VideoPage';
 };
 
+const isLessonInProgress = () =>
+    cards.value.length > 0 && currentCardIndex.value < cards.value.length - 1;
+
 onBeforeRouteLeave((to, from, next) => {
-    if (cards.value.length > 0 && currentCardIndex.value < cards.value.length - 1) {
+    if (isLessonInProgress()) {
         isNotEndedLearn.value = true;
         navigationNext.value = next;
     } else {
         next();
     }
 });
+
+// Предупреждение при обновлении/закрытии вкладки во время урока (F5, крестик).
+const handleBeforeUnload = (event) => {
+    if (!isLessonInProgress()) return;
+    event.preventDefault();
+    event.returnValue = '';
+};
+onMounted(() => window.addEventListener('beforeunload', handleBeforeUnload));
+onBeforeUnmount(() => window.removeEventListener('beforeunload', handleBeforeUnload));
 
 const handleConfirmLeave = () => {
     isNotEndedLearn.value = false;

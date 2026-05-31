@@ -35,6 +35,7 @@
 <script setup>
 import { computed } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
+import { allowUnload } from '@/shared/composables/useEarnedStarsGuard';
 
 const router = useRouter();
 const route = useRoute();
@@ -58,6 +59,7 @@ const goToPlanet = () => {
         : router.push({ name: 'mainPage' });
 };
 const goToGamePage = () => {
+    allowUnload(); // намеренная перезагрузка для повтора — без предупреждения
     window.location.reload();
 };
 </script>
