@@ -77,6 +77,7 @@ const buttonPassed = 'Пройти еще раз';
 const buttonLoss = 'Попробовать еще раз';
 const stars = ref(0);
 const maxStarsForGame = ref(50);
+const isNavigating = ref(false);
 const fromGame = route.query.from;
 const gameSource = route.query.gameSource;
 
@@ -85,16 +86,19 @@ const categoryId = computed(() => route.query.id || useCategoriesStore().selecte
 
 onMounted(async () => {
     loading.value = true;
-    if (categoryId.value && !isAllCategories) {
-        const currentStarsForCategory = await useCategoriesStore().getCategoryStars(
-            categoryId.value
-        );
-        const alreadyEarnedForGame = currentStarsForCategory?.[gameSource] ?? 0;
-        const currentStars = maxStarsForGame.value - alreadyEarnedForGame;
-        maxStarsForGame.value = currentStars < 0 ? 0 : currentStars;
+    try {
+        if (categoryId.value && !isAllCategories) {
+            const currentStarsForCategory = await useCategoriesStore().getCategoryStars(
+                categoryId.value
+            );
+            const alreadyEarnedForGame = currentStarsForCategory?.[gameSource] ?? 0;
+            const currentStars = maxStarsForGame.value - alreadyEarnedForGame;
+            maxStarsForGame.value = currentStars < 0 ? 0 : currentStars;
+        }
+        if (isAllCategories) maxStarsForGame.value = 0;
+    } finally {
+        loading.value = false;
     }
-    if (isAllCategories) maxStarsForGame.value = 0;
-    loading.value = false;
 });
 
 const resultHeader = computed(() => {
@@ -147,6 +151,8 @@ const repeatGame = () => {
 };
 
 const goToMainPage = () => {
+    if (isNavigating.value) return;
+    isNavigating.value = true;
     if (isAllCategories) return router.push({ name: 'allGames' });
     if (totalStars.value <= 0)
         return router.push({

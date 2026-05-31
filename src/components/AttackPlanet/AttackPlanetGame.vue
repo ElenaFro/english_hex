@@ -233,7 +233,7 @@ onMounted(async () => {
             const currentStarsForCategory = await useCategoriesStore().getCategoryStars(
                 categoryId.value
             );
-            maxStarsForGame.value = maxStarsForGame.value - currentStarsForCategory?.planet_attack;
+            maxStarsForGame.value = maxStarsForGame.value - (currentStarsForCategory?.planet_attack ?? 0);
         }
     } catch (error) {
         console.error('Ошибка при загрузке данных:', error);

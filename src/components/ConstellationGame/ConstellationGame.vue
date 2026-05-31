@@ -225,11 +225,6 @@ const chunkPairsUnique = (pairs, chunkSize = 4) => {
     return chunks;
 };
 
-const currentStarsForCategory = ref(0);
-
-watch(currentStarsForCategory, (newVal) => {
-    maxStarsForGame.value = maxStarsForGame.value - newVal;
-});
 
 onMounted(async () => {
     loading.value = true;
@@ -276,7 +271,8 @@ onMounted(async () => {
         timer.value++;
     }, 1000);
     if (categoryId && !isAllCategories) {
-        currentStarsForCategory.value = useCategoriesStore().getCategoryStars(categoryId);
+        const earned = await useCategoriesStore().getCategoryStars(categoryId);
+        maxStarsForGame.value = 50 - (earned?.constellation_word ?? 0);
     }
 });
 

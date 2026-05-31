@@ -92,6 +92,7 @@ import defaultPopup from '@/shared/components/popups/defaultPopup.vue';
 import { useCategoriesStore } from '@/stores/categories';
 import { useElementPosition } from '@/shared/composables/useElementPosition';
 import { useUserStore } from '@/stores/user';
+import { addPendingCategoryStars } from '@/shared/utils/pendingCategoryStars';
 
 const props = defineProps({
     propsCards: { type: Array, default: () => [] },
@@ -174,11 +175,10 @@ const handleNextOrFinish = async () => {
     if (isTransitioning.value) return;
     if (isLastCard.value) {
         if (props.propsCards.length > 0) return emit('closePreview');
-        if (!selectedCategory.value.completed_category) {
-            const current = Number(localStorage.getItem('earnedStars') ?? 0);
-            localStorage.setItem('earnedStars', current + 20);
-        }
         const result = await categoriesStore.updateComplateCategory(selectedCategory.value.id);
+        if (!selectedCategory.value.completed_category) {
+            addPendingCategoryStars(selectedCategory.value.id);
+        }
         if (result?.achievement?.title) {
             categoriesStore.pendingAchievement = result.achievement;
             localStorage.setItem('pendingAchievement', JSON.stringify(result.achievement));

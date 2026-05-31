@@ -179,24 +179,28 @@ export const useUserStore = defineStore('user', () => {
     }
 
     async function addRatingToGame(categoryId, gameName, count) {
-        if (!token.value) return;
+        if (!token.value) return false;
         try {
             await apiClient.patch('/rating/add-rating-to-game', {
                 categoryId: categoryId,
                 game: gameName,
                 rating: count,
             });
+            return true;
         } catch (error) {
             console.error(error);
+            throw error;
         }
     }
 
     async function addRatingToCategory(categoryId) {
-        if (!token.value) return;
+        if (!token.value) return false;
         try {
             await apiClient.patch(`/rating/add-rating-to-category/${categoryId}`);
+            return true;
         } catch (error) {
             console.error(error);
+            throw error;
         }
     }
 

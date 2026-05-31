@@ -55,6 +55,11 @@ import { useUserStore } from '@/stores/user';
 import { useCategoriesStore } from '@/stores/categories';
 import { usePlanetStore } from '@/stores/planet';
 import { useElementPosition } from '@/shared/composables/useElementPosition';
+import {
+    readPendingCategoryStars,
+    sumPendingStars,
+    persistPendingCategoryStars,
+} from '@/shared/utils/pendingCategoryStars';
 
 const router = useRouter();
 const route = useRoute();
@@ -71,7 +76,16 @@ const currentUser = useUserStore().user;
 const userStore = useUserStore();
 const planetStore = usePlanetStore();
 const selectedCategory = useCategoriesStore().selectedCategory;
-const localStorageStars = Number(localStorage.getItem('earnedStars') ?? 0);
+const pendingCategoryStars = readPendingCategoryStars();
+// Legacy: старый плоский earnedStars без привязки к категории — относим к текущей категории.
+if (Object.keys(pendingCategoryStars).length === 0) {
+    const legacy = Number(localStorage.getItem('earnedStars') ?? 0);
+    const legacyCatId = selectedCategory.id ?? route.query.id;
+    if (legacy > 0 && legacyCatId != null) {
+        pendingCategoryStars[legacyCatId] = legacy;
+    }
+}
+const localStorageStars = sumPendingStars(pendingCategoryStars);
 const gameSource = ref(route.query.gameSource);
 const earnedStars = ref(0);
 const queryStars = ref(0);
@@ -112,11 +126,13 @@ onMounted(async () => {
         localStorage.removeItem('pendingAchievement');
     }
 
+    // Считаем заработанные звёзды до загрузки скинов, чтобы начисление не сорвалось,
+    // если getPlanetSkins() упадёт.
+    queryStars.value = route.query.earnedStars || 0;
+    earnedStars.value = Number(queryStars.value) + localStorageStars;
+
     try {
         await planetStore.getPlanetSkins();
-        queryStars.value = route.query.earnedStars || 0;
-        earnedStars.value = Number(queryStars.value) + localStorageStars;
-
         everPlayedGame.value = currentUser.ever_played_game;
         myPlanet.value = everPlayedGame.value;
         if (!everPlayedGame.value) showNewPlanet.value = true;
@@ -128,17 +144,30 @@ onMounted(async () => {
 
     if (earnedStars.value) {
         animateStars.value = true;
-        if (gameSource.value) {
-            await userStore.addRatingToGame(
-                selectedCategory.id ?? route.query.id,
-                gameSource.value,
-                localStorageStars ? earnedStars.value - localStorageStars : earnedStars.value
-            );
+        const catId = selectedCategory.id ?? route.query.id;
+
+        // 1) Звёзды за конкретную игру (передаются через query параметр).
+        if (gameSource.value && catId && Number(queryStars.value) > 0) {
+            try {
+                await userStore.addRatingToGame(catId, gameSource.value, Number(queryStars.value));
+            } catch {
+                /* звёзды за игру не сохранились — ошибка залогирована в user store */
+            }
         }
-        if (localStorageStars) {
-            await userStore.addRatingToCategory(selectedCategory.id);
-            if (localStorageStars) localStorage.removeItem('earnedStars');
+
+        // 2) Звёзды за пройденные категории обучения — начисляем за КАЖДУЮ накопленную
+        //    категорию, а не только за текущую. Успешно зачтённые удаляем, остальные
+        //    оставляем в localStorage для повторной попытки.
+        const remaining = { ...pendingCategoryStars };
+        for (const id of Object.keys(pendingCategoryStars)) {
+            try {
+                await userStore.addRatingToCategory(id);
+                delete remaining[id];
+            } catch {
+                /* эта категория не зачлась — оставляем в localStorage */
+            }
         }
+        persistPendingCategoryStars(remaining);
     }
 
     if (isShowPlanetOverview.value && route.name === 'myPlanet') {
