@@ -226,7 +226,7 @@ onMounted(async () => {
     align-items: center;
     justify-content: space-between;
     border-radius: 20px;
-    padding: 7px;
+    padding: 13px;
     min-height: 118px;
     overflow: hidden;
 

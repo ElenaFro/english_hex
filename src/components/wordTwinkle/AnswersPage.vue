@@ -17,6 +17,8 @@
     align-items: center;
     width: 100%;
     height: 100%;
+    max-width: 300px;
+    margin: 0 auto;
     background-color: #ffffff;
     background-image: url('@/assets/lesson/word_card_bg.png');
     background-repeat: no-repeat;
@@ -24,6 +26,7 @@
     background-position: center;
     border: 3px solid #262060;
     border-radius: 20px;
+    overflow: hidden;
     z-index: 1000;
 
     &__question-mark {
@@ -35,12 +38,13 @@
     }
 
     .img-container {
-        position: fixed;
-        bottom: 3px;
-        left: 16dvw;
+        position: absolute;
+        bottom: 0;
+        left: 40%;
+        height: 50%;
 
         .girl-img {
-            height: 25dvh;
+            height: 100%;
             width: auto;
         }
     }

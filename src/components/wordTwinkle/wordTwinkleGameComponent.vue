@@ -209,7 +209,7 @@ const getOptionState = (option) => {
     aspect-ratio: 3 / 4;
     position: relative;
     flex-shrink: 0;
-    max-height: 50dvh;
+    max-height: 358px;
 }
 
 .flip-card__inner {

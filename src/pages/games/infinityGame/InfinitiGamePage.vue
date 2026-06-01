@@ -60,7 +60,10 @@ const buildInterleavedGroups = (items, constellationChunkSize = 4) => {
     if (constellations.length) {
         const groups = [];
         for (let i = 0; i < constellations.length; i += constellationChunkSize) {
-            groups.push({ game: 'constellation', items: constellations.slice(i, i + constellationChunkSize) });
+            groups.push({
+                game: 'constellation',
+                items: constellations.slice(i, i + constellationChunkSize),
+            });
         }
         buckets.push({ game: 'constellation', groups: shuffle(groups) });
     }
@@ -216,5 +219,9 @@ onBeforeUnmount(() => {
     text-align: center;
     color: #ffffff;
     font-weight: 600;
+}
+
+:deep(.scroll-container) {
+    padding: 0;
 }
 </style>
