@@ -16,7 +16,7 @@
 
 <script setup>
 import { computed, onBeforeUnmount, onMounted, ref } from 'vue';
-import { useRouter } from 'vue-router';
+import { useRouter, onBeforeRouteLeave } from 'vue-router';
 import Loader from '@/shared/components/Loader.vue';
 import { useGamesStore } from '@/stores/games';
 import { useUserStore } from '@/stores/user';
@@ -33,6 +33,8 @@ const groups = ref([]);
 const activeGroupIndex = ref(0);
 const totalCorrect = ref(0);
 const totalSeconds = ref(0);
+const isFinished = ref(false);
+const cameFromDailyReward = ref(false);
 
 const normalizeGameKey = (value) => (value || '').toString().toLowerCase();
 
@@ -112,6 +114,38 @@ const activeProps = computed(() => {
     }
 });
 
+const saveProgress = async () => {
+    if (isFinished.value || totalCorrect.value === 0) return;
+    isFinished.value = true;
+    try {
+        await gamesStore.finishInfinityMode(totalCorrect.value);
+    } catch (error) {
+        console.error('Ошибка сохранения прогресса при выходе', error);
+    }
+};
+
+const saveProgressBeforeUnload = () => {
+    if (isFinished.value || totalCorrect.value === 0) return;
+    const token = localStorage.getItem('access_token');
+    const headers = { 'Content-Type': 'application/json' };
+    if (token) headers['Authorization'] = `Bearer ${token}`;
+    fetch('https://dicardz.com/api/games/infinity-mode/finish', {
+        method: 'POST',
+        headers,
+        body: JSON.stringify({ words_repeated: totalCorrect.value }),
+        keepalive: true,
+    });
+};
+
+onBeforeRouteLeave(async (to, from, next) => {
+    await saveProgress();
+    if (cameFromDailyReward.value && to.name !== 'DailyReward') {
+        next({ name: 'DailyReward' });
+    } else {
+        next();
+    }
+});
+
 const handleFinish = async (payload = {}) => {
     const correctCount = Number(payload.correctCount ?? 0);
     totalCorrect.value += Number.isFinite(correctCount)
@@ -124,6 +158,7 @@ const handleFinish = async (payload = {}) => {
         return;
     }
 
+    isFinished.value = true;
     let rewardState = null;
     try {
         const result = await gamesStore.finishInfinityMode(totalCorrect.value);
@@ -141,6 +176,8 @@ const handleFinish = async (payload = {}) => {
 };
 
 onMounted(async () => {
+    window.addEventListener('beforeunload', saveProgressBeforeUnload);
+    cameFromDailyReward.value = Boolean(window.history.state?.fromDailyReward);
     userStore.setHeaderTitle('Бесконечный режим');
     loading.value = true;
     try {
@@ -163,6 +200,7 @@ onMounted(async () => {
 });
 
 onBeforeUnmount(() => {
+    window.removeEventListener('beforeunload', saveProgressBeforeUnload);
     userStore.setHeaderTitle(null);
 });
 </script>

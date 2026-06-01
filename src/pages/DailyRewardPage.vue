@@ -110,7 +110,7 @@ const percentOfFill = computed(
 const overlayClass = computed(() => ({ 'index-up': showHint.value }));
 
 const goToInfinityGame = () => {
-    router.push({ name: 'infinityGame' });
+    router.push({ name: 'infinityGame', state: { fromDailyReward: true } });
     closeHint();
 };
 
