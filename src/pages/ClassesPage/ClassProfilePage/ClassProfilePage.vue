@@ -57,7 +57,7 @@
 </template>
 
 <script setup>
-import { computed, onMounted, ref, watch } from 'vue';
+import { computed, onMounted, onUnmounted, ref, watch } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import Loader from '@/shared/components/Loader.vue';
 import SearchInput from '@/shared/ui/SearchInput.vue';
@@ -113,8 +113,12 @@ const searchStudent = (event) => {
 };
 
 const goToUserProfile = (userId) => {
-    router.push({ name: 'profileAchievements', params: { id: userId } });
+    router.push({ name: 'profileAchievements', params: { id: userId }, query: { classId: currentClassId.value } });
 };
+
+onUnmounted(() => {
+    teacherStore.clearCurrentClass();
+});
 
 watch(
     () => teacherStore.searchedStudents,

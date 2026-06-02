@@ -109,6 +109,10 @@ export const useTeacherStore = defineStore('teacher', () => {
         }
     }
 
+    function clearCurrentClass() {
+        currentClass.value = null;
+    }
+
     return {
         allClasses,
         currentClass,
@@ -121,5 +125,6 @@ export const useTeacherStore = defineStore('teacher', () => {
         deleteStudentFromClass,
         searchClass,
         searchStudents,
+        clearCurrentClass,
     };
 });
