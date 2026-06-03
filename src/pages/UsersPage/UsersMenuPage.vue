@@ -8,7 +8,7 @@
 
                 <div class="users-card__info">
                     <p class="users-card__title">Мой рейтинг</p>
-                    <p class="users-card__text">Сюда надо текст посмотреть место</p>
+                    <p class="users-card__text">Тут будет отображаться твой рейтинг</p>
                 </div>
             </button>
 

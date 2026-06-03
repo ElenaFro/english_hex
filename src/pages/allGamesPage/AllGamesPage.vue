@@ -19,7 +19,10 @@
                             </p>
                         </div>
 
-                        <span class="all-games__card-btn">Начать</span>
+                        <span
+                            class="all-games__card-btn"
+                            :class="{ 'all-games__card-btn--locked': !hasCompletedCategory }"
+                        >Начать</span>
                     </button>
                 </div>
             </section>
@@ -27,11 +30,17 @@
     </div>
 </template>
 <script setup>
-import { ref } from 'vue';
+import { ref, computed } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
+import { useCategoriesStore } from '@/stores/categories';
 
 const router = useRouter();
 const route = useRoute();
+const categoriesStore = useCategoriesStore();
+
+const hasCompletedCategory = computed(() =>
+    categoriesStore.categories.some((c) => c.completed_category)
+);
 
 const games = ref([
     {
@@ -72,8 +81,7 @@ const games = ref([
 ]);
 
 const goToGame = (game) => {
-    if (!game?.routeName || game.disabled) return;
-
+    if (!game?.routeName || game.disabled || !hasCompletedCategory.value) return;
     if (game.id === 'endless') {
         router.push({ name: game.routeName });
         return;
@@ -117,10 +125,6 @@ const goToGame = (game) => {
 
         text-align: left;
         cursor: pointer;
-    }
-
-    &__card[aria-disabled='true'] {
-        cursor: default;
     }
 
     &__card-text {
@@ -167,6 +171,34 @@ const goToGame = (game) => {
         font-weight: 700;
         line-height: 1.2;
         color: #262060;
+
+        &--locked {
+            background-color: rgba(255, 255, 255, 0.4);
+            color: rgba(49, 29, 93, 0.5);
+            cursor: not-allowed;
+
+            &::after {
+                content: 'Пройдите хотя бы одну колоду';
+                position: absolute;
+                bottom: calc(100% + 8px);
+                right: 0;
+                white-space: nowrap;
+                background: #311d5d;
+                color: #ffffff;
+                font-size: 13px;
+                font-weight: 500;
+                padding: 6px 12px;
+                border-radius: 10px;
+                pointer-events: none;
+                opacity: 0;
+                transition: opacity 0.15s ease;
+            }
+
+            &:hover::after,
+            &:active::after {
+                opacity: 1;
+            }
+        }
     }
 }
 </style>
