@@ -183,8 +183,8 @@ const goToGame = (game) => {
                 bottom: calc(100% + 8px);
                 right: 0;
                 white-space: nowrap;
-                background: #311d5d;
-                color: #ffffff;
+                background: #ffffff;
+                color: #000000;
                 font-size: 13px;
                 font-weight: 500;
                 padding: 6px 12px;
