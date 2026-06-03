@@ -178,7 +178,7 @@ const goToGame = (game) => {
             cursor: not-allowed;
 
             &::after {
-                content: 'Пройдите хотя бы одну колоду';
+                content: 'Пройдите хотя бы одну категорию';
                 position: absolute;
                 bottom: calc(100% + 8px);
                 right: 0;
