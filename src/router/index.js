@@ -1,6 +1,7 @@
 import { createRouter, createWebHistory } from 'vue-router';
 import { useUserStore } from '@/stores/user';
 import routes from './routes';
+import { captureUtmParams } from '@/shared/utils/utm';
 
 const isAuthenticated = () => !!localStorage.getItem('access_token');
 
@@ -13,6 +14,8 @@ const router = createRouter({
 });
 
 router.beforeEach(async (to, from, next) => {
+    captureUtmParams(to.query);
+
     if (MAINTENANCE_MODE && to.path !== MAINTENANCE_ROUTE) {
         return next(MAINTENANCE_ROUTE);
     }

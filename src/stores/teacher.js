@@ -10,13 +10,17 @@ export const useTeacherStore = defineStore('teacher', () => {
     const currentClass = ref(null);
     const searchedStudents = ref([]);
 
-    async function registerTeacher(name, email, password, confirm_agreement) {
-        const response = await apiClient.post('/registration-teacher', {
+    async function registerTeacher(name, email, password, confirm_agreement, utm = null) {
+        const payload = {
             email: email,
             password: password,
             name: name,
             confirm_agreement: confirm_agreement,
-        });
+        };
+        if (utm) {
+            Object.assign(payload, utm);
+        }
+        const response = await apiClient.post('/registration-teacher', payload);
         return response.data;
     }
 

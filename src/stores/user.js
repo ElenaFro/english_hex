@@ -31,7 +31,7 @@ export const useUserStore = defineStore('user', () => {
         return user.value;
     };
 
-    async function register(name, email, password, confirm_agreement, referralCode = null) {
+    async function register(name, email, password, confirm_agreement, referralCode = null, utm = null) {
         const payload = {
             email: email,
             password: password,
@@ -40,6 +40,9 @@ export const useUserStore = defineStore('user', () => {
         };
         if (referralCode) {
             payload.referral_code = referralCode;
+        }
+        if (utm) {
+            Object.assign(payload, utm);
         }
         const requestConfig = referralCode
             ? {
