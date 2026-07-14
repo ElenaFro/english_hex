@@ -133,6 +133,7 @@ import { useUserStore } from '../../stores/user';
 import loader from '@/shared/components/Loader.vue';
 import defaultPopup from '@/shared/components/popups/defaultPopup.vue';
 import { useTeacherStore } from '@/stores/teacher';
+import { captureUtmParams, getUtmParams, clearUtmParams } from '@/shared/utils/utm';
 
 const route = useRoute();
 const userStore = useUserStore();
@@ -317,12 +318,16 @@ async function login() {
             : rawReferralCode;
         const referralCode = referralCodeFromQuery || localStorage.getItem(REFERRAL_CODE_STORAGE_KEY);
 
+        captureUtmParams(route.query);
+        const utm = getUtmParams();
+
         if (isTeacherReg.value) {
             response = await teacherStore.registerTeacher(
                 nick.value,
                 email.value,
                 password.value,
-                agreementCheckbox.value
+                agreementCheckbox.value,
+                utm
             );
             localStorage.removeItem('isTeacherReg');
         } else {
@@ -331,11 +336,13 @@ async function login() {
                 email.value,
                 password.value,
                 agreementCheckbox.value,
-                referralCode || null
+                referralCode || null,
+                utm
             );
         }
         if (response?.message?.includes('Success registration')) {
             localStorage.removeItem(REFERRAL_CODE_STORAGE_KEY);
+            clearUtmParams();
             confirmEmailSend.value = true;
         } else {
             errorMessage.value = 'Что-то пошло не так, попробуйте еще раз';
