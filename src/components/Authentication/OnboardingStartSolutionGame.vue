@@ -19,7 +19,7 @@
 
             <div v-if="showBubble" class="speech-bubble-container">
                 <span class="speech-bubble-text"
-                    >Замечательно, значит за неделю вы выучите 20 новых слов!</span
+                    >Замечательно, значит за 5 минут вы выучите 20 новых слов!</span
                 >
             </div>
 
