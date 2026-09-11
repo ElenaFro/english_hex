@@ -1,6 +1,7 @@
 import axios from 'axios';
 import { useUserStore } from '../stores/user';
 import router from '@/router';
+import { getGuestToken } from '@/shared/utils/guestToken';
 
 const apiClient = axios.create({
     baseURL: 'https://dicardz.com/api',
@@ -20,6 +21,16 @@ apiClient.interceptors.request.use(
         } else {
             delete config.headers.Authorization;
             config._authTokenUsed = null;
+        }
+
+        // Онбординг работает без авторизации, по гостевому токену.
+        // Флаг _guest ставят только ручки из src/api/onboarding.js.
+        if (config._guest) {
+            const guestToken = getGuestToken();
+
+            if (guestToken) {
+                config.headers['X-Guest-Token'] = guestToken;
+            }
         }
 
         return config;
@@ -42,6 +53,13 @@ export function setupInterceptors(pinia) {
     apiClient.interceptors.response.use(
         (response) => response,
         (error) => {
+            // _silent — запрос гостевого онбординга и аналитики: он не должен ни разлогинивать,
+            // ни уводить на /error/*, иначе упавшая аналитика ломает продукт.
+            // Такой запрос отклоняется исходной ошибкой axios, чтобы вызывающий код видел статус.
+            if (error.config?._silent) {
+                return Promise.reject(error);
+            }
+
             const status = error.response?.status;
             const requestToken = error.config?._authTokenUsed;
             const currentToken = localStorage.getItem('access_token');

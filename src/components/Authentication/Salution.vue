@@ -17,9 +17,9 @@
 
 <script setup>
 const emit = defineEmits(['change-component']);
+
 function goToNext() {
-    localStorage.setItem('salutionShown', 'true');
-    emit('change-component', 'Onboarding');
+    emit('change-component', 'OnboardingIntroVideo');
 }
 </script>
 

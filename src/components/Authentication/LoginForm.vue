@@ -98,6 +98,8 @@ import BButton from '@/shared/components/BaseButton.vue';
 import defaultPopup from '@/shared/components/popups/defaultPopup.vue';
 import SubscribePushNotify from '@/pages/MainPage/popups/SubscribePushNotify.vue';
 import { shouldShowDailyReward } from '@/shared/utils/dailyReward';
+import { setOnboardingDone } from '@/shared/utils/onboardingSteps';
+import { getApiErrorMessage } from '@/shared/utils/apiErrors';
 
 const router = useRouter();
 
@@ -131,6 +133,9 @@ const login = async () => {
     loading.value = true;
     try {
         await userStore.login(email.value, password.value);
+        // Вошёл — значит аккаунт уже есть, и после выхода гнать его по онбордингу заново
+        // не нужно: `logout` чистит только токен и про онбординг ничего не знает.
+        setOnboardingDone();
         await userStore.fetchUser();
         await userStore.checkUserSubscribe();
         await userStore.getUserRole();
@@ -144,10 +149,9 @@ const login = async () => {
         }
         await router.push({ name: 'mainPage' });
     } catch (error) {
-        errorMessage.value =
-            error.message === 'Access closed, email not confirm'
-                ? 'Доступ запрещен, подтвердите свой email'
-                : 'Ошибка входа';
+        // Бэк отвечает английскими текстами Laravel — переводим, иначе человек видит
+        // «The selected email is invalid.» вместо «Пользователь с таким email не найден».
+        errorMessage.value = getApiErrorMessage(error, 'Ошибка входа');
         showPopup.value = true;
     } finally {
         loading.value = false;

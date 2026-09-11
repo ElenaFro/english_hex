@@ -16,12 +16,25 @@ import RegistConfirm from '@/components/Authentication/RegistConfirm.vue';
 import PasswordRecovConfirm from '@/components/Authentication/PasswordRecovConfirm.vue';
 import UserAgreem from '@/components/Authentication/UserAgreem.vue';
 import PrivacyPolicy from '@/components/Authentication/PrivacyPolicy.vue';
-import Onboarding from '@/components/Authentication/Onboarding.vue';
-import OnboardingGame from '@/components/Authentication/OnboardingGame.vue';
-import OnboardingStartSolutionGame from '@/components/Authentication/OnboardingStartSolutionGame.vue';
+import OnboardingIntroVideo from '@/components/Authentication/OnboardingIntroVideo.vue';
+import OnboardingHero from '@/components/Authentication/OnboardingHero.vue';
+import OnboardingSectorDanger from '@/components/Authentication/OnboardingSectorDanger.vue';
+import OnboardingCardsLesson from '@/components/Authentication/OnboardingCardsLesson.vue';
+import OnboardingOutroVideo from '@/components/Authentication/OnboardingOutroVideo.vue';
+import OnboardingSectorSaved from '@/components/Authentication/OnboardingSectorSaved.vue';
+import RoleChoice from '@/components/Authentication/RoleChoice.vue';
+import AdultHelper from '@/components/Authentication/AdultHelper.vue';
+import { useOnboardingStore } from '@/stores/onboarding';
+import {
+    isOnboardingDone,
+    resolveStartComponent,
+    setStoryStep,
+} from '@/shared/utils/onboardingSteps';
+import { initOnboardingAnalytics } from '@/shared/analytics/onboardingAnalytics';
 
 const currentComponent = ref(null);
 const route = useRoute();
+const onboarding = useOnboardingStore();
 const REFERRAL_CODE_STORAGE_KEY = 'referral_code';
 
 const componentsMap = {
@@ -34,13 +47,20 @@ const componentsMap = {
     PasswordRecovConfirm,
     UserAgreem,
     PrivacyPolicy,
-    Onboarding,
-    OnboardingGame,
-    OnboardingStartSolutionGame,
+    OnboardingIntroVideo,
+    OnboardingHero,
+    OnboardingSectorDanger,
+    OnboardingCardsLesson,
+    OnboardingOutroVideo,
+    OnboardingSectorSaved,
+    RoleChoice,
+    AdultHelper,
 };
 
 const switchComponent = (componentName) => {
     currentComponent.value = componentName;
+    // Экраны истории сервер не различает — запоминаем место внутри шага words сами.
+    setStoryStep(componentName);
 };
 
 const persistReferralCode = (rawCode) => {
@@ -49,22 +69,29 @@ const persistReferralCode = (rawCode) => {
     localStorage.setItem(REFERRAL_CODE_STORAGE_KEY, String(code));
 };
 
-onMounted(() => {
+onMounted(async () => {
     persistReferralCode(route.query.referral_code);
 
-    const salutionShown = localStorage.getItem('salutionShown');
-    const ageVerified = localStorage.getItem('ageVerified');
-    const onboardingCompleted = localStorage.getItem('onboardingComplete');
-
-    if (!salutionShown) {
-        currentComponent.value = 'Salution';
-    } else if (!onboardingCompleted) {
-        currentComponent.value = 'Onboarding';
-    } else if (!ageVerified) {
-        currentComponent.value = 'AgeVerif';
-    } else {
+    // Онбординг здесь уже проходили: показываем вход и НЕ зовём /onboarding/start —
+    // иначе каждый возврат (после регистрации, после выхода из аккаунта) заводил бы
+    // новую гостевую сессию и писал в воронку лишний start_page_open.
+    if (isOnboardingDone()) {
         currentComponent.value = 'LoginForm';
+        return;
     }
+
+    // Событие start_page_open бэк пишет сам при POST /onboarding/start, поэтому запрос идёт
+    // на открытии страницы, а не по кнопке «Начать» — иначе потеряется верх воронки.
+    await onboarding.bootstrap();
+    initOnboardingAnalytics();
+
+    currentComponent.value = resolveStartComponent({
+        nextStep: onboarding.nextStep,
+        wordsCompleted: onboarding.wordsCompleted,
+        needsAdult: onboarding.needsAdult,
+    });
+
+    onboarding.loadContent();
 });
 
 watch(

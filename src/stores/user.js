@@ -31,7 +31,15 @@ export const useUserStore = defineStore('user', () => {
         return user.value;
     };
 
-    async function register(name, email, password, confirm_agreement, referralCode = null, utm = null) {
+    async function register(
+        name,
+        email,
+        password,
+        confirm_agreement,
+        referralCode = null,
+        utm = null,
+        guestToken = null
+    ) {
         const payload = {
             email: email,
             password: password,
@@ -40,6 +48,10 @@ export const useUserStore = defineStore('user', () => {
         };
         if (referralCode) {
             payload.referral_code = referralCode;
+        }
+        // Переносит в созданный аккаунт роль и ответ про возраст из гостевого онбординга.
+        if (guestToken) {
+            payload.guest_token = guestToken;
         }
         if (utm) {
             Object.assign(payload, utm);

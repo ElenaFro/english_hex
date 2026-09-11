@@ -24,6 +24,7 @@
                         v-model.trim="nick"
                         type="text"
                         placeholder="Ник"
+                        @input="onFirstInput"
                         :class="{
                             'login-form__input-field': true,
                             'login-form__input-field--error': nickError,
@@ -36,6 +37,7 @@
                         v-model.trim="email"
                         type="email"
                         placeholder="email"
+                        @input="onFirstInput"
                         :class="{
                             'login-form__input-field': true,
                             'login-form__input-field--error': emailError,
@@ -55,6 +57,7 @@
                             }"
                             @focus="passwordFocused = true"
                             @blur="passwordFocused = false"
+                            @input="onFirstInput"
                         />
 
                         <button type="button" class="show-password-button" @click="togglePassword">
@@ -108,8 +111,8 @@
             </section>
             <section v-else class="confirmText">
                 Почти готово! <br />
-                Мы отправили вам письмо со ссылкой на почту — перейди по ней, чтобы активировать
-                аккаунт и начать учить слова.
+                Мы отправили письмо со ссылкой на почту — перейди по ней, чтобы активировать аккаунт
+                и начать учить слова.
             </section>
         </section>
         <loader v-if="loading" />
@@ -132,11 +135,15 @@ import visibilityOffIcon from '@/assets/img/visibility_off_icon.svg';
 import { useUserStore } from '../../stores/user';
 import loader from '@/shared/components/Loader.vue';
 import defaultPopup from '@/shared/components/popups/defaultPopup.vue';
+import { useOnboardingStore } from '@/stores/onboarding';
 import { useTeacherStore } from '@/stores/teacher';
 import { captureUtmParams, getUtmParams, clearUtmParams } from '@/shared/utils/utm';
+import { getApiErrorMessage, getFieldErrors } from '@/shared/utils/apiErrors';
+import { FRONT_EVENTS, trackEventOnce } from '@/shared/analytics/onboardingAnalytics';
 
 const route = useRoute();
 const userStore = useUserStore();
+const onboarding = useOnboardingStore();
 const teacherStore = useTeacherStore();
 const REFERRAL_CODE_STORAGE_KEY = 'referral_code';
 const nick = ref('');
@@ -158,10 +165,42 @@ const loading = ref(false);
 const showPopup = ref(false);
 const errorMessage = ref(null);
 const passwordFocused = ref(false);
-const isTeacherReg = ref(localStorage.getItem('isTeacherReg'));
 
 const mode = ref('register');
 const emit = defineEmits(['change-component']);
+
+const onFirstInput = () => {
+    trackEventOnce(FRONT_EVENTS.REGISTRATION_STARTED);
+};
+
+/** Куда класть ошибку бэка по каждому полю формы. */
+const SERVER_FIELD_TARGETS = {
+    name: { flag: nickError, text: nickErrorText },
+    email: { flag: emailError, text: emailErrorText },
+    password: { flag: passwordError, text: passwordErrorText },
+    confirm_agreement: { flag: agreementError, text: agreementErrorText },
+};
+
+/**
+ * Разложить ошибки 422 по полям формы.
+ * @returns {boolean} была ли хоть одна ошибка, которую удалось показать у поля —
+ *                    если нет, вызывающий код показывает попап.
+ */
+const applyServerFieldErrors = (error) => {
+    const fieldErrors = getFieldErrors(error);
+    let shown = false;
+
+    Object.entries(fieldErrors).forEach(([field, message]) => {
+        const target = SERVER_FIELD_TARGETS[field];
+        if (!target) return;
+
+        target.flag.value = true;
+        target.text.value = message;
+        shown = true;
+    });
+
+    return shown;
+};
 
 const togglePassword = () => {
     showPassword.value = !showPassword.value;
@@ -311,46 +350,60 @@ const formValidator = () => {
 async function login() {
     loading.value = true;
     try {
-        let response;
         const rawReferralCode = route.query.referral_code;
         const referralCodeFromQuery = Array.isArray(rawReferralCode)
             ? rawReferralCode[0]
             : rawReferralCode;
-        const referralCode = referralCodeFromQuery || localStorage.getItem(REFERRAL_CODE_STORAGE_KEY);
+        const referralCode =
+            referralCodeFromQuery || localStorage.getItem(REFERRAL_CODE_STORAGE_KEY);
 
         captureUtmParams(route.query);
         const utm = getUtmParams();
 
-        if (isTeacherReg.value) {
-            response = await teacherStore.registerTeacher(
-                nick.value,
-                email.value,
-                password.value,
-                agreementCheckbox.value,
-                utm
-            );
-            localStorage.removeItem('isTeacherReg');
-        } else {
-            response = await userStore.register(
-                nick.value,
-                email.value,
-                password.value,
-                agreementCheckbox.value,
-                referralCode || null,
-                utm
-            );
-        }
+        // Роль «Учить других с помощью DICARDZ» регистрируется отдельной учительской
+        // ручкой, как было до онбординга: онбординг добавил к ней только маркетинговые
+        // поля, а сам учительский аккаунт заводится там же, где и раньше.
+        // guest_token в эту ручку не шлём — она его не принимает (вопрос бэкендеру открыт),
+        // поэтому роль и ответ про возраст в учительский аккаунт не переносятся.
+        const response = onboarding.isTeacherGoal
+            ? await teacherStore.registerTeacher(
+                  nick.value,
+                  email.value,
+                  password.value,
+                  agreementCheckbox.value,
+                  utm
+              )
+            : await userStore.register(
+                  nick.value,
+                  email.value,
+                  password.value,
+                  agreementCheckbox.value,
+                  referralCode || null,
+                  utm,
+                  onboarding.guestToken
+              );
+
         if (response?.message?.includes('Success registration')) {
             localStorage.removeItem(REFERRAL_CODE_STORAGE_KEY);
             clearUtmParams();
+            // Бэк гасит гостевой токен — дальше все ручки онбординга по нему вернут 409.
+            // Вместе с этим ставится метка «онбординг пройден»: без неё возврат на /auth
+            // заводил новую гостевую сессию и гнал человека по онбордингу заново.
+            onboarding.finishOnboarding();
             confirmEmailSend.value = true;
         } else {
             errorMessage.value = 'Что-то пошло не так, попробуйте еще раз';
             showPopup.value = true;
         }
     } catch (error) {
-        errorMessage.value = error.message || 'Ошибка при регистрации';
-        showPopup.value = true;
+        // Бэк отвечает 422 с английскими текстами Laravel («The email has already been
+        // taken.»). Показываем перевод, и по возможности — под самим полем, а не попапом.
+        const hasFieldErrors = applyServerFieldErrors(error);
+
+        if (!hasFieldErrors) {
+            errorMessage.value = getApiErrorMessage(error, 'Ошибка при регистрации');
+            showPopup.value = true;
+        }
     } finally {
         loading.value = false;
     }
