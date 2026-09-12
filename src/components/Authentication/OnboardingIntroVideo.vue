@@ -9,7 +9,6 @@
                 class="auth-story-screen__video"
                 :src="videoUrl"
                 autoplay
-                muted
                 playsinline
                 @playing="onPlaying"
                 @ended="goNext"
