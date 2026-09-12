@@ -97,7 +97,7 @@ onMounted(async () => {
 
     &__bubble {
         position: absolute;
-        left: 45.6%;
+        left: 50.6%;
         top: 0;
         width: 47.7%;
         // 109 / 372.8 — высота пузыря из макета относительно блока композиции.

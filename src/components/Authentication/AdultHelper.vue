@@ -60,7 +60,7 @@ const goToRegistration = () => {
         margin-left: 28%;
         width: 47.5%;
         height: auto;
-        z-index: 1;
+        z-index: 3;
     }
 
     &__card {
