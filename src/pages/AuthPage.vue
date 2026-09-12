@@ -88,6 +88,7 @@ onMounted(async () => {
     currentComponent.value = resolveStartComponent({
         nextStep: onboarding.nextStep,
         wordsCompleted: onboarding.wordsCompleted,
+        sectorCompleted: onboarding.sectorCompleted,
         needsAdult: onboarding.needsAdult,
     });
 

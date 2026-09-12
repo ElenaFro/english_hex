@@ -1,8 +1,0 @@
-{
-  "permissions": {
-    "allow": [
-      "Bash(ls -la \"D:\\\\Проекты\\\\english_hex\\\\\" | head -30)",
-      "mcp__53d9d06e-cc0e-4ce0-9c41-96ca9a40104c__get_metadata"
-    ]
-  }
-}
