@@ -160,6 +160,8 @@ onBeforeUnmount(() => {
         display: flex;
         align-items: center;
         gap: 8px;
+        width: max-content;
+        max-width: calc(100% - 32px);
         margin: 0;
         padding: 8px 16px;
         border-radius: 16px;
@@ -168,10 +170,11 @@ onBeforeUnmount(() => {
         font-size: 16px;
         font-weight: 600;
         line-height: 1.2;
-        white-space: nowrap;
+        text-align: center;
         pointer-events: none;
 
         img {
+            flex-shrink: 0;
             width: 24px;
             height: 24px;
         }
